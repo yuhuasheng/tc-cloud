@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.integrate.pnms.mapper.AddCableInfoMapper">
+
+    <select id="getCableCountByHHPN" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(*) num from cable_table where hh_pn = #{hhpn}
+    </select>
+
+    <select id="getHHPNEmptyByGroupId" parameterType="java.lang.String" resultType="java.lang.String">
+        select id from cable_table where hh_pn is null and group_id = #{groupId}
+    </select>
+
+    <insert id="addCableInfo">
+        insert into cable_table
+        (
+        hh_pn, design_pn, description, supplier, group_id, creator, creation_time, modify_time
+        )
+        values
+        (
+        #{hhpn},#{designPN},#{desc},#{mfg},#{groupId},#{creator},#{creationTime},#{modifyTime}
+        )
+    </insert>
+
+    <update id="updateCableInfo" parameterType="java.lang.String">
+        update cable_table
+        <set>
+            <if test="hhpn != null">
+                hh_pn = #{hhpn},
+            </if>
+            <if test="designPN != null">
+                design_pn = #{designPN},
+            </if>
+            <if test="desc != null">
+                description = #{desc},
+            </if>
+            <if test="mfg != null">
+                supplier = #{mfg},
+            </if>
+            <if test="modifyTime != null">
+                modify_time = #{modifyTime}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>

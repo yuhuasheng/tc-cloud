@@ -1,0 +1,48 @@
+GET http://localhost:8274/DCNReport/getFeeLovList
+
+<> 2023-05-08T113100.200.json
+
+###
+
+GET http://localhost:8605/DCNReport/getFeeLovList
+
+<> 2023-05-08T113021.200.json
+
+###
+
+GET http://localhost:8288/DCNReport/getFeeLovList
+
+<> 2023-05-08T111335.200.json
+
+###
+
+GET http://localhost:8804/DCNReport/getFeeLovList
+
+<> 2023-05-06T160629.200.json
+
+###
+
+GET http://localhost:8804/DCNReport/getFeeLovList
+
+<> 2023-05-06T160618.200.json
+
+###
+
+GET http://localhost:8804/DCNReport/getFeeLovList
+
+<> 2023-05-06T160543.200.json
+
+###
+
+GET http://localhost:8661/DCNReport/getFeeLovList
+
+<> 2023-05-06T155820.200.json
+
+###
+
+GET http://localhost:8702/DCNReport/getFeeLovList
+
+<> 2023-05-06T155629.200.json
+
+###
+

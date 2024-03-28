@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" native2AsciiForPropertiesFiles="true" defaultCharsetForPropertiesFiles="UTF-8">
+    <file url="file://$PROJECT_DIR$/tc-common/tc-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-common/tc-entity/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-common/tc-entity/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-common/tc-feign/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-common/tc-feign/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-common/tc-private/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-common/tc-private/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-common/tc-rabbitmq/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-common/tc-rabbitmq/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-common/tc-redis/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-common/tc-redis/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-common/tc-util/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-common/tc-util/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-gateway/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-gateway/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-modules/tc-fileservice/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-modules/tc-fileservice/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-modules/tc-hdfs/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-modules/tc-hdfs/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-modules/tc-health/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-modules/tc-health/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-modules/tc-integrate-b2b/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-modules/tc-integrate-b2b/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-modules/tc-integrate-cis/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-modules/tc-integrate-cis/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-modules/tc-integrate-spas/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-modules/tc-integrate-spas/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-modules/tc-integrate-sso/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-modules/tc-integrate-sso/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-modules/tc-integrate/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-modules/tc-integrate/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-modules/tc-mail/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-modules/tc-mail/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-modules/tc-ops/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-modules/tc-ops/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-modules/tc-report/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-modules/tc-report/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-modules/tc-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-modules/tc-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-modules/tc-sync-folder/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tc-modules/tc-sync-folder/src/main/resources" charset="UTF-8" />
+    <file url="PROJECT" charset="UTF-8" />
+  </component>
+</project>

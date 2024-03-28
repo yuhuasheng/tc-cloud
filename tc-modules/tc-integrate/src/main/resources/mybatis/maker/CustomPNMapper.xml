@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.integrate.sap.customPN.mapper.CustomPNMapper">
+
+    <select id="getSqlByPartSource" resultType="java.util.Map">
+        SELECT * from inl_sap_plant_attribute_map
+        WHERE MRP_PROCUREMENT_TYPE= #{partSource} and enable_flag=1
+    </select>
+
+
+    <select id="getSqlByMtlType" resultType="java.util.Map">
+        SELECT * from inl_sap_plant_attribute_map
+        WHERE material_type=#{mtlType} and enable_flag=1
+    </select>
+
+    <select id="getSqlByPlant" resultType="java.util.Map">
+        SELECT * from inl_sap_plant_attribute_map
+        WHERE plant_code= #{plantCode} and enable_flag=1
+    </select>
+
+
+    <select id="getSqlByMtlGroup" resultType="java.util.Map">
+        SELECT * from inl_sap_basic_attribute_map
+        WHERE material_group= #{mtlGrp}
+    </select>
+
+    <select id="getSqlByPlantMtlType" resultType="java.util.Map">
+        SELECT * from inl_sap_plant_maltype_map
+        WHERE material_type =#{mtlType} and plant_code= #{plantCode} and enable_flag=1
+    </select>
+
+
+    <select id="selectNeedPost" resultType="java.lang.String">
+        select need from inl_need_sap_view
+        where material_type= #{mtlType}
+        and view_code=#{vCode}
+        and plant_code= #{plant}
+        and enable_flag=1
+    </select>
+
+
+    <select id="selectMakerCode" resultType="java.lang.String">
+        select m.makercode from sas_mnt_maker m where m.makername= #{makerName}
+    </select>
+
+
+    <select id="getCustomSEQ" resultType="java.lang.String">
+        SELECT max(code) FROM CONFIG WHERE name ='customPNSeq' and value=#{seqId}
+    </select>
+
+    <insert id="addSeqCounter">
+        <selectKey keyProperty="id" resultType="java.lang.Long" order="BEFORE">
+            select MAX(ID)+1 from CONFIG
+        </selectKey>
+        insert into CONFIG(id, name,value,code) values(#{id},'customPNSeq',#{seqId},#{seqCounter})
+    </insert>
+
+    <update id="updateSeqCounter">
+        update CONFIG set code=#{seqCounter} where name ='customPNSeq' and value=#{seqId}
+    </update>
+
+
+</mapper>

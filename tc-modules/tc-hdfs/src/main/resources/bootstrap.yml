@@ -1,0 +1,11 @@
+server:
+  port: 8234
+spring:
+  application:
+    name: tc-hdfs
+  profiles:
+    active: local
+
+
+
+

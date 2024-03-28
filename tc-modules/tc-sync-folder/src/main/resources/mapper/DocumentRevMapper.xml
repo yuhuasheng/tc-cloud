@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.tcsyncfolder.mapper.DocumentRevMapper">
+
+    <resultMap id="FileResultMap" type="com.foxconn.plm.tcsyncfolder.vo.FileVo">
+        <id property="fileVersionSn" column="file_version_sn"/>
+        <result property="fileId" column="file_id"/>
+        <result property="fileName" column="file_name"/>
+        <result property="fileType" column="file_type"/>
+    </resultMap>
+
+
+    <select id="getId" resultType="int">
+        select OBJ_DOCUMENT_REV_seq.nextval from dual
+    </select>
+
+    <select id="getFileInfo" resultMap="FileResultMap">
+        SELECT v.file_version_sn,f.file_sn AS file_id,f.file_name,f.file_type
+        FROM obj_file_version v,
+            obj_file f
+        WHERE v.file_id = f.file_sn
+        AND v.doc_rev_id = #{docRevId}
+        AND f.del_flag = 0
+    </select>
+
+
+</mapper>
+

@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: tc-sync-folder
+  profiles:
+    active: poc
+server:
+  port: 18088

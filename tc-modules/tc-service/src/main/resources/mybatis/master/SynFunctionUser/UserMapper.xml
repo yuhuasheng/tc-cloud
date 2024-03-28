@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.tcservice.mapper.master.UserMapper">
+
+    <select id="getMaxRecordDate" resultType="java.util.Date">
+        select max(record_date) from xplm.lur_user
+    </select>
+
+    <select id="getTCUserInfo" resultType="com.foxconn.plm.tcservice.tclicensereport.domain.UserInfo">
+        -- Organization of DTSA has 4 levels, others have 3
+        ( -- DTSA
+        select t5.pname as bu,
+        t3.pname as department,
+        t2.pname as function,
+        t1.puser_id as userId,
+        t1.puser_name as userName,
+        t1.plast_login_time + 8/24 as lastLoginDate,
+        nvl(t6.pfnd0used_hours, 0) as usedHoursInMonth,
+        null as usedHoursInDay,
+        sysdate as recordDate
+        from infodba.ppom_user t1,
+        infodba.ppom_group t2,
+        infodba.ppom_group t3,
+        infodba.ppom_group t4,
+        infodba.ppom_group t5,
+        (select * from infodba.pfnd0licenseusage
+        where pfnd0month = to_number(substr(to_char(sysdate - 8/24, 'yyyy-mm'), 6, 7)) - 1
+        and pfnd0year = to_number(substr(to_char(sysdate - 8/24, 'yyyy-mm'), 1, 4))
+        ) t6
+        where substr(t1.pdefault_group,1,14) = t2.puid
+        and t2.rparentu = t3.puid
+        and t3.rparentu = t4.puid
+        and t4.rparentu = t5.puid
+        and t5.pname = 'Desktop'
+        and t1.pstatus = 0
+        and t1.puser_id not in ('apadmin', 'dcproxy', 'dev', 'infodba', 'spas1', 'spas2', 'spas3', 'spas4', 'tcadmin',
+        'test1', 'test2')
+        and t1.puser_id = t6.pfnd0user_id(+)
+        )
+
+        union
+
+        ( -- MNT PRT EV
+        select p4.pname as bu,
+        p3.pname as department,
+        p2.pname as function,
+        p1.puser_id as user_id,
+        p1.puser_name as user_name,
+        p1.plast_login_time + 8/24 as last_login_time,
+        nvl(p5.pfnd0used_hours, 0) as used_hours_in_month,
+        null as used_hours_in_day,
+        sysdate as record_date
+        from infodba.ppom_user p1,
+        infodba.ppom_group p2,
+        infodba.ppom_group p3,
+        infodba.ppom_group p4,
+        (select * from infodba.pfnd0licenseusage
+        where pfnd0month = to_number(substr(to_char(sysdate - 8/24, 'yyyy-mm'), 6, 7)) - 1
+        and pfnd0year = to_number(substr(to_char(sysdate - 8/24, 'yyyy-mm'), 1, 4))
+        ) p5
+        where substr(p1.pdefault_group,1,14) = p2.puid
+        and p2.rparentu = p3.puid
+        and p3.rparentu = p4.puid
+        and p4.pname in ('Monitor', 'Printer', 'EV')
+        and p1.pstatus = 0
+        and p1.puser_id not in ('apadmin', 'dcproxy', 'dev', 'infodba', 'spas1', 'spas2', 'spas3', 'spas4', 'tcadmin',
+        'test1', 'test2')
+        and p1.puser_id = p5.pfnd0user_id(+)
+        )
+        order by bu asc, department asc, function asc
+    </select>
+
+    <select id="getYesterdayUserInfo" parameterType="java.lang.String"
+            resultType="com.foxconn.plm.tcservice.tclicensereport.domain.UserInfo" flushCache="true">
+        select
+        bu,department,userId,userName,lastLoginDate,usedHoursInMonth,usedHoursInDay,to_date(recordDate,'yyyy-MM-dd')
+        recordDate from (
+        select bu,department,function,user_id userId,user_name userName,last_login_date lastLoginDate,
+        used_hours_in_month usedHoursInMonth,used_hours_in_day usedHoursInDay,
+        to_char(record_date,'yyyy-MM-dd') recordDate from xplm.lur_user
+        )where recordDate = #{yesterday}
+    </select>
+
+    <insert id="setUserInfo" parameterType="java.util.List">
+        insert all
+        <foreach collection="list" item="item" index="index">
+            into xplm.lur_user
+            (
+            bu,department,function,user_id,user_name
+            <if test="item.lastLoginDate != null">
+                ,last_login_date
+            </if>
+            ,used_hours_in_month,used_hours_in_day,record_date
+            )
+            values
+            (
+            #{item.bu},#{item.department},#{item.function},#{item.userId},#{item.userName}
+            <if test="item.lastLoginDate != null">
+                ,#{item.lastLoginDate}
+            </if>
+            ,#{item.usedHoursInMonth,jdbcType=INTEGER},#{item.usedHoursInDay,jdbcType=INTEGER},#{item.recordDate}
+            )
+        </foreach>
+        select 1 from dual
+    </insert>
+
+</mapper>

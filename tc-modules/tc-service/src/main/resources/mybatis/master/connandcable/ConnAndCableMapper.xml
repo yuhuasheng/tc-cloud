@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.tcservice.mapper.master.ConnAndCableMapper">
+
+    <insert id="insertConnRecord" parameterType="java.util.List">
+        MERGE INTO XPLM.CONNECTOR_TABLE t1
+        USING (
+        <foreach collection="list" item="item" index="index" separator="union">
+            SELECT
+            #{item.groupId,jdbcType=INTEGER} GROUP_ID,
+            #{item.HHPN,jdbcType=VARCHAR} HH_PN,
+            #{item.description,jdbcType=VARCHAR} DESCRIPTION,
+            #{item.supperlier,jdbcType=VARCHAR} SUPPLIER,
+            #{item.creator, jdbcType=VARCHAR} CREATOR
+            FROM DUAL
+        </foreach>) t2
+        ON (
+        t1.GROUP_ID = t2.GROUP_ID
+        AND t1.HH_PN = t2.HH_PN
+        )
+        WHEN MATCHED THEN
+        UPDATE SET t1.DESCRIPTION = t2.DESCRIPTION, t1.SUPPLIER = t2.SUPPLIER, t1.CREATOR = t2.CREATOR
+        WHEN NOT MATCHED THEN
+        INSERT
+        (HH_PN, SUPPLIER, DESCRIPTION, GROUP_ID, CREATOR)
+        VALUES
+        (t2.HH_PN, t2.SUPPLIER, t2.DESCRIPTION, t2.GROUP_ID, t2.CREATOR)
+    </insert>
+
+    <insert id="insertCableRecord" parameterType="java.util.List">
+        MERGE INTO XPLM.CABLE_TABLE t1
+        USING (
+        <foreach collection="list" item="item" index="index" separator="union">
+            SELECT
+            #{item.groupId,jdbcType=INTEGER} GROUP_ID,
+            #{item.HHPN,jdbcType=VARCHAR} HH_PN,
+            #{item.description,jdbcType=VARCHAR} DESCRIPTION,
+            #{item.supperlier,jdbcType=VARCHAR} SUPPLIER,
+            #{item.creator, jdbcType=VARCHAR} CREATOR
+            FROM DUAL
+        </foreach>) t2
+        ON (
+        t1.GROUP_ID = t2.GROUP_ID
+        AND t1.HH_PN = t2.HH_PN
+        )
+        WHEN MATCHED THEN
+        UPDATE SET t1.DESCRIPTION = t2.DESCRIPTION, t1.SUPPLIER = t2.SUPPLIER, t1.CREATOR = t2.CREATOR
+        WHEN NOT MATCHED THEN
+        INSERT
+        (HH_PN, SUPPLIER, DESCRIPTION, GROUP_ID, CREATOR)
+        VALUES
+        (t2.HH_PN, t2.SUPPLIER, t2.DESCRIPTION, t2.GROUP_ID, t2.CREATOR)
+
+    </insert>
+
+    <select id="checkConnRepeat" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM
+        XPLM.CONNECTOR_TABLE
+        <where>
+            <if test="groupId != null and groupId !=''">
+                AND GROUP_ID = #{groupId}
+            </if>
+            <if test="HHPN != null and HHPN !=''">
+                AND HH_PN = #{HHPN}
+            </if>
+        </where>
+    </select>
+
+    <select id="checkCableRepeat" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM
+        XPLM.CABLE_TABLE
+        <where>
+            <if test="groupId != null and groupId !=''">
+                AND GROUP_ID = #{groupId}
+            </if>
+            <if test="HHPN != null and HHPN !=''">
+                AND HH_PN = #{HHPN}
+            </if>
+        </where>
+    </select>
+
+    <select id="getMAXGroupId" resultType="java.lang.Integer">
+        SELECT MAX(GROUP_ID) FROM CONNECTOR_TABLE
+    </select>
+
+    <select id="getConnData" resultType="com.foxconn.plm.tcservice.connandcable.domain.ConnectorInfo">
+        select id,hh_pn hhPN,description,supplier,group_id groupId from connector_table
+        <where>
+            <if test="groupIds != null">
+                group_id in
+                <foreach collection="groupIds" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="getCableData" resultType="com.foxconn.plm.tcservice.connandcable.domain.CableInfo">
+        select id,hh_pn hhPN,design_pn designPN,description,supplier,group_id groupId from cable_table
+        <where>
+            <if test="groupIds != null">
+                group_id in
+                <foreach collection="groupIds" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="queryConnGroupIdByPN" resultType="String">
+        select group_id from connector_table where hh_pn in
+        <foreach collection="hhpns" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="queryCableGroupIdByPN" resultType="String">
+        select group_id from connector_table where hh_pn in
+        <foreach collection="hhpns" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="queryConnInfoCount" resultType="java.lang.Integer">
+        select count(*) num from connector_table where hh_pn = #{hhpn}
+    </select>
+
+    <select id="queryCableInfoCount" resultType="java.lang.Integer">
+        select count(*) num from cable_table where hh_pn = #{hhpn}
+    </select>
+
+    <insert id="addConn" parameterType="java.lang.String">
+        insert into connector_table(hh_pn, description, supplier, group_id, creator, creation_time, modify_time)
+        values (
+             #{hhpn,jdbcType=VARCHAR},#{desc,jdbcType=VARCHAR},#{mfg,jdbcType=VARCHAR}
+            ,#{groupId,jdbcType=VARCHAR},#{creator,jdbcType=VARCHAR}
+            ,to_date(#{creationTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+            ,to_date(#{modifyTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+          )
+    </insert>
+
+    <select id="queryHHPNEmptyByGroupId" resultType="java.lang.Integer">
+       select id from cable_table where hh_pn is null and group_id = #{groupId}
+    </select>
+
+    <update id="updateCable1" parameterType="java.lang.String">
+        update cable_table set
+        hh_pn =  #{hhpn}, design_pn = #{designPN},
+        description = #{desc}, supplier = #{mfg} where id = #{id}
+    </update>
+
+    <insert id="addCable" parameterType="java.lang.String">
+        insert into cable_table(hh_pn,
+            <if test="designPN != null and designPN != ''">
+                design_pn,
+            </if>
+            description, supplier, group_id, creator, creation_time, modify_time)
+        values (
+             #{hhpn,jdbcType=VARCHAR}
+            <if test="designPN != null and designPN != ''">
+                ,#{designPN,jdbcType=VARCHAR}
+            </if>
+            ,#{desc,jdbcType=VARCHAR},#{mfg,jdbcType=VARCHAR}
+            ,#{groupId,jdbcType=VARCHAR},#{creator,jdbcType=VARCHAR}
+            ,to_date(#{creationTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+            ,to_date(#{modifyTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+          )
+    </insert>
+
+    <select id="queryMaxGroupId" resultType="java.lang.Integer">
+       select max(group_id) groupId from connector_table
+    </select>
+
+    <insert id="addConnInfo" parameterType="java.lang.String">
+        insert into connector_table(hh_pn, description, supplier, group_id, creator, creation_time, modify_time)
+        values (
+             #{hhpn,jdbcType=VARCHAR},#{desc,jdbcType=VARCHAR}
+            ,#{mfg,jdbcType=VARCHAR},#{groupId,jdbcType=VARCHAR}
+            ,#{creator,jdbcType=VARCHAR}
+            ,to_date(#{creationTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+            ,to_date(#{modifyTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+          )
+    </insert>
+
+    <insert id="addCableInfo" parameterType="java.lang.String">
+        insert into cable_table(group_id, creator, creation_time, modify_time)
+        values (
+             #{groupId,jdbcType=VARCHAR},#{creator,jdbcType=VARCHAR}
+            ,to_date(#{creationTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+            ,to_date(#{modifyTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+          )
+    </insert>
+
+    <update id="updateConn" parameterType="java.lang.String">
+        update connector_table set description = #{desc} , supplier = #{mfg} where hh_pn = #{hhpn}
+    </update>
+
+    <update id="updateCable2" parameterType="java.lang.String">
+        update cable_table set description = #{desc} , supplier = #{mfg} where hh_pn = #{hhpn}
+    </update>
+
+    <delete id="delConnInfo" parameterType="java.util.List">
+        delete from connector_table where id in
+        <foreach collection="connIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="delCableInfo" parameterType="java.util.List">
+        delete from cable_table where id in
+        <foreach collection="cableIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+</mapper>
+

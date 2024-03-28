@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.tcservice.mapper.master.DCNReportMapper">
+
+    <insert id="insertDCNData" parameterType="java.util.List">
+        MERGE INTO XPLM.DCN_RECORD t1
+        USING (
+        <foreach collection="list" item="item" index="index" separator="union">
+            SELECT
+            #{item.bu,jdbcType=VARCHAR} BU,
+            #{item.projectId,jdbcType=VARCHAR} PROJECT_ID,
+            #{item.projectName,jdbcType=VARCHAR} PROJECT_NAME,
+            #{item.customerType,jdbcType=VARCHAR} CUSTOMER_TYPE,
+            #{item.productLine, jdbcType=VARCHAR} PRODUCT_LINE,
+            #{item.dcnNo, jdbcType=VARCHAR} DCN_NO,
+            #{item.modelNo, jdbcType=VARCHAR} MODEL_NO,
+            #{item.modelNoPrefix, jdbcType=VARCHAR} MODEL_NO_PREFIX,
+            #{item.hhpn, jdbcType=VARCHAR} HHPN,
+            #{item.customerPN, jdbcType=VARCHAR} CUSTOMER_PN,
+            #{item.partName, jdbcType=VARCHAR} PART_NAME,
+            #{item.description, jdbcType=VARCHAR} DESCRIPTION,
+            #{item.reason, jdbcType=VARCHAR} REASON,
+            #{item.reason, jdbcType=VARCHAR} reasonActualProp,
+            #{item.costImpact, jdbcType=VARCHAR} COST_IMPACT,
+            #{item.status, jdbcType=VARCHAR} STATUS,
+            #{item.createDate, jdbcType=VARCHAR} CREATE_DATE
+            FROM DUAL
+        </foreach>) t2
+        ON (
+        t1.BU = t2.BU
+        AND t1.DCN_NO = t2.DCN_NO
+        AND t1.REASON = t2.REASON
+        )
+        WHEN MATCHED THEN
+        UPDATE SET t1.PROJECT_ID = t2.PROJECT_ID, t1.PROJECT_NAME = t2.PROJECT_NAME, t1.CUSTOMER_TYPE =
+        t2.CUSTOMER_TYPE, t1.PRODUCT_LINE = t2.PRODUCT_LINE,
+        t1.MODEL_NO = t2.MODEL_NO, t1.MODEL_NO_PREFIX = t2.MODEL_NO_PREFIX, t1.HHPN = t2.HHPN, t1.CUSTOMER_PN =
+        t2.CUSTOMER_PN, t1.PART_NAME = t2.PART_NAME, t1.DESCRIPTION = t2.DESCRIPTION,
+        t1.COST_IMPACT = t2.COST_IMPACT, t1.STATUS = t2.STATUS, t1.CREATE_DATE = t2.CREATE_DATE
+        WHEN NOT MATCHED THEN
+        INSERT
+        (BU, PROJECT_ID, PROJECT_NAME, CUSTOMER_TYPE, PRODUCT_LINE, DCN_NO, MODEL_NO, MODEL_NO_PREFIX, HHPN,
+        CUSTOMER_PN, PART_NAME, DESCRIPTION, REASON, COST_IMPACT, STATUS, CREATE_DATE)
+        VALUES
+        (t2.BU, t2.PROJECT_ID, t2.PROJECT_NAME, t2.CUSTOMER_TYPE, t2.PRODUCT_LINE, t2.DCN_NO, t2.MODEL_NO,
+        t2.MODEL_NO_PREFIX, t2.HHPN, t2.CUSTOMER_PN, t2.PART_NAME, t2.DESCRIPTION, t2.REASON, t2.COST_IMPACT, t2.STATUS,
+        t2.CREATE_DATE)
+    </insert>
+
+    <select id="getLov" resultType="com.foxconn.plm.tcservice.dcnreport.domain.LovEntity">
+        SELECT
+        DISTINCT s.BU, s.CUSTOMER, s.PRODUCT_LINE AS productLine, s.project_id || '-'|| s.project_name AS projectInfo
+        FROM
+        infodba.SPAS_INFO s
+        WHERE
+        BU IS NOT NULL
+        AND CUSTOMER IS NOT NULL
+        AND PRODUCT_LINE IS NOT NULL
+        AND project_id IS not NULL
+        AND project_name IS NOT NULL
+    </select>
+
+    <select id="getFeeLov" resultType="com.foxconn.plm.tcservice.dcnreport.domain.FeeLovEntity">
+        SELECT a.owner, a.projectId, a.projectName FROM
+            (
+                SELECT b.owner, b.PROJECT_ID AS projectId, b.PROJECT_NAME AS projectName FROM MATERIAL_MOLD_INFO b
+                UNION
+                SELECT c.owner, c.PROJECT_ID AS projectId, c.PROJECT_NAME  AS projectName FROM DCN_FEE_RECORD c
+            ) a
+    </select>
+
+    <select id="getDCNRecord" resultType="com.foxconn.plm.tcservice.dcnreport.domain.DCNReportBean">
+        SELECT
+            BU,
+            PROJECT_ID AS projectId,
+            PROJECT_NAME AS projectName,
+            CUSTOMER_TYPE AS customerType,
+            PRODUCT_LINE AS productLine,
+            MODEL_NO AS modelNo,
+            MODEL_NO_PREFIX AS modelNoPrefix,
+            DCN_NO AS dcnNo,
+            HHPN,
+            CUSTOMER_PN AS customerPN,
+            PART_NAME AS partName,
+            DESCRIPTION,
+            REASON,
+            COST_IMPACT AS costImpact,
+            STATUS,
+            CREATE_DATE AS createDate,
+            OWNER
+        FROM
+        XPLM.DCN_FEE_RECORD
+        <where>
+            <if test="queryEntity.bu != null and queryEntity.bu !=''">
+                AND BU =#{queryEntity.bu}
+            </if>
+
+            <if test="queryEntity.customer != null and queryEntity.customer !=''">
+                AND CUSTOMER_TYPE =#{queryEntity.customer}
+            </if>
+
+            <if test="queryEntity.productLine != null and queryEntity.productLine != ''">
+                AND PRODUCT_LINE =#{queryEntity.productLine}
+            </if>
+
+            <if test="queryEntity.projectId != null and queryEntity.projectId != ''">
+                AND PROJECT_ID =#{queryEntity.projectId}
+            </if>
+
+            <if test='queryEntity.dcnRelease == "1"'>
+                AND STATUS = 'Released'
+            </if>
+
+            <if test='queryEntity.dcnRelease == "0"'>
+                AND STATUS = ''
+            </if>
+
+            <if test='queryEntity.dcnCostImpact == "1"'>
+                AND COST_IMPACT IS NOT NULL
+            </if>
+
+            <if test='queryEntity.dcnCostImpact == "0"'>
+                AND COST_IMPACT IS NULL
+            </if>
+
+            <if test="queryEntity.startDate != null and queryEntity.startDate != ''">
+                AND SUBSTR(CREATE_DATE, 0, 10) &gt;= #{queryEntity.startDate}
+            </if>
+
+            <if test="queryEntity.endDate != null and queryEntity.endDate != ''">
+                AND SUBSTR(CREATE_DATE, 0, 10) &lt;= #{queryEntity.endDate}
+            </if>
+        </where>
+        ORDER BY DCN_NO ASC
+    </select>
+
+    <select id="getDCNRecordByType" resultType="com.foxconn.plm.tcservice.dcnreport.domain.DCNReportBean">
+        SELECT
+            DCN_NO AS dcnNo,
+            MODEL_NO AS modelNo,
+            MODEL_NO_PREFIX AS modelNoPrefix,
+            PROJECT_ID AS projectId,
+            PROJECT_NAME AS projectName,
+            HHPN,
+            CUSTOMER_PN AS customerPN,
+            CUSTOMER_TYPE AS customerType,
+            PART_NAME AS partName,
+            DESCRIPTION,
+            REASON,
+            COST_IMPACT AS costImpact,
+            SUBSTR(CREATE_DATE, 0, 10) AS createDate
+        FROM
+        XPLM.DCN_FEE_RECORD
+        WHERE MODEL_NO_PREFIX IN
+        <foreach collection="modelNoPrefix" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        <if test="queryEntity.bu != null and queryEntity.bu !=''">
+            AND BU =#{queryEntity.bu}
+        </if>
+
+        <if test="queryEntity.customer != null and queryEntity.customer !=''">
+            AND CUSTOMER_TYPE =#{queryEntity.customer}
+        </if>
+
+        <if test="queryEntity.productLine != null and queryEntity.productLine !=''">
+            AND PRODUCT_LINE =#{queryEntity.productLine}
+        </if>
+
+        <if test="queryEntity.projectId != null and queryEntity.projectId !=''">
+            AND PROJECT_ID =#{queryEntity.projectId}
+        </if>
+
+        <if test='queryEntity.dcnRelease == "1"'>
+            AND STATUS = 'Released'
+        </if>
+
+        <if test='queryEntity.dcnRelease == "0"'>
+            AND STATUS = ''
+        </if>
+
+        <if test='queryEntity.dcnCostImpact == "1"'>
+            AND COST_IMPACT IS NOT NULL
+        </if>
+
+        <if test='queryEntity.dcnCostImpact == "0"'>
+            AND COST_IMPACT IS NULL
+        </if>
+
+        <if test="queryEntity.startDate != null and queryEntity.startDate !=''">
+            AND SUBSTR(CREATE_DATE, 0, 10) &gt;= #{queryEntity.startDate}
+        </if>
+
+        <if test="queryEntity.endDate != null and queryEntity.endDate !=''">
+            AND SUBSTR(CREATE_DATE, 0, 10) &lt;= #{queryEntity.endDate}
+        </if>
+        ORDER BY DCN_NO ASC
+    </select>
+
+    <select id="getDCNCreateRecord" resultType="com.foxconn.plm.tcservice.dcnreport.domain.DCNCreateBean">
+        SELECT
+        ITEM_ID AS itemId, VER AS version, ITEM_REV_UID as itemRevUid, CREATE_TIME AS createDate
+        FROM
+        XPLM.GET_CREATEITEMREV_RECORD_VIEW
+        <where>
+            <if test="objectType != null and objectType != ''">
+                AND OBJECT_TYPE =#{objectType}
+            </if>
+
+            <if test="startDate != null">
+                AND CREATE_TIME &gt;= #{startDate}
+            </if>
+
+            <if test="endDate != null">
+                AND CREATE_TIME &lt;= #{endDate}
+            </if>
+
+        </where>
+    </select>
+
+    <select id="getDCNFeeRecord" resultType="com.foxconn.plm.tcservice.dcnreport.domain.DCNFeeBean">
+        SELECT
+            SUBSTR(OWNER, 1, INSTR(OWNER, '(') -1) AS userName,
+            SUBSTR(OWNER, INSTR(OWNER, '(') +1, (INSTR(OWNER, ')')  - INSTR(OWNER, '(') -1)) AS userId,
+            PROJECT_ID AS projectId,
+            PROJECT_NAME AS projectName,
+            DCN_NO AS dcnNo,
+            DCN_VERSION AS dcnVersion,
+            REASON,
+            HHPN,
+            MODEL_NO AS modelNo,
+            MODEL_NO_VERSION AS modelNoVersion,
+            PART_NAME AS partName,
+            COST_IMPACT AS dcnFee
+        FROM
+            XPLM.DCN_FEE_RECORD
+        <where>
+            <if test="projectId != null and projectId !=''">
+                AND PROJECT_ID = #{projectId, jdbcType=VARCHAR}
+            </if>
+
+            <if test="owner != null and owner != ''">
+                AND OWNER = #{owner, jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="getNewMoldFeeRecord" resultType="com.foxconn.plm.tcservice.dcnreport.domain.DCNFeeBean">
+        SELECT
+            SUBSTR(OWNER, 1, INSTR(OWNER, '(') -1) AS userName,
+            SUBSTR(OWNER, INSTR(OWNER, '(') + 1, (INSTR(OWNER, ')') - INSTR(OWNER, '(') -1)) AS userId,
+            PROJECT_ID AS projectId,
+            PROJECT_NAME AS projectName,
+            HHPN,
+            ITEM_ID AS modelNo,
+            ITEM_REVISION_ID AS modelNoVersion,
+            PART_NAME AS partName,
+            NEW_MOLD_FEE AS newMoldFee
+        FROM
+            XPLM.MATERIAL_MOLD_INFO
+        <where>
+            <if test ="owner != null and owner !=''">
+                AND OWNER = #{owner, jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="getNewMoldFee" resultType="com.foxconn.plm.tcservice.dcnreport.domain.DCNFeeBean">
+        SELECT
+            ITEM_ID AS modelNo,
+            ITEM_REVISION_ID AS modelNoVersion,
+            NEW_MOLD_FEE AS newMoldFee
+        FROM
+            XPLM.MATERIAL_MOLD_INFO
+        <where>
+            <if test ="itemId != null and itemId != ''">
+                AND ITEM_ID = #{itemId, jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>
+

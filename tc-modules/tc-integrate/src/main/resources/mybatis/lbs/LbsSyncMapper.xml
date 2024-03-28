@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.integrate.lbs.mapper.LbsSyncMapper">
+    <resultMap id="BaseResult" type="com.foxconn.plm.integrate.lbs.entity.LbsSyncEntity">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="rev" property="rev" jdbcType="VARCHAR"/>
+        <result column="spas_id" property="spasId" jdbcType="VARCHAR"/>
+        <result column="spas_phase" property="spasPhase" jdbcType="VARCHAR"/>
+        <result column="chang_list" property="changList" jdbcType="VARCHAR"/>
+        <result column="proj_name" property="projName" jdbcType="VARCHAR"/>
+        <result column="file_name" property="fileName" jdbcType="VARCHAR"/>
+        <result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="DATE"/>
+    </resultMap>
+
+    <insert id="saveEntity">
+        INSERT into lbs_sync_record (id,rev,spas_id,spas_phase,chang_list,file_name,del_flag,create_time,proj_name)
+        VALUES (
+        #{id},#{rev},#{spasId},#{spasPhase},#{changList},#{fileName},#{delFlag},#{createTime},#{projName}
+        )
+    </insert>
+
+    <update id="updateById">
+        UPDATE lbs_sync_record
+        SET del_flag = '1'
+        WHERE id = #{id}
+    </update>
+
+
+    <update id="updateByIds">
+        UPDATE lbs_sync_record
+        SET del_flag = '1'
+        WHERE id IN
+        <foreach collection="ids" item="item" separator="," close=")" open="(">
+            #{item}
+        </foreach>
+    </update>
+
+    <select id="getByTime" resultMap="BaseResult">
+        SELECT
+        id,rev,spas_id,spas_phase,chang_list,file_name,proj_name
+        FROM lbs_sync_record
+        WHERE del_flag = '0'
+        AND create_time BETWEEN #{startTime} AND #{endTime}
+    </select>
+
+    <select id="getList" resultType="com.foxconn.plm.integrate.lbs.domain.SyncRes">
+        SELECT
+        id,rev,spas_id,spas_phase,chang_list,file_name,proj_name
+        FROM lbs_sync_record
+        WHERE del_flag = '0'
+        ORDER BY create_time DESC
+    </select>
+
+    <delete id="batchDelete">
+        DELETE
+        FROM lbs_sync_record
+        WHERE id IN
+        <foreach collection="ids" item="item" separator="," close=")" open="(">
+            #{item}
+        </foreach>
+    </delete>
+</mapper>

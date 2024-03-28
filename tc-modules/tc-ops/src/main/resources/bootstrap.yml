@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: tc-ops
+  profiles:
+    active: local
+server:
+  port: 18090

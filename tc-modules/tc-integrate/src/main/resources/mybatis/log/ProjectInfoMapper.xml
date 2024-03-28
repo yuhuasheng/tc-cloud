@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.integrate.log.mapper.ProjectInfoMapper">
+
+
+    <insert id="addProjInfo">
+        insert into
+        infodba.spas_info(PROJECT_ID,BU,CUSTOMER,PRODUCT_LINE,SERIES_NAME,PROJECT_NAME,PHASE,CUR_PHASE,START_TIME,END_TIME,CUR_START_TIME,CUR_END_TIME,SPM)
+        values(#{projId},#{bu,jdbcType=VARCHAR},#{customer,jdbcType=VARCHAR},#{productLine,jdbcType=VARCHAR},#{series,jdbcType=VARCHAR},#{projName,jdbcType=VARCHAR},#{phase,jdbcType=VARCHAR},#{curPhase,jdbcType=VARCHAR},to_date(#{startTime},'yyyy-MM-dd'),to_date(#{endTime},'yyyy-MM-dd'),to_date(#{curStartTime},'yyyy-MM-dd'),to_date(#{curEndTime},'yyyy-MM-dd'),#{ownerName,jdbcType=VARCHAR})
+    </insert>
+
+    <delete id="deleteProjInfo">
+        delete from infodba.spas_info
+    </delete>
+
+
+    <select id="selectActiveProjInTC" resultType="java.lang.String">
+        select pproject_id from infodba.ptc_project t where t.pis_active = 1
+    </select>
+
+
+    <select id="getActualUsers" resultType="java.lang.String">
+        select t3.pd9_userinfo as UserInfo
+        from infodba.pworkspaceobject t1,
+        infodba.pitem t2,
+        infodba.pd9_actualuser t3
+        where t1.puid = t2.puid
+        and t1.puid = t3.puid
+        and t1.pobject_desc ='Y'
+    </select>
+
+
+    <select id="getProjsIntc" resultType="java.lang.String">
+        select pproject_id ||'-'||pproject_name from infodba.ptc_project t where t.pis_active = 1
+    </select>
+
+
+    <delete id="deleteProjectInfo">
+        delete from infodba. t where t.pis_active = 1
+    </delete>
+
+
+    <select id="getManPowerFunction" resultType="com.foxconn.plm.integrate.log.domain.ManpowerPhaseInfo">
+       select distinct c.tc_function_name deptName,ps.phase_sn phase
+              from spas_manpower_standard p ,
+                   spas_function_config  c,
+                   spas_product_line_phase  ps
+              where p.project_id=#{projectId}
+                and p.factor > '0.0'
+                and p.function_id=c.spas_function_id
+                and p.group_id=c.spas_group_id
+                and p.phase_id=ps.id
+                and p.is_active=1
+                and c.is_active=1
+    </select>
+
+</mapper>

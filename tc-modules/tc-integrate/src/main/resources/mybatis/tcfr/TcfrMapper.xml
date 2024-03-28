@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.integrate.tcfr.mapper.TCFRMapper">
+
+
+    <select id="getTCFRProjectInfoPojos" resultType="com.foxconn.plm.integrate.tcfr.domain.TCFRProjectInfoPojo">
+        select p.id                spasProjId,
+               p.name              spasProjName,
+               p.project_series_id spasProjSeriesId,
+               s.series_name       spasProjSeriesName,
+               c.id                spasCustomerId,
+               c.name              spasCustomerName
+        from infodba.ptc_project t,
+             spas_platform_found p,
+             spas_series s,
+             spas_customer c
+        where t.pis_active = 1
+          and t.pproject_id = 'P' || p.id
+          and p.project_series_id = s.id
+          and s.customer_id = c.id
+
+    </select>
+
+
+    <select id="getTCProjectFolder" resultType="java.lang.String">
+        select
+            t2.pobject_name as projectFolderName
+        from
+            infodba.pd9_projectfolder t1,
+            infodba.pworkspaceobject t2
+        where
+            t1.puid = t2.puid
+        and
+            t2.pobject_type = 'D9_PlatformFoundFolder'
+        and
+            t1.pd9_spas_id IS NOT NULL
+        and
+            t1.pd9_spas_id = #{projectId, jdbcType=VARCHAR}
+    </select>
+
+    <select id="getTCUserInfo" resultType="com.foxconn.plm.integrate.tcfr.domain.TCUserBean">
+        select
+            s.work_id AS workId,
+            t.spas_user_name AS workName,
+            t.tc_user_id AS tcUserId,
+            t.email AS email
+        from
+            spas_user s,
+            spas_work_mapping_tcuser t
+        where
+            s.work_id = t.spas_user_id
+        and
+            t.email = #{email}
+    </select>
+
+    <insert id="insertTCFRData" parameterType="com.foxconn.plm.integrate.tcfr.domain.MeetBean">
+       INSERT INTO
+            XPLM.TCFR_RECORD
+           (SPAS_PROJ_ID, SPAS_PROJ_PHASE, SPAS_SERIES, MEET_MAIN_OWNER, CUSTOMER_NAME, MEETING_START_DATE, MEETING_TITLE, MEETING_MINUTES_PATH, ACTION_ITEM_LIST, SCHEDULE_UID, MEETING_TYPE)
+       VALUES
+            (#{spasProjId, jdbcType=VARCHAR}, #{spasProjPhase, jdbcType=VARCHAR}, #{spasSeries, jdbcType=VARCHAR}, #{meetMainOwner, jdbcType=VARCHAR}, #{customerName, jdbcType=VARCHAR},
+            #{meetingStartDate, jdbcType=VARCHAR}, #{meetingTitle, jdbcType=VARCHAR}, #{meetingMinutesPath, jdbcType=VARCHAR}, #{actionItemList, jdbcType=VARCHAR}, #{scheduleUid, jdbcType=VARCHAR},
+             #{meetingType, jdbcType=VARCHAR})
+    </insert>
+
+    <select id="getTCFRData" resultType="com.foxconn.plm.integrate.tcfr.domain.MeetBean">
+        select
+            SPAS_PROJ_ID as spasProjId,
+            SPAS_PROJ_PHASE as spasProjPhase,
+            SPAS_SERIES as spasSeries,
+            MEET_MAIN_OWNER as meetMainOwner,
+            CUSTOMER_NAME as customerName,
+            MEETING_START_DATE as meetingStartDate,
+            MEETING_TITLE as meetingTitle,
+            MEETING_MINUTES_PATH as meetingMinutesPath,
+            ACTION_ITEM_LIST as actionItemList,
+            SCHEDULE_UID as scheduleUid,
+            MSG as msg,
+            UPLOAD_FLAG as uploadFLag,
+            DOCUMENT_UID as documentUid
+        from
+            XPLM.TCFR_RECORD
+        where
+            MSG = 'N'
+        AND DOCUMENT_UID is not null
+        AND to_char(create_date, 'dd') = to_char(SYSDATE, 'dd')
+        order by create_date desc
+    </select>
+
+    <select id="getTCFRDataCount" resultType="java.lang.Integer">
+        SELECT
+           COUNT(*)
+        FROM
+             XPLM.TCFR_RECORD
+        <where>
+            <if test="spasProjId != null and spasProjId !=''">
+                AND SPAS_PROJ_ID = #{spasProjId, jdbcType=VARCHAR}
+            </if>
+
+            <if test="spasProjPhase != null and spasProjPhase !=''">
+                AND SPAS_PROJ_PHASE = #{spasProjPhase, jdbcType=VARCHAR}
+            </if>
+
+            <if test="spasSeries != null and spasSeries !=''">
+                AND SPAS_SERIES = #{spasSeries, jdbcType=VARCHAR}
+            </if>
+
+            <if test="meetMainOwner != null and meetMainOwner !=''">
+                AND MEET_MAIN_OWNER = #{meetMainOwner, jdbcType=VARCHAR}
+            </if>
+
+            <if test="customerName != null and customerName !=''">
+                AND CUSTOMER_NAME = #{customerName, jdbcType=VARCHAR}
+            </if>
+
+            <if test="meetingStartDate != null and meetingStartDate !=''">
+                AND MEETING_START_DATE = #{meetingStartDate, jdbcType=VARCHAR}
+            </if>
+
+            <if test="meetingTitle != null and meetingTitle !=''">
+                AND MEETING_TITLE = #{meetingTitle, jdbcType=VARCHAR}
+            </if>
+
+            <if test="meetingType != null and meetingType !=''">
+                AND MEETING_TYPE = #{meetingType, jdbcType=VARCHAR}
+            </if>
+
+        </where>
+    </select>
+
+    <update id="updateTCFRFilePath">
+        UPDATE
+            XPLM.TCFR_RECORD
+        SET
+            MEETING_MINUTES_PATH = #{meetingMinutesPath}
+
+        <where>
+            <if test="spasProjId != null and spasProjId !=''">
+                AND SPAS_PROJ_ID = #{spasProjId, jdbcType=VARCHAR}
+            </if>
+
+            <if test="spasProjPhase != null and spasProjPhase !=''">
+                AND SPAS_PROJ_PHASE = #{spasProjPhase, jdbcType=VARCHAR}
+            </if>
+
+            <if test="spasSeries != null and spasSeries !=''">
+                AND SPAS_SERIES = #{spasSeries, jdbcType=VARCHAR}
+            </if>
+
+            <if test="meetMainOwner != null and meetMainOwner !=''">
+                AND MEET_MAIN_OWNER = #{meetMainOwner, jdbcType=VARCHAR}
+            </if>
+
+            <if test="customerName != null and customerName !=''">
+                AND CUSTOMER_NAME = #{customerName, jdbcType=VARCHAR}
+            </if>
+
+            <if test="meetingStartDate != null and meetingStartDate !=''">
+                AND MEETING_START_DATE = #{meetingStartDate, jdbcType=VARCHAR}
+            </if>
+
+            <if test="meetingTitle != null and meetingTitle !=''">
+                AND MEETING_TITLE = #{meetingTitle, jdbcType=VARCHAR}
+            </if>
+
+            <if test="meetingType != null and meetingType !=''">
+                AND MEETING_TYPE = #{meetingType, jdbcType=VARCHAR}
+            </if>
+
+        </where>
+    </update>
+
+    <update id="updateScheduleUid">
+        UPDATE
+            XPLM.TCFR_RECORD
+        <set>
+            <if test="scheduleUid != null and scheduleUid !=''">
+                SCHEDULE_UID = #{scheduleUid, jdbcType=VARCHAR}
+            </if>
+        </set>
+
+        <where>
+            <if test="spasProjId != null and spasProjId !=''">
+                AND SPAS_PROJ_ID = #{spasProjId, jdbcType=VARCHAR}
+            </if>
+
+            <if test="spasProjPhase != null and spasProjPhase !=''">
+                AND SPAS_PROJ_PHASE = #{spasProjPhase, jdbcType=VARCHAR}
+            </if>
+
+            <if test="spasSeries != null and spasSeries !=''">
+                AND SPAS_SERIES = #{spasSeries, jdbcType=VARCHAR}
+            </if>
+
+            <if test="meetMainOwner != null and meetMainOwner !=''">
+                AND MEET_MAIN_OWNER = #{meetMainOwner, jdbcType=VARCHAR}
+            </if>
+
+            <if test="customerName != null and customerName !=''">
+                AND CUSTOMER_NAME = #{customerName, jdbcType=VARCHAR}
+            </if>
+
+            <if test="meetingStartDate != null and meetingStartDate !=''">
+                AND MEETING_START_DATE = #{meetingStartDate, jdbcType=VARCHAR}
+            </if>
+
+            <if test="meetingTitle != null and meetingTitle !=''">
+                AND MEETING_TITLE = #{meetingTitle, jdbcType=VARCHAR}
+            </if>
+
+            <if test="meetingMinutesPath != null and meetingMinutesPath !=''">
+                AND MEETING_MINUTES_PATH = #{meetingMinutesPath, jdbcType=VARCHAR}
+            </if>
+
+            <if test="meetingType != null and meetingType !=''">
+                AND MEETING_TYPE = #{meetingType, jdbcType=VARCHAR}
+            </if>
+
+            <if test="actionItemList != null and actionItemList !=''">
+                AND to_char(ACTION_ITEM_LIST) = #{actionItemList, jdbcType=VARCHAR}
+            </if>
+
+        </where>
+    </update>
+
+
+    <select id="getTCFRDataByTCUid" resultType="com.foxconn.plm.integrate.tcfr.domain.MeetBean">
+        select
+            d.SPAS_PROJ_ID as spasProjId,
+            d.SPAS_PROJ_PHASE as spasProjPhase,
+            d.SPAS_SERIES as spasSeries,
+            d.MEET_MAIN_OWNER as meetMainOwner,
+            d.CUSTOMER_NAME as customerName,
+            d.MEETING_START_DATE as meetingStartDate,
+            d.MEETING_TITLE as meetingTitle,
+            d.MEETING_MINUTES_PATH as meetingMinutesPath,
+            d.ACTION_ITEM_LIST as actionItemList,
+            d.SCHEDULE_UID as scheduleUid,
+            p.name AS projectName
+        from
+            XPLM.TCFR_RECORD d , SPAS_PLATFORM_FOUND p
+        where
+            d.SCHEDULE_UID = #{scheduleUid}   AND p.id = d.SPAS_PROJ_ID
+    </select>
+
+    <select id="getUserMail" resultType="string">
+         <!--SELECT notes FROM xplm.spas_user where (  name || '('  || work_id || ')' )  = #{userName} -->
+         SELECT email FROM xplm.spas_work_mapping_tcuser where (  SPAS_USER_NAME || '('  || SPAS_USER_ID || ')' )  = #{userName}
+    </select>
+
+    <select id="getWrokDayTpe" resultType="string">
+          select working_day_taiwan from xplm.lur_date where  record_date = #{recordDate}
+    </select>
+
+    <select id="getWrokDayMainland" resultType="string">
+          select working_day_mainland from xplm.lur_date where  record_date = #{recordDate}
+    </select>
+    <select id="getTCFRDataByScheduleUid" resultType="com.foxconn.plm.integrate.tcfr.domain.MeetBean">
+        SELECT
+             SPAS_SERIES as spasSeries,
+             SPAS_PROJ_PHASE as spasProjPhase,
+             MEETING_TITLE as meetingTitle,
+             MEET_MAIN_OWNER as meetMainOwner,
+             p.name AS projectName
+        FROM  tcfr_record,
+              SPAS_PLATFORM_FOUND p
+        where SCHEDULE_UID = #{0}
+              AND p.id = SPAS_PROJ_ID
+    </select>
+
+    <select id="getTCFRDataByDocumentUid" resultType="com.foxconn.plm.integrate.tcfr.domain.MeetBean">
+        SELECT
+            SPAS_SERIES as spasSeries,
+            SPAS_PROJ_PHASE as spasProjPhase,
+            MEETING_TITLE as meetingTitle,
+            MEET_MAIN_OWNER as meetMainOwner,
+            p.name AS projectName
+        FROM  tcfr_record,
+              SPAS_PLATFORM_FOUND p
+        where DOCUMENT_UID = #{0}
+          AND p.id = SPAS_PROJ_ID
+    </select>
+
+    <update id="updateFlag">
+        UPDATE
+            XPLM.TCFR_RECORD
+        <set>
+            <if test="msg != null and msg !=''">
+                MSG = #{msg, jdbcType=VARCHAR},
+            </if>
+            <if test="uploadFLag != null">
+                UPLOAD_FLAG = #{uploadFLag, jdbcType=VARCHAR}
+            </if>
+        </set>
+        <where>
+            <if test="spasProjId != null and spasProjId !=''">
+                AND SPAS_PROJ_ID = #{spasProjId, jdbcType=VARCHAR}
+            </if>
+
+            <if test="spasProjPhase != null and spasProjPhase !=''">
+                AND SPAS_PROJ_PHASE = #{spasProjPhase, jdbcType=VARCHAR}
+            </if>
+
+            <if test="spasSeries != null and spasSeries !=''">
+                AND SPAS_SERIES = #{spasSeries, jdbcType=VARCHAR}
+            </if>
+
+            <if test="meetMainOwner != null and meetMainOwner !=''">
+                AND MEET_MAIN_OWNER = #{meetMainOwner, jdbcType=VARCHAR}
+            </if>
+
+            <if test="customerName != null and customerName !=''">
+                AND CUSTOMER_NAME = #{customerName, jdbcType=VARCHAR}
+            </if>
+
+            <if test="meetingStartDate != null and meetingStartDate !=''">
+                AND MEETING_START_DATE = #{meetingStartDate, jdbcType=VARCHAR}
+            </if>
+
+            <if test="meetingTitle != null and meetingTitle !=''">
+                AND MEETING_TITLE = #{meetingTitle, jdbcType=VARCHAR}
+            </if>
+
+            <if test="meetingMinutesPath != null and meetingMinutesPath !=''">
+                AND MEETING_MINUTES_PATH = #{meetingMinutesPath, jdbcType=VARCHAR}
+            </if>
+
+            <if test="scheduleUid != null and scheduleUid !=''">
+                AND SCHEDULE_UID = #{scheduleUid, jdbcType=VARCHAR}
+            </if>
+
+            <if test="meetingType != null and meetingType !=''">
+                AND MEETING_TYPE = #{meetingType, jdbcType=VARCHAR}
+            </if>
+
+        </where>
+    </update>
+
+    <update id="updateDocumentInfo">
+        UPDATE
+        XPLM.TCFR_RECORD
+        <set>
+            <if test="documentId != null and documentId !=''">
+                DOCUMENT_ID = #{documentId, jdbcType=VARCHAR},
+            </if>
+
+            <if test="documentVer != null and documentVer !=''">
+                DOCUMENT_VER = #{documentVer, jdbcType=VARCHAR},
+            </if>
+
+            <if test="documentUid != null and documentUid !=''">
+                DOCUMENT_UID = #{documentUid, jdbcType=VARCHAR}
+            </if>
+        </set>
+        <where>
+            <if test="spasProjId != null and spasProjId !=''">
+                AND SPAS_PROJ_ID = #{spasProjId, jdbcType=VARCHAR}
+            </if>
+
+            <if test="spasProjPhase != null and spasProjPhase !=''">
+                AND SPAS_PROJ_PHASE = #{spasProjPhase, jdbcType=VARCHAR}
+            </if>
+
+            <if test="spasSeries != null and spasSeries !=''">
+                AND SPAS_SERIES = #{spasSeries, jdbcType=VARCHAR}
+            </if>
+
+            <if test="meetMainOwner != null and meetMainOwner !=''">
+                AND MEET_MAIN_OWNER = #{meetMainOwner, jdbcType=VARCHAR}
+            </if>
+
+            <if test="customerName != null and customerName !=''">
+                AND CUSTOMER_NAME = #{customerName, jdbcType=VARCHAR}
+            </if>
+
+            <if test="meetingStartDate != null and meetingStartDate !=''">
+                AND MEETING_START_DATE = #{meetingStartDate, jdbcType=VARCHAR}
+            </if>
+
+            <if test="meetingTitle != null and meetingTitle !=''">
+                AND MEETING_TITLE = #{meetingTitle, jdbcType=VARCHAR}
+            </if>
+
+            <if test="meetingMinutesPath != null and meetingMinutesPath !=''">
+                AND MEETING_MINUTES_PATH = #{meetingMinutesPath, jdbcType=VARCHAR}
+            </if>
+
+            <if test="scheduleUid != null and scheduleUid !=''">
+                AND SCHEDULE_UID = #{scheduleUid, jdbcType=VARCHAR}
+            </if>
+
+            <if test="meetingType != null and meetingType !=''">
+                AND MEETING_TYPE = #{meetingType, jdbcType=VARCHAR}
+            </if>
+
+        </where>
+    </update>
+
+    <update id="updateStatus">
+        UPDATE
+        XPLM.TCFR_RECORD
+        <set>
+            <if test="msg != null and msg !=''">
+                MSG = #{msg, jdbcType=VARCHAR},
+            </if>
+            <if test="uploadFLag != null">
+                UPLOAD_FLAG = #{uploadFLag, jdbcType=VARCHAR},
+            </if>
+
+            <if test="documentStatus != null and documentStatus !=''">
+                DOCUMENT_STATUS = #{documentStatus, jdbcType=VARCHAR}
+            </if>
+        </set>
+        <where>
+            <if test="documentUid != null and documentUid !=''">
+                AND DOCUMENT_UID = #{documentUid, jdbcType=VARCHAR}
+            </if>
+        </where>
+    </update>
+
+    <select id="getCustomerLov" resultType="com.foxconn.plm.integrate.tcfr.domain.CustomerPojo">
+        select
+               p.pobject_desc as customerName
+        from infodba.pworkspaceobject p,
+             infodba.pfolder          f,
+             infodba.pcontents        c
+        where p.pobject_type = 'Document Master'
+          and f.puid = 'R2uJgx05ppJG1D'
+          and f.puid = c.puid
+          and c.pvalu_0 = p.puid
+    </select>
+
+    <select id="getMeetingTypeLov" resultType="com.foxconn.plm.integrate.tcfr.domain.MeetingTypeBean">
+        select t2.pobject_name as customer,
+               t3.pobject_name as phase,
+               t4.pobject_name as meetingType
+        from infodba.pworkspaceobject t1,
+             infodba.pworkspaceobject t2,
+             infodba.pworkspaceobject t3,
+             infodba.pworkspaceobject t4,
+             infodba.pfolder          t5,
+             infodba.pfolder          t6,
+             infodba.pfolder          t7,
+             infodba.pcontents        t8,
+             infodba.pcontents        t9,
+             infodba.pcontents        t10
+        where t1.puid = t5.puid
+          and t2.puid = t6.puid
+          and t3.puid = t7.puid
+          and t5.puid = t8.puid
+          and t6.puid = t9.puid
+          and t7.puid = t10.puid
+          and t8.pvalu_0 = t6.puid
+          and t9.pvalu_0 = t7.puid
+          and t10.pvalu_0 = t4.puid
+          and t1.pobject_name = 'TCFR Meeting Keywords'
+          and t2.pobject_name in ('Dell', 'HP', 'Lenovo')
+          and t4.pobject_type = 'Document Master'
+        order by Customer asc
+    </select>
+
+    <insert id="insertOrUpdateSpasToTC">
+        MERGE INTO XPLM.SPAS_WORK_MAPPING_TCUSER t1
+        USING (
+        <foreach collection="list" item="item" index="index" separator="union">
+            SELECT
+            #{item.spasUserId, jdbcType=VARCHAR} SPAS_USER_ID,
+            #{item.spasUserName, jdbcType=VARCHAR} SPAS_USER_NAME,
+            #{item.tcUserId, jdbcType=VARCHAR} TC_USER_ID,
+            #{item.email, jdbcType=VARCHAR} email
+            FROM dual
+        </foreach>) t2
+        ON (
+        t1.SPAS_USER_ID = t2.SPAS_USER_ID
+        )
+        WHEN MATCHED THEN
+        UPDATE SET t1.SPAS_USER_NAME = t2.SPAS_USER_NAME, t1.TC_USER_ID = t2.TC_USER_ID, t1.email = t2.email, t1.CREATE_DATE = sysdate
+        WHEN NOT MATCHED THEN
+        INSERT
+        (SPAS_USER_ID, SPAS_USER_NAME, TC_USER_ID, email, CREATE_DATE)
+        VALUES
+        (t2.SPAS_USER_ID, t2.SPAS_USER_NAME, t2.TC_USER_ID, t2.email, sysdate)
+    </insert>
+
+    <select id="deleteBySpasUserId">
+        delete from
+            XPLM.SPAS_WORK_MAPPING_TCUSER
+        where SPAS_USER_ID in
+        <foreach collection="list" open="(" close=")" separator="," item="item">
+            #{item.spasUserId, jdbcType=VARCHAR}
+        </foreach>
+    </select>
+
+    <select id="getTotalTCUserInfo" resultType="com.foxconn.plm.integrate.tcfr.domain.TCUserBean">
+        select
+            SPAS_USER_ID as workId,
+            SPAS_USER_NAME as workName,
+            TC_USER_ID as tcUserId,
+            EMAIL as email
+        FROM
+            xplm.spas_work_mapping_tcuser
+    </select>
+</mapper>

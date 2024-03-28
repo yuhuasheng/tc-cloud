@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.tcservice.mapper.master.TcLicenseReportMapper">
+
+    <select id="summary" resultType="com.foxconn.plm.tcservice.tclicensereport.domain.ReportVO" flushCache="true">
+        select
+        t2.bu,
+        t2.department AS dept,
+        t2.FUNCTION AS func,
+        t2.license_total AS licenseTotal,
+        decode(sign(t2.license_total - t1.license_used), -1, 0, t2.license_total - t1.license_used) as notUsedQty,
+        decode(sign(t2.license_total - t1.license_used), -1, 1, t1.license_used / t2.license_total) as utilizationRate,
+        t3.used_hours AS accumulateUsageQty,
+        1 as mainlandLicQty,
+        1 as mainlandWortDayQty,
+        1 as taiwanLicQty,
+        1 as taiwanWortDayQty,
+        t3.lur AS cropRate
+        from (-- history license num from start date to end date
+        select bu, department, function,
+        sum(case when sum_hours > 0 then 1 else 0 end) as license_used
+        from (-- sum hours
+        select max(bu) as bu,
+        max(department) as department,
+        max(function) as function,
+        user_id as user_id,
+        sum(used_hours_in_day) as sum_hours
+        from lur_user
+        where to_char(record_date, 'yyyy-mm-dd') &gt;= #{startDate}
+        and to_char(record_date, 'yyyy-mm-dd') &lt;= #{endDate}
+        group by user_id
+        )
+        group by bu, department, function
+        order by bu asc, department asc, function asc
+        ) t1,
+        ( -- total license num by end date
+        select bu, department, function,
+        count(*) as license_total
+        from lur_user
+        where to_char(record_date, 'yyyy-mm-dd') = #{endDate}
+        group by bu, department, function
+        order by bu asc, department asc, function asc
+        ) t2,
+        ( -- used hours and lur
+        select p1.bu, p1.department, p1.function,
+        sum(p1.used_hours_in_day) as used_hours,
+        avg(p1.lur_in_day) as lur
+        from lur_function p1,
+        ( -- only working day
+        select record_date
+        from lur_date
+        where to_char(record_date, 'yyyy-mm-dd') &gt;= #{startDate}
+        and to_char(record_date, 'yyyy-mm-dd') &lt;= #{endDate}
+        and (working_day_mainland = 'Y' or working_day_taiwan = 'Y')
+        ) p2
+        where to_char(p1.record_date, 'yyyy-mm-dd') &gt;= #{startDate}
+        and to_char(p1.record_date, 'yyyy-mm-dd') &lt;= #{endDate}
+        and to_char(p1.record_date, 'yyyy-mm-dd') = to_char(p2.record_date, 'yyyy-mm-dd')
+        group by p1.bu, p1.department, p1.function
+        order by p1.bu asc, p1.department asc, p1.function asc
+        ) t3
+        where
+        t1.bu = t2.bu
+        and t1.bu = t3.bu
+        and t1.department = t2.department
+        and t1.department = t3.department
+        and t1.function = t2.function
+        and t1.function = t3.function
+        <if test="bu != null and bu != ''">
+            and t1.bu = #{bu}
+        </if>
+        <if test="dept != null and dept != ''">
+            and t2.department = #{dept}
+        </if>
+        <if test="func != null and func != ''">
+            and t2.FUNCTION = #{func}
+        </if>
+        order by t1.bu asc, t1.department asc, t1.function asc
+
+    </select>
+
+    <select id="history" resultType="com.foxconn.plm.tcservice.tclicensereport.domain.ReportVO" flushCache="true">
+        select
+        h.bu,
+        h.department AS dept,
+        h.FUNCTION AS func,
+        h.license_total AS licenseTotal,
+        h.license_unused as notUsedQty,
+        round(h.aur,4) as utilizationRate,
+        h.used_hours AS accumulateUsageQty,
+        1 as mainlandLicQty,
+        1 as mainlandWortDayQty,
+        1 as taiwanLicQty,
+        1 as taiwanWortDayQty,
+        round(h.lur,4) AS cropRate
+        from
+        lur_history h
+        where 1=1
+        <if test="bu != null and bu != ''">
+            and h.bu = #{bu}
+        </if>
+        <if test="dept != null and dept != ''">
+            and h.department = #{dept}
+        </if>
+        <if test="func != null and func != ''">
+            and h.FUNCTION = #{func}
+        </if>
+        <if test="historyMouth != null and historyMouth != ''">
+            and h."YEAR" || to_char(h."MONTH",'fm00') = #{historyMouth}
+        </if>
+
+    </select>
+
+    <select id="getLov" resultType="com.foxconn.plm.tcservice.tclicensereport.domain.LovEntity">
+        SELECT DISTINCT f.bu,f."FUNCTION" as func,f.department as dept FROM xplm.LUR_USER f
+    </select>
+
+    <select id="getUsageInfo" resultType="com.foxconn.plm.tcservice.tclicensereport.domain.UserInfoVO">
+
+        select
+        t1.bu,
+        t1.department as dept,
+        t1.function as func,
+        t1.user_id as workNum,
+        t2.puser_name as name,
+        to_char(t1.record_date, 'yyyy-mm-dd') as loginDate,
+        t1.used_hours_in_day as accumulateDayUsageQty
+        from lur_user t1,
+        infodba.ppom_user t2
+        where
+        t1.user_id = t2.puser_id
+        and to_char(t1.record_date, 'yyyy-mm-dd') &gt;= #{startDate}
+        and to_char(t1.record_date, 'yyyy-mm-dd') &lt;= #{endDate}
+        <if test="bu != null and bu != ''">
+            and t1.bu = #{bu}
+        </if>
+        <if test="dept != null and dept != ''">
+            and t1.department = #{dept}
+        </if>
+        <if test="func != null and func != ''">
+            and t1.function = #{func}
+        </if>
+        order by loginDate asc, bu asc, dept asc, func asc
+    </select>
+
+    <select id="getUserInfo" resultType="com.foxconn.plm.tcservice.tclicensereport.domain.UserInfoVO">
+
+
+        select *
+        from (
+        select t5.pname as bu,
+        t3.pname as dept,
+        t2.pname as func,
+        t1.puser_id as workNum,
+        t1.puser_name as name,
+        to_char((t1.plast_login_time + 8/24),'yyyy-mm-dd') as loginDate
+        from infodba.ppom_user t1,
+        infodba.ppom_group t2,
+        infodba.ppom_group t3,
+        infodba.ppom_group t4,
+        infodba.ppom_group t5
+        where substr(t1.pdefault_group,1,14) = t2.puid
+        and t2.rparentu = t3.puid
+        and t3.rparentu = t4.puid
+        and t4.rparentu = t5.puid
+        and t5.pname = 'Desktop'
+        and t1.pstatus = 0
+        and t1.puser_id not in ('apadmin', 'dcproxy', 'dev', 'infodba', 'spas1', 'spas2', 'spas3', 'spas4', 'tcadmin',
+        'test1', 'test2')
+        union
+        select p4.pname as bu,
+        p3.pname as department,
+        p2.pname as function,
+        p1.puser_id as workNum,
+        p1.puser_name as name,
+        to_char((p1.plast_login_time + 8/24),'yyyy-mm-dd') as loginDate
+        from infodba.ppom_user p1,
+        infodba.ppom_group p2,
+        infodba.ppom_group p3,
+        infodba.ppom_group p4
+        where substr(p1.pdefault_group,1,14) = p2.puid
+        and p2.rparentu = p3.puid
+        and p3.rparentu = p4.puid
+        and p4.pname in ('Monitor', 'Printer', 'EV')
+        and p1.pstatus = 0
+        and p1.puser_id not in ('apadmin', 'dcproxy', 'dev', 'infodba', 'spas1', 'spas2', 'spas3', 'spas4', 'tcadmin',
+        'test1', 'test2')
+        ) t
+        where 1=1
+        <if test="bu != null and bu != ''">
+            and t.bu = #{bu}
+        </if>
+        <if test="dept != null and dept != ''">
+            and t.dept = #{dept}
+        </if>
+        <if test="func != null and func != ''">
+            and t.func = #{func}
+        </if>
+        order by bu asc, dept asc, func asc
+
+    </select>
+
+    <select id="utilizationRate" resultType="java.util.Map" flushCache="true">
+        select
+        COUNT(1) AS total,BU,
+        (CASE WHEN used_hours_in_day > 0 then 1 else 0 end) AS used,
+        to_char(record_date, 'yyyy.mm.dd') AS day
+        from lur_user
+        WHERE to_char(record_date, 'yyyy-mm-dd') in (
+        SELECT to_char(record_date, 'yyyy-mm-dd')
+        FROM lur_date
+        WHERE to_char(record_date, 'yyyy-mm-dd') &gt;= #{arg0}
+        AND to_char(record_date, 'yyyy-mm-dd') &lt;= #{arg1}
+        AND (working_day_mainland = 'Y' or working_day_taiwan = 'Y'))
+        group by BU,CASE WHEN used_hours_in_day > 0 then 1 else 0 end,to_char(record_date, 'yyyy.mm.dd')
+    </select>
+
+    <select id="cropRate" resultType="java.util.Map" flushCache="true">
+        select BU,avg(lur_in_day) AS lur,to_char(record_date, 'yyyy.mm.dd') AS day
+        from LUR_FUNCTION
+        WHERE to_char(record_date, 'yyyy-mm-dd') in (
+        SELECT to_char(record_date, 'yyyy-mm-dd')
+        FROM lur_date
+        WHERE to_char(record_date, 'yyyy-mm-dd') &gt;= #{arg0}
+        AND to_char(record_date, 'yyyy-mm-dd') &lt;= #{arg1}
+        AND (working_day_mainland = 'Y' or working_day_taiwan = 'Y'))
+        group by BU,to_char(record_date, 'yyyy.mm.dd')
+    </select>
+
+    <select id="countNum" resultType="int">
+        select COUNT(1)
+        from lur_user
+        WHERE
+        to_char(record_date, 'yyyy-mm-dd') = (select record_date from (
+        SELECT to_char(record_date, 'yyyy-mm-dd') AS record_date
+        FROM lur_date
+        WHERE to_char(record_date, 'yyyy-mm-dd') &gt;= #{arg0}
+        AND to_char(record_date, 'yyyy-mm-dd') &lt;= #{arg1}
+        AND (working_day_mainland = 'Y' or working_day_taiwan = 'Y')
+        ORDER BY record_date DESC
+        ) WHERE ROWNUM = 1)
+    </select>
+
+    <select id="totalCropRate" resultType="java.util.Map" flushCache="true">
+        select BU,avg(lur_in_day) AS lur
+        from LUR_FUNCTION
+        WHERE to_char(record_date, 'yyyy-mm-dd') in (
+        SELECT to_char(record_date, 'yyyy-mm-dd')
+        FROM lur_date
+        WHERE to_char(record_date, 'yyyy-mm-dd') &gt;= #{arg0}
+        AND to_char(record_date, 'yyyy-mm-dd') &lt;= #{arg1}
+        AND (working_day_mainland = 'Y' or working_day_taiwan = 'Y'))
+        group by BU
+    </select>
+
+    <select id="utilizationRateByFunction" resultType="java.util.Map" flushCache="true">
+        select t1.BU,t1.FUNCTION,t1.department,t1.user_id,(CASE WHEN t1.used_hours_in_day > 0 then 1 else 0 end) AS used
+        from lur_user t1,
+        (
+        select BU,FUNCTION,department,user_id
+        FROM lur_user
+        WHERE
+        to_char(record_date, 'yyyy-mm-dd') = #{arg1}
+        ) t2
+        WHERE to_char(t1.record_date, 'yyyy-mm-dd') in (
+        SELECT to_char(record_date, 'yyyy-mm-dd') AS record_date
+        FROM lur_date
+        WHERE to_char(record_date, 'yyyy-mm-dd') &gt;= #{arg0}
+        AND to_char(record_date, 'yyyy-mm-dd') &lt;= #{arg1}
+        AND (working_day_mainland = 'Y' or working_day_taiwan = 'Y')
+        )
+        AND t1.BU = t2.BU
+        AND t1.FUNCTION = t2.FUNCTION
+        AND t1.department = t2.department
+        AND t1.user_id = t2.user_id
+        group by t1.BU,t1.FUNCTION,t1.department,t1.user_id,CASE WHEN t1.used_hours_in_day > 0 then 1 else 0 end
+    </select>
+
+    <select id="cropRateByFunction" resultType="java.util.Map" flushCache="true">
+        select t1.BU,avg(t1.lur_in_day) AS lur,t1.FUNCTION,t1.department
+        from LUR_FUNCTION t1,
+        (
+        select BU,FUNCTION,department,user_id
+        FROM lur_user
+        WHERE
+        to_char(record_date, 'yyyy-mm-dd') = #{arg1}
+        ) t2
+        WHERE to_char(t1.record_date, 'yyyy-mm-dd') in (
+        SELECT to_char(record_date, 'yyyy-mm-dd')
+        FROM lur_date
+        WHERE to_char(record_date, 'yyyy-mm-dd') &gt;= #{arg0}
+        AND to_char(record_date, 'yyyy-mm-dd') &lt;= #{arg1}
+        AND (working_day_mainland = 'Y' or working_day_taiwan = 'Y'))
+        AND t1.BU = t2.BU
+        AND t1.FUNCTION = t2.FUNCTION
+        AND t1.department = t2.department
+        group by t1.BU,t1.FUNCTION,t1.department
+    </select>
+
+    <select id="historyUtilizationRate" resultType="java.util.Map">
+        SELECT
+        BU,SUM(LICENSE_TOTAL) AS total,SUM(LICENSE_UNUSED) AS unused, CONCAT(CONCAT(year,'-0'),month) AS MONTH
+        FROM LUR_HISTORY
+        GROUP BY BU,CONCAT(CONCAT(year,'-0'),month)
+    </select>
+
+
+    <select id="historyCropRate" resultType="java.util.Map">
+        SELECT
+        BU,avg(lur) AS LUR, CONCAT(CONCAT(year,'-0'),month) AS MONTH
+        FROM LUR_HISTORY
+        GROUP BY BU,CONCAT(CONCAT(year,'-0'),month)
+    </select>
+
+    <select id="historyRadarChart" resultType="java.util.Map">
+        SELECT
+        BU,SUM(LICENSE_TOTAL) AS total,SUM(LICENSE_UNUSED) AS unused,avg(lur) AS LUR, FUNCTION,department
+        FROM LUR_HISTORY
+        WHERE month = #{month}
+        GROUP BY BU,FUNCTION,department
+    </select>
+
+    <select id="exportByPhase" resultType="com.foxconn.plm.tcservice.tclicensereport.domain.TCLicenseByBean">
+        select
+            lp.bu as bu,
+            lp.DEPARTMENT as department,
+            lp."FUNCTION" as "function",
+            lp."LEVEL" as "level",
+            lp.customer as customer,
+            lp.cur_phase as phase,
+            TO_CHAR(nvl2(lp.avg_used,lp.avg_used,0), 'FM9999999990.00') as avgUsed,
+            TO_CHAR(nvl2(lp.avg_used,lp.avg_rate,0), 'FM9999999990.0000') as avgRate
+        from V_LUR_BY_PHASE lp
+    </select>
+</mapper>

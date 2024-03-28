@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.dp.plm.fileservice.mapper.FileManageMapper">
+
+
+    <select id="getObjFileSqe" flushCache="true" useCache="false" resultType="java.lang.Long">
+        SELECT OBJ_FILE_SEQ.NEXTVAL FROM DUAL
+    </select>
+
+    <select id="getDocFileCnt" flushCache="true" useCache="false" resultType="java.lang.Integer">
+        SELECT count(*) FROM OBJ_FILE
+        WHERE FILE_SN in(SELECT FILE_ID FROM OBJ_FILE_VERSION WHERE DOC_ID =#{docId})
+        AND DEL_FLAG =0
+    </select>
+
+    <select id="getUnReleaseCnt" flushCache="true" useCache="false" resultType="java.lang.Integer">
+        SELECT count(*) FROM OBJ_DOCUMENT_REV a
+        WHERE a.DOC_ID=#{docId}
+        and a.LIFECYCLE_PHASE =1
+        AND a.DEL_FLAG =0
+    </select>
+
+    <select id="getServerList" flushCache="true"
+            resultType="com.foxconn.dp.plm.fileservice.domain.entity.ServerListEntity">
+        SELECT code id,value,descr code FROM CONFIG where name='ServerList' and del_flag=0
+    </select>
+
+    <select id="getFileInfo" flushCache="true" resultType="com.foxconn.dp.plm.fileservice.domain.entity.FileEntity">
+        SELECT b.FILE_SN fileId,
+        b.FILE_NAME fileName,
+        b.FILE_TYPE fileType,
+        b.IFS_FILEPATH filePath,
+        b.SERVER_ID serverId
+        FROM OBJ_FILE_VERSION a ,OBJ_FILE b
+        WHERE a.FILE_VERSION_SN =#{fileVersionId} AND a.FILE_ID =b.FILE_SN AND b.DEL_FLAG =0
+    </select>
+
+    <select id="getDocRevInfo" flushCache="true"
+            resultType="com.foxconn.dp.plm.fileservice.domain.entity.DocumentRevEntity">
+        SELECT a.DOC_ID docId,
+        a.FLD_ID folderId,
+        a.REV_NAME docRevName,
+        a.LIFECYCLE_PHASE lifecyclePhase,
+        a.REV_NUM docRevNum,
+        a.CREATED createDate,
+        a.LAST_UPD lastUpdateDate
+        FROM OBJ_DOCUMENT_REV a
+        WHERE a.REV_SN =#{docRevId}
+    </select>
+
+    <select id="getDeletedFileInfo" flushCache="true"
+            resultType="com.foxconn.dp.plm.fileservice.domain.entity.FileEntity">
+        SELECT b.FILE_SN fileId,
+        b.FILE_NAME fileName,
+        b.FILE_TYPE fileType,
+        b.IFS_FILEPATH filePath,
+        b.SERVER_ID serverId
+        FROM OBJ_FILE_VERSION a ,OBJ_FILE b
+        WHERE a.DOC_REV_ID =#{docRevId} AND a.FILE_ID =b.FILE_SN
+    </select>
+
+    <update id="deleteDocRevFiles">
+        UPDATE OBJ_FILE d SET d.DEL_FLAG = 1
+        WHERE d.FILE_SN IN (SELECT FILE_ID FROM OBJ_FILE_VERSION WHERE DOC_REV_ID =#{docRevId})
+    </update>
+
+    <update id="deleteDoc">
+        UPDATE OBJ_DOCUMENT f SET f.DEL_FLAG = 1
+        WHERE f.DOC_SN =#{docId}
+    </update>
+
+    <update id="deleteDocRev">
+        UPDATE OBJ_DOCUMENT_REV f SET f.DEL_FLAG = 1
+        WHERE f.REV_SN in(
+        select r.rev_sn from obj_document_rev r,obj_document_rev r1
+        where r.doc_id=r1.doc_id
+        and r.rev_num=r1.rev_num
+        and r1.rev_sn=#{docRevId}
+        )
+    </update>
+
+    <update id="quickReleaseDocRev">
+        UPDATE OBJ_DOCUMENT_REV f SET f.LIFECYCLE_PHASE = 0
+        WHERE f.REV_SN in(
+        select r.rev_sn from obj_document_rev r,obj_document_rev r1
+        where r.doc_id=r1.doc_id
+        and r.rev_num=r1.rev_num
+        and r1.rev_sn=#{docRevId}
+        )
+    </update>
+
+
+    <update id="updateDocName">
+        UPDATE obj_document_rev r SET r.rev_name= = #{newDocName}
+        WHERE r.rev_sn in(
+        select r.rev_sn from obj_document_rev r,obj_document_rev r1
+        where r.doc_id=r1.doc_id
+        and r.rev_num=r1.rev_num
+        and r1.rev_sn=#{docRevId}
+        )
+    </update>
+
+
+    <insert id="addDoc" parameterType="com.foxconn.dp.plm.fileservice.domain.entity.DocumentEntity">
+        <selectKey keyProperty="docId" resultType="java.lang.Long" order="BEFORE">
+            select OBJ_DOCUMENT_SEQ.nextval from dual
+        </selectKey>
+        insert into
+        OBJ_DOCUMENT(DOC_SN,DOC_NUM,DESCRIPTION,DOC_ORIGIN,PRODUCT_CODE,PRODUCT_LINE,CUSTOMER,DOCUMENT_CATEGORY,CREATOR,DOC_NAME,CREATOR_NAME)
+        values(#{docId,jdbcType=NUMERIC},#{docNum,jdbcType=VARCHAR},#{docDescription,jdbcType=VARCHAR},#{docOrigin,jdbcType=VARCHAR},#{productCode,jdbcType=VARCHAR},#{productLine,jdbcType=VARCHAR},#{customer,jdbcType=VARCHAR},#{docCategory,jdbcType=VARCHAR},#{creator,jdbcType=VARCHAR},#{docName,jdbcType=VARCHAR},#{creatorName,jdbcType=VARCHAR})
+    </insert>
+
+    <insert id="addDocRev" parameterType="com.foxconn.dp.plm.fileservice.domain.entity.DocumentRevEntity">
+        <selectKey keyProperty="docRevId" resultType="java.lang.Long" order="BEFORE">
+            select OBJ_DOCUMENT_REV_SEQ.nextval from dual
+        </selectKey>
+        insert into
+        OBJ_DOCUMENT_REV(REV_SN,DOC_ID,FLD_ID,REV_NAME,REV_NUM,REF_ID,REF_TYPE,LIFECYCLE_PHASE,CREATOR,CREATOR_NAME)
+        values(#{docRevId,jdbcType=NUMERIC},#{docId,jdbcType=NUMERIC},#{folderId,jdbcType=NUMERIC},#{docRevName,jdbcType=VARCHAR},#{docRevNum,jdbcType=VARCHAR},#{refId,jdbcType=VARCHAR},#{refType,jdbcType=VARCHAR},#{lifecyclePhase,jdbcType=NUMERIC},#{creator,jdbcType=VARCHAR},#{creatorName,jdbcType=VARCHAR})
+    </insert>
+
+    <insert id="addFile" parameterType="com.foxconn.dp.plm.fileservice.domain.entity.FileEntity">
+        <selectKey keyProperty="fileId" resultType="java.lang.Long" order="BEFORE">
+            select OBJ_FILE_SEQ.nextval from dual
+        </selectKey>
+        insert into OBJ_FILE(FILE_SN,FILE_NAME,FILE_TYPE,FILE_SIZE,SERVER_ID,IFS_FILEPATH)
+        values(#{fileId,jdbcType=NUMERIC}, #{fileName,jdbcType=VARCHAR}, #{fileType,jdbcType=VARCHAR},
+        #{fileSize,jdbcType=NUMERIC}, #{serverId,jdbcType=NUMERIC}, #{filePath,jdbcType=VARCHAR})
+    </insert>
+
+    <insert id="addFileVersion" parameterType="com.foxconn.dp.plm.fileservice.domain.entity.FileVersionEntity">
+        <selectKey keyProperty="fileVersionId" resultType="java.lang.Long" order="BEFORE">
+            select OBJ_FILE_VERSION_SEQ.nextval from dual
+        </selectKey>
+        insert into OBJ_FILE_VERSION(FILE_VERSION_SN,DOC_REV_ID,FILE_VERSION_NUM,FILE_ID)
+        values(#{fileVersionId,jdbcType=NUMERIC},#{docRevId,jdbcType=NUMERIC},#{versionNum,jdbcType=NUMERIC},#{fileId,jdbcType=NUMERIC})
+    </insert>
+
+    <select id="getDocRevNums" flushCache="true" resultType="java.lang.String">
+        SELECT REV_NUM FROM OBJ_DOCUMENT_REV fv where fv.DOC_ID=#{docId} AND fv.DEL_FLAG =0
+    </select>
+
+    <insert id="addFileHistory" parameterType="com.foxconn.dp.plm.fileservice.domain.entity.FileHisEntity">
+        <selectKey keyProperty="fileHisId" resultType="java.lang.Long" order="BEFORE">
+            select HIS_FILE_VERSION_SEQ.nextval from dual
+        </selectKey>
+        insert into HIS_FILE_VERSION(HIS_DOC_SN,FILE_VERSION_ID,HIS_ACTION,HIS_DESCRIPTION,MODIFIED)
+        values(#{fileHisId,jdbcType=NUMERIC},#{fileVersionId,jdbcType=NUMERIC},#{hisAction,jdbcType=NUMERIC},#{hisDescription,jdbcType=VARCHAR},#{modified,jdbcType=VARCHAR})
+    </insert>
+
+    <select id="getDocCnt" flushCache="true" resultType="java.lang.Integer">
+        select count(*) from obj_document_rev f where f.fld_id=#{folderId} and f.rev_name=#{docName} and ref_type=0 and del_flag=0
+    </select>
+
+</mapper>

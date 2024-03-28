@@ -1,0 +1,14 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        enabled: true
+        server-addr: http://127.0.0.1:8848
+        namespace: 7778da60-5b6d-4ce7-8780-b80a9b6cffb6
+      # 配置中心配置
+      config:
+        enabled: true
+        server-addr: http://127.0.0.1:8848
+        namespace: 7778da60-5b6d-4ce7-8780-b80a9b6cffb6
+        file-extension: yaml
+        shared-configs: tc-redis.yaml,tc-common.yaml

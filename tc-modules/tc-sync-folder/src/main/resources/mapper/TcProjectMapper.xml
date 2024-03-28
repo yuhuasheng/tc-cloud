@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.tcsyncfolder.mapper.TcProjectMapper">
+    <resultMap id="projectInfoResult" type="com.foxconn.plm.tcsyncfolder.vo.ProjectVo">
+        <result property="spasId" column="spas_id"/>
+        <result property="projectName" column="project_name"/>
+        <result property="puid" column="puid"/>
+    </resultMap>
+    <resultMap id="folderInfoResult" type="com.foxconn.plm.tcsyncfolder.vo.FolderVo">
+        <result property="folderName" column="folder_name"/>
+        <result property="puid" column="puid"/>
+        <result property="folderType" column="folder_type"/>
+        <result property="folderDesc" column="folder_desc"/>
+    </resultMap>
+
+
+    <select id="getTcProjectInfo" resultMap="projectInfoResult">
+        select
+             t2.puid,t2.pobject_name As project_name,t1.pd9_spas_id AS spas_id
+          from
+            infodba.pd9_projectfolder t1,
+            infodba.pworkspaceobject t2
+        WHERE  t2.puid = t1.puid
+        AND    t1.pd9_spas_id =  #{spasId}
+        AND    t2.pobject_type = 'D9_PlatformFoundFolder'
+    </select>
+
+    <select id="getAllProject" resultMap="projectInfoResult">
+        select
+             t2.puid,t2.pobject_name As project_name,t1.pd9_spas_id AS spas_id
+          from
+            infodba.pd9_projectfolder t1,
+            infodba.pworkspaceobject t2
+        WHERE  t2.puid = t1.puid
+        AND    t2.pobject_type = 'D9_PlatformFoundFolder'
+    </select>
+
+    <select id="getChildFolder" resultMap="folderInfoResult">
+        select
+            t2.puid,t2.pobject_name AS folder_name,t2.pobject_type AS folder_type,t2.pobject_desc AS folder_desc
+        from
+            INFODBA.PCONTENTS t1,
+            INFODBA.PWORKSPACEOBJECT t2
+        Where t1.PUID = #{parentId}
+        AND t1.pvalu_0 = t2.puid
+        AND (t2.pobject_type =  'D9_PlatformFoundFolder' or t2.pobject_type =  'D9_FunctionFolder' or
+        t2.pobject_type =  'D9_PhaseFolder' or t2.pobject_type =  'D9_ArchiveFolder')
+    </select>
+
+
+    <select id="getByUid" resultMap="folderInfoResult">
+        select
+            t2.puid,t2.pobject_name AS folder_name,t2.pobject_type AS folder_type,t2.pobject_desc AS folder_desc
+        from
+            INFODBA.PWORKSPACEOBJECT t2
+        WHERE t2.puid = #{puid}
+        AND (t2.pobject_type =  'D9_PlatformFoundFolder' or t2.pobject_type =  'D9_FunctionFolder' or
+        t2.pobject_type =  'D9_PhaseFolder' or t2.pobject_type =  'D9_ArchiveFolder')
+    </select>
+
+</mapper>
+

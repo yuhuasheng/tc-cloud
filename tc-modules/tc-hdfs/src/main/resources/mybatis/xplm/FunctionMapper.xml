@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.dp.plm.hdfs.dao.xplm.FunctionConfigMapper">
+
+    <select id="getConfigList" resultType="com.foxconn.dp.plm.hdfs.domain.rv.FunctionConfigRv">
+        select c.id id,
+        c.tc_function_name tcFunctionName,
+        f.id functionId,
+        f.name functionName,
+        g.id groupId,
+        (od.name || NVL2(ode.name,'/' || ode.name,'') || NVL2(os.name,'/' || os.name,'')) groupName,
+        c.is_active isActive
+        from spas_function_config c,
+        spas_dept_group g ,
+        spas_function f,
+        spas_organization od,
+        spas_organization ode,
+        spas_organization os
+        where c.spas_function_id=f.id
+        and f.id=g.function_id(+)
+        and g.division_id=od.id(+)
+        and g.department_id=ode.id(+)
+        and g.section_id=os.id(+)
+        and c.spas_group_id=g.id(+)
+        and c.is_active=1
+        <if test="functionName != null and functionName != ''">
+            AND f.name like '%' || #{functionName} || '%'
+        </if>
+        <if test="tcFunctionName != null and tcFunctionName != ''">
+            AND c.tc_function_name like '%' || #{tcFunctionName} || '%'
+        </if>
+        <if test="groupName != null and groupName != ''">
+            AND (od.name || NVL2(ode.name,'/' || ode.name,'') || NVL2(os.name,'/' || os.name,'')) like '%' || #{groupName} || '%'
+        </if>
+        order by c.id
+    </select>
+
+    <select id="getFunctionList"    resultType="com.foxconn.dp.plm.hdfs.domain.rv.FunctionConfigRv">
+        select f.id functionId ,f.name  functionName from spas_function f where f.is_active=1
+    </select>
+
+    <select id="getTCFunctionList"    resultType="com.foxconn.dp.plm.hdfs.domain.rv.FunctionConfigRv">
+        select unique(t1.pobject_name) as tcFunctionName
+        from INFODBA.pworkspaceobject   t1,
+             INFODBA.pd9_functionfolder t2
+        where t1.puid = t2.puid
+        order by tcFunctionName ASC
+    </select>
+
+    <select id="getGroupList"   resultType="com.foxconn.dp.plm.hdfs.domain.rv.FunctionConfigRv">
+
+   select f.id functionId,
+                f.name functionName,
+                g.id groupId,
+                (bu.name||'/'||od.name || NVL2(ode.name,'/' || ode.name,'') || NVL2(os.name,'/' || os.name,'')) groupName
+              from spas_dept_group g ,
+                   spas_function f,
+                   spas_organization od,
+                   spas_organization ode,
+                   spas_organization os,
+                   spas_organization bu
+                where f.id=#{functionId}
+                 and f.id=g.function_id
+                 and g.division_id=od.id(+)
+                 and g.department_id=ode.id(+)
+                 and g.section_id=os.id(+)
+                 and g.businessunit_id=bu.id(+)
+                  and (g.is_active=1 OR g.IS_ACTIVE IS NULL)
+                  and (od.is_active=1 OR od.IS_ACTIVE IS NULL)
+                  and (ode.is_active=1 OR ode.IS_ACTIVE IS NULL)
+                  and (os.is_active=1 OR os.IS_ACTIVE IS NULL)
+    </select>
+
+    <update id="modify" parameterType="com.foxconn.dp.plm.hdfs.domain.rv.FunctionConfigRv">
+        update spas_function_config set spas_group_id = #{groupId} ,spas_function_id = #{functionId} ,tc_function_name = #{tcFunctionName} where
+        id = #{id}
+    </update>
+
+    <insert id="insert" parameterType="com.foxconn.dp.plm.hdfs.domain.rv.FunctionConfigRv">
+        <selectKey keyProperty="id" resultType="java.lang.Integer" order="BEFORE">
+            select spas_function_config_seq.nextval from dual
+        </selectKey>
+        insert into spas_function_config (id,spas_group_id,spas_function_id,TC_FUNCTION_NAME) values (#{id},#{groupId},#{functionId},#{tcFunctionName})
+    </insert>
+
+    <delete id="delete"  parameterType="com.foxconn.dp.plm.hdfs.domain.rv.FunctionConfigRv">
+        delete from  spas_function_config  where id = #{id}
+    </delete>
+
+</mapper>

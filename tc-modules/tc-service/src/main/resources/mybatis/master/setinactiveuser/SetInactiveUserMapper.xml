@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.tcservice.mapper.master.SetInactiveUserMapper">
+
+    <select id="getUserInfo" flushCache="true" resultType="com.foxconn.plm.tcservice.setinactiveuser.domain.UserBean">
+        select puser_id as userId
+        from INFODBA.ppom_user
+        where pstatus = 0
+        and plast_login_time &lt; (sysdate - #{days})
+        and puser_id not in
+        <foreach collection="excludeUsers" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="getUserInfoByIds" flushCache="true"
+            resultType="com.foxconn.plm.tcservice.setinactiveuser.domain.UserBean">
+        select puser_id as userId
+        from INFODBA.ppom_user
+        where pstatus = 0
+        and puser_id in
+        <foreach collection="userIds" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <update id="updateUserState" parameterType="java.util.List">
+        update INFODBA.ppom_user set pstatus = 1 where puser_id in
+        <foreach collection="users" item="item" separator="," open="(" close=")">
+            #{item.userId}
+        </foreach>
+    </update>
+
+</mapper>

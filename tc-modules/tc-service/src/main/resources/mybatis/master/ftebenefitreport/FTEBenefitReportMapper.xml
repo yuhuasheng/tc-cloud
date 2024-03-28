@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.tcservice.mapper.master.FTEBenefitReportMapper">
+
+    <!--批量插入，若存在则更新-->
+    <insert id="insertOrUpdateFTERecord" parameterType="java.util.List">
+        INSERT ALL
+        <foreach collection="list" item="item" index="index">
+            INTO XPLM.NON_FTE_BENEFIT_RECORD
+            (
+            BU, FUNCTION_NAME, PRODUCT_LINE, PRODUCT, PN, COST_TRANSFER_NUMBER, REWORK_NUMBER, REWORK_COST, REWORK_DATE
+            )
+            VALUES
+            (
+            #{item.BU, jdbcType=VARCHAR}, #{item.functionName, jdbcType=VARCHAR}, #{item.productline, jdbcType=VARCHAR},
+            #{item.product, jdbcType=VARCHAR}, #{item.PN, jdbcType=VARCHAR},
+            #{item.costTransferNumber, jdbcType=VARCHAR}, #{item.reworkNumber, jdbcType=INTEGER},
+            #{item.reworkCost,jdbcType=DOUBLE}, #{item.reworkDate,jdbcType=DATE}
+            )
+        </foreach>
+        SELECT 1 FROM DUAL
+    </insert>
+
+    <select id="getFTEBenefitRecordn" resultType="com.foxconn.plm.tcservice.ftebenefitreport.domain.FTERecordInfo">
+        SELECT
+        BU AS bu,
+        FUNCTION_NAME AS functionName,
+        REWORK_COST AS reworkCost,
+        to_char(#{startDate}, 'yyyy') AS years
+        FROM XPLM.NON_FTE_BENEFIT_RECORD
+        <where>
+            <if test="startDate != null">
+                AND REWORK_DATE &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND REWORK_DATE &lt;= #{endDate}
+            </if>
+        </where>
+    </select>
+
+</mapper>

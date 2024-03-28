@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.dp.plm.hdfs.dao.xplm.BUMapper">
+
+    <select id="getBUList" resultType="com.foxconn.plm.entity.response.BURv">
+        SELECT
+        bc.id,
+        c.name as customer,
+        c.id as customerId,
+        line.id as productLineId,
+        line.name as productLine,
+        cf.code AS bu,
+        cf.id as buId
+        FROM
+        SPAS_BU_CONFIG bc,
+        spas_product_line line,
+        SPAS_CUSTOMER c,
+        Config cf
+        WHERE 1=1
+        AND bc.customer_id = c.id
+        AND bc.productline_id = line.id
+        AND cf.id = bc.bu_id
+        AND line.IS_ACTIVE = 1
+        AND c.IS_ACTIVE = 1
+        AND bc.IS_ACTIVE = 1
+        <if test="customer != null and customer != ''">
+            AND c.name like '%' || #{customer} || '%'
+        </if>
+        <if test="productLine != null and productLine != ''">
+            AND line.name like '%' || #{productLine} || '%'
+        </if>
+        <if test="bu != null and bu != ''">
+            AND cf.value like '%' || #{bu} || '%'
+        </if>
+        order by bc.id
+    </select>
+
+    <select id="getCustomerList" resultType="com.foxconn.dp.plm.hdfs.domain.rv.LOVRv">
+        select id,name FROM spas_customer where IS_ACTIVE = 1
+    </select>
+
+    <select id="getProductLineList" resultType="com.foxconn.dp.plm.hdfs.domain.rv.ProductLineRv">
+        select c.id,c.CUSTOMER_ID as customerId ,c.name FROM spas_product_line c where c.IS_ACTIVE = 1
+    </select>
+
+    <update id="modify" parameterType="com.foxconn.dp.plm.hdfs.domain.rp.SaveBuRp">
+        update SPAS_BU_CONFIG set BU_ID = #{buId} ,CUSTOMER_ID = #{customerId} ,PRODUCTLINE_ID = #{productLineId} where
+        id = #{id}
+    </update>
+
+    <insert id="insert" parameterType="com.foxconn.dp.plm.hdfs.domain.rp.SaveBuRp">
+        insert into SPAS_BU_CONFIG (CUSTOMER_ID,PRODUCTLINE_ID,BU_ID) values (#{customerId},#{productLineId},#{buId})
+    </insert>
+
+    <delete id="delete">
+        update SPAS_BU_CONFIG set IS_ACTIVE = 0,INACTIVE_TIME = SYSDATE,INACTIVE_BY = #{param2} where id = #{param1}
+    </delete>
+
+    <select id="exits" parameterType="com.foxconn.dp.plm.hdfs.domain.rp.SaveBuRp" resultType="int">
+        SELECT
+        count(1)
+        FROM
+        SPAS_BU_CONFIG bc,
+        spas_product_line line,
+        SPAS_CUSTOMER c
+        WHERE 1=1
+        <if test="id != null and id != ''">
+            AND bc.id &lt;&gt; #{id}
+        </if>
+        AND bc.customer_id = c.id
+        AND bc.productline_id = line.id
+        AND bc.customer_id = #{customerId}
+        AND bc.productline_id = #{productLineId}
+        AND bc.IS_ACTIVE = 1
+        AND line.IS_ACTIVE = 1
+        AND c.IS_ACTIVE = 1
+    </select>
+
+</mapper>

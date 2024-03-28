@@ -1,0 +1,14 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        enabled: true
+        server-addr: http://10.203.163.43:8848
+        namespace: uat
+      # 配置中心配置
+      config:
+        enabled: true
+        server-addr: http://10.203.163.43:8848
+        namespace: uat
+        file-extension: yaml
+        shared-configs: tc-redis.yaml,tc-common.yaml,tc-rabbit.yaml,tc-integrate-druid.yaml

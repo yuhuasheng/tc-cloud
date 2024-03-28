@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.foxconn.plm.integrateb2b.dataExchange.mapper.DataExchangeMapper">
+
+    <select id="getMaterialInfo" flushCache="true"
+            resultType="com.foxconn.plm.integrateb2b.dataExchange.domain.MaterialInfo">
+        select
+        *
+        from material_table where material_change_num=#{changeNum}
+    </select>
+
+
+    <!--调用存储过程 -->
+    <resultMap type="com.foxconn.plm.integrateb2b.dataExchange.domain.BOMActionInfo" id="cursorMap">
+        <result property="xfe_cn_num" column="xfe_cn_num"/>
+        <result property="xfe_mm_num" column="xfe_mm_num"/>
+        <result property="xfe_find_num" column="xfe_find_num"/>
+        <result property="xfe_component_num" column="xfe_component_num"/>
+        <result property="xfe_component_qty" column="xfe_component_qty"/>
+        <result property="xfe_alt_group" column="xfe_alt_group"/>
+        <result property="xfe_alt_code" column="xfe_alt_code"/>
+        <result property="xfe_unit" column="xfe_unit"/>
+        <result property="xfe_item_text" column="xfe_item_text"/>
+        <result property="xfe_item_category" column="xfe_item_category"/>
+        <result property="xfe_priority" column="xfe_priority"/>
+        <result property="xfe_bom_usage" column="xfe_bom_usage"/>
+        <result property="xfe_alternative_bom" column="xfe_alternative_bom"/>
+        <result property="xfe_base_quantity" column="xfe_base_quantity"/>
+        <result property="xfe_strategy" column="xfe_strategy"/>
+        <result property="xfe_location" column="xfe_location"/>
+        <result property="xfe_usage_prob" column="xfe_usage_prob"/>
+        <result property="xfe_action" column="xfe_action"/>
+        <result property="xfe_material_uid" column="xfe_material_uid"/>
+        <result property="xfe_component_uid" column="xfe_component_uid"/>
+
+    </resultMap>
+
+
+    <select id="getBOMAction" parameterType="java.util.HashMap" statementType="CALLABLE">
+        call xfe_compare_bom_difference(
+        #{map.changeNum,mode=IN,jdbcType=VARCHAR},
+        #{map.cursor,mode=OUT,jdbcType=CURSOR,resultMap=cursorMap},
+        #{map.code,mode=OUT,jdbcType=INTEGER},
+        #{map.msg,mode=OUT,jdbcType=VARCHAR}
+        )
+    </select>
+
+    <update id="updateSynFlag">
+        update change_table c set c.change_transfer_status=#{synFlag} where c.change_sn=#{changeSn}
+    </update>
+
+
+    <update id="updateTransferOrder">
+        update change_table c set c.change_transfer_status=#{code} ,c.change_transfer_msg=#{msg} where
+        c.change_sn=#{changeSn}
+    </update>
+
+
+    <select id="getTransferOrders" parameterType="java.util.List" resultType="com.foxconn.plm.integrateb2b.dataExchange.domain.TransferOrder">
+        select c.change_sn changeSn,
+        c.change_num changNum,
+        c.change_status changeStatus,
+        c.change_valid_from effectDate,
+        c.change_description changeDescr,
+        c.change_originator owner,
+        c.change_plant_code plantCode
+        from change_table c
+        where c.change_transfer_status=0
+        <if test="list != null">
+            and  c.change_plant_code in
+            <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+              #{item}
+            </foreach>
+        </if>
+        order by c.change_create_dt asc
+    </select>
+
+    <select id="getBomMaterialInfo" resultMap="cursorMap">
+       select c.after_change_material_puid xfe_material_uid,
+              c.after_change_material_num xfe_mm_num,
+              c.after_change_component_num xfe_component_num,
+              c.after_change_component_puid  xfe_component_uid
+        from bom_after_change_table c
+       where c.after_change_change_num=#{changeNum}
+        union
+        select  b.before_change_material_puid xfe_material_uid,
+                b.before_change_material_num xfe_mm_num,
+                b.before_change_component_num xfe_component_num,
+                b.before_change_component_puid  xfe_component_uid
+        from bom_before_change_table b
+        where b.before_change_change_num=#{changeNum}
+
+    </select>
+
+
+</mapper>

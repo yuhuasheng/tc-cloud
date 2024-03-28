@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.tcservice.mapper.master.MailMonitorMapper">
+
+    <select id="getActiveEmail" resultMap="MailResultMap">
+        SELECT user2.PUSER_NAME as userName, person.PPA9 as email
+        FROM infodba.puser user1,
+        infodba.ppom_user user2,
+        infodba.pperson person
+        WHERE user1.puid = user2.puid
+        AND user1.RPERSONU = person.PUID
+        AND user2.PSTATUS = 0
+    </select>
+
+    <resultMap id="MailResultMap" type="java.util.Map">
+        <result property="name" column="userName"/>
+        <result property="email" column="email"/>
+    </resultMap>
+
+</mapper>

@@ -1,0 +1,482 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.tcservice.mapper.infodba.ProjectReportMapper">
+
+    <select id="summary" resultType="com.foxconn.plm.tcservice.projectReport.ReportEntity" flushCache="true">
+        -- 专案执行报表统计
+        select * from (
+        ( --不包含SIM
+        select t19.bu as BU,
+        t19.customer as customer,
+        t19.product_line as productLine,
+        t19.series_name as series,
+        t19.project_name as projectName,
+        t19.cur_phase || chr(10) || '(' || to_char(t19.cur_start_time,'yyyy/mm/dd') || '-' ||
+        to_char(t19.cur_end_time,'yyyy/mm/dd') || ')' as phase,
+        t19.phase || chr(10) || '(' || to_char(t19.start_time,'yyyy/mm/dd') || '-' || to_char(t19.end_time,'yyyy/mm/dd')
+        || ')' as historicalPhase,
+        to_char(t19.end_time,'yyyy/mm/dd') as phaseEndDate,
+        t11.pobject_name as dept,
+        nvl(t20.num,0) as outputDeliverableQty,
+        nvl(t21.num,0) as shouldOutputDeliverableQty,
+        t19.project_id as pid,
+        t19.spm as spm
+        from pworkspaceobject t1,
+        pworkspaceobject t2,
+        pworkspaceobject t3,
+        pd9_customerfolder t4,
+        pd9_projectseriesfolder t5,
+        pd9_platformfoundfolder t6,
+        pcontents t7,
+        pcontents t8,
+        pfolder t9,
+        pcontents t10,
+        pworkspaceobject t11,
+        pworkspaceobject t12,
+        pd9_functionfolder t13,
+        pd9_phasefolder t14,
+        pcontents t15,
+        pcontents t16,
+        pfolder t17,
+        pd9_projectfolder t18,
+        spas_info t19,
+        (SELECT * FROM (select count(1) AS num,p4.puid
+        from pworkspaceobject f1, pfolder f2, pd9_archivefolder f3,pcontents p4
+        where f3.puid = f1.puid
+        and f3.puid = f2.puid
+        and f3.puid = p4.pvalu_0
+        and f2.vla_864_3 > 0
+        and f1.pobject_name not in ( '參考文檔','參考資料', 'DCN')
+        and (f1.pobject_desc &lt;&gt; 'KPI' OR f1.pobject_desc is null) -- KPI 資料夾不納入專案統計
+        GROUP by p4.puid )) t20,
+        (select * FROM (select count(1) AS num,p4.puid
+        from pworkspaceobject f1, pd9_archivefolder f2,pcontents p4
+        where f1.puid = f2.puid
+        AND f2.puid = p4.pvalu_0
+        and f1.pobject_name not in ( '參考文檔','參考資料', 'DCN')
+        and (f1.pobject_desc &lt;&gt; 'KPI' OR f1.pobject_desc is null) -- KPI 資料夾不納入專案統計
+        GROUP by p4.puid )) t21
+        where t1.puid = t4.puid
+        and t2.puid = t5.puid
+        and t3.puid = t6.puid
+        and t4.puid = t7.puid
+        and t7.pvalu_0 = t5.puid
+        and t5.puid = t8.puid
+        and t8.pvalu_0 = t6.puid
+        and t9.puid = t10.puid
+        and t10.pvalu_0 = t4.puid
+        and t9.puid = 'SSkJgx05ppJG1D'
+        and t11.puid = t13.puid
+        and t12.puid = t14.puid
+        and t6.puid = t15.puid
+        and t15.pvalu_0 = t13.puid
+        and t13.puid = t16.puid
+        and t16.pvalu_0 = t14.puid
+        and t14.puid = t17.puid
+        and t18.puid = t6.puid
+        and t19.project_id = t18.pd9_spas_id
+        and t19.phase = substr(t12.pobject_name,1,2)
+        AND t14.puid = t20.puid(+)
+        AND t14.puid = t21.puid(+)
+        )
+        union
+        ( --僅SIM
+        select t15.bu as BU,
+        t15.customer as customer,
+        t15.product_line as productLine,
+        t15.series_name as series,
+        t15.project_name as projectName,
+        t15.cur_phase || chr(10) || '(' || to_char(t15.cur_start_time,'yyyy/mm/dd') || '-' ||
+        to_char(t15.cur_end_time,'yyyy/mm/dd') || ')' as phase,
+        t15.phase || chr(10) || '(' || to_char(t15.start_time,'yyyy/mm/dd') || '-' || to_char(t15.end_time,'yyyy/mm/dd')
+        || ')' as historicalPhase,
+        to_char(t15.end_time,'yyyy/mm/dd') as phaseEndDate,
+        t11.pobject_name as dept,
+        nvl(t17.num,0) as outputDeliverableQty, --參考和DCN資料夾不納入統計
+        nvl(t18.num,0) as shouldOutputDeliverableQty, --參考和DCN資料夾不納入統計
+        t15.project_id as pid,
+        t15.spm as spm
+        from pworkspaceobject t1,
+        pworkspaceobject t2,
+        pworkspaceobject t3,
+        pd9_customerfolder t4,
+        pd9_projectseriesfolder t5,
+        pd9_platformfoundfolder t6,
+        pcontents t7,
+        pcontents t8,
+        pfolder t9,
+        pcontents t10,
+        pworkspaceobject t11,
+        pd9_functionfolder t12,
+        pfolder t13,
+        pd9_projectfolder t14,
+        spas_info t15,
+        pcontents t16,
+        (SELECT * FROM (select count(1) AS num,p4.puid
+        from pworkspaceobject f1, pfolder f2, pd9_archivefolder f3,pcontents p4
+        where f3.puid = f1.puid
+        and f3.puid = f2.puid
+        and f3.puid = p4.pvalu_0
+        and f2.vla_864_3 > 0
+        and f1.pobject_name not in ( '參考文檔','參考資料', 'DCN')
+        and (f1.pobject_desc &lt;&gt; 'KPI' OR f1.pobject_desc is null) -- KPI 資料夾不納入專案統計
+        GROUP BY p4.puid)) t17,
+        (SELECT * FROM (select count(1) AS num,p4.puid
+        from pworkspaceobject f1, pd9_archivefolder f2 ,pcontents p4
+        where f1.puid = f2.puid
+        and f2.puid = p4.pvalu_0
+        and f1.pobject_name not in ( '參考文檔','參考資料', 'DCN')
+        and (f1.pobject_desc &lt;&gt; 'KPI' OR f1.pobject_desc is null) -- KPI 資料夾不納入專案統計
+        GROUP BY p4.puid)) t18
+        where t1.puid = t4.puid
+        and t2.puid = t5.puid
+        and t3.puid = t6.puid
+        and t4.puid = t7.puid
+        and t7.pvalu_0 = t5.puid
+        and t5.puid = t8.puid
+        and t8.pvalu_0 = t6.puid
+        and t9.puid = t10.puid
+        and t10.pvalu_0 = t4.puid
+        and t9.puid = 'SSkJgx05ppJG1D'
+        and t6.puid = t16.puid
+        and t16.pvalu_0 = t12.puid
+        and t11.puid = t12.puid
+        and t13.puid = t12.puid
+        and t14.puid = t6.puid
+        and t15.project_id = t14.pd9_spas_id
+        and t11.pobject_name like 'SIM%'
+        AND t12.puid = t17.puid(+)
+        AND t12.puid = t18.puid(+)
+        )
+        ) t where 1=1
+        and UPPER(substr(t.phase,1,2)) in ('P0','P1','P2','P3','P4','P5','P6','P7','P8')
+        and UPPER(substr(t.historicalPhase,1,2)) in ('P0','P1','P2','P3','P4','P5','P6','P7','P8')
+        and UPPER(substr(t.phase,1,2)) >= UPPER(substr(t.historicalPhase,1,2))
+        and UPPER(t.dept) != UPPER('TCFR Report')
+        <if test="bu != null and bu != ''">
+            and UPPER(t.bu) = UPPER(#{bu})
+        </if>
+        <if test="customer != null and customer != ''">
+            <if test="customerLike == null or customerLike == ''">
+                and UPPER(t.customer) = UPPER(#{customer})
+            </if>
+            <if test="customerLike != null and customerLike != ''">
+                and UPPER(t.customer) like UPPER(#{customer} || '%')
+            </if>
+        </if>
+        <if test="productLine != null and productLine != ''">
+            and UPPER(t.productLine) = UPPER(#{productLine})
+        </if>
+        <if test="series != null and series != ''">
+            and UPPER(t.series) = UPPER(#{series})
+        </if>
+        <if test="projectName != null and projectName != ''">
+            and UPPER(t.projectName) like UPPER('%' || #{projectName} || '%')
+        </if>
+        <if test="dept != null and dept != ''">
+            and UPPER(t.dept) = UPPER(#{dept})
+        </if>
+        <if test="phase != null and phase != ''">
+            and UPPER(substr(t.phase,1,2)) = UPPER(#{phase})
+        </if>
+        <if test="date != null and date != ''">
+            and TO_DATE(#{date},'yyyy/MM/dd HH24:MI:SS') BETWEEN t.startTime and t.endTime
+        </if>
+        <if test="month != null and month != ''">
+            and t.onlineMonth = #{month}
+        </if>
+        order by bu asc,customer asc,productLine asc,series asc, projectName asc , pid asc , phase asc
+    </select>
+
+    <select id="testsql" resultType="int">
+        select count(1) from pworkspaceobject
+    </select>
+
+    <select id="workingData" resultType="com.foxconn.plm.tcservice.projectReport.WorkingDataEntity">
+        --專案過程產出物數量(指派TC_Project的ItemRevision)
+        select t2.pitem_id as ID,
+        t1.pobject_name as Name,
+        t1.pobject_type as Type,
+        t3.pitem_revision_id as Rev,
+        t4.puser_name as Owner,
+        t0.pcreation_date as Creation,
+        t6.pproject_name as projectName,
+        t8.phase as phase,
+        t5.pname as functionName,
+        t8.project_id as pid
+        from ppom_application_object t0,
+        pworkspaceobject t1,
+        pitem t2,
+        pitemrevision t3,
+        ppom_user t4,
+        ppom_group t5,
+        ptc_project t6,
+        pproject_list t7,
+        spas_info t8
+        where t3.ritems_tagu = t2.puid
+        and t3.puid = t1.puid
+        and t3.puid = t0.puid
+        and t1.pactive_seq = 1 /* 显示最新版本 */
+        and t0.rowning_useru = t4.puid
+        and t0.rowning_groupu = t5.puid
+        and t1.puid = t7.puid
+        and t7.pvalu_0 = t6.puid
+        and t0.pcreation_date &lt;= t8.end_time
+        and t0.pcreation_date &gt;= t8.start_time
+        and substr(t6.pproject_id,2,8) = substr(t8.project_id,2,8)
+        and t6.pis_active = 1
+        order by projectName asc, phase asc, functionName asc, Owner asc
+    </select>
+
+    <select id="archiveData" resultType="com.foxconn.plm.tcservice.projectReport.ArchiveDataEntity">
+
+        (--三级文件夹归档ItemRevision
+        select t11.pitem_id as Item_ID,
+        t10.pobject_name as Revision_Name,
+        t10.pobject_type as Revision_Type,
+        t12.pitem_revision_id as Revision_ID,
+        t15.puser_name as Owner,
+        t3.pobject_name as projectName,
+        null as phase,
+        t2.pobject_name as functionName,
+        t19.project_id as pid
+        from pworkspaceobject t1,
+        pworkspaceobject t2,
+        pworkspaceobject t3,
+        --pfolder t4,
+        pd9_archivefolder t5,
+        pd9_functionfolder t6,
+        pd9_platformfoundfolder t7,
+        pcontents t8,
+        pcontents t9,
+        pworkspaceobject t10,
+        pitem t11,
+        pitemrevision t12,
+        pcontents t13,
+        ppom_application_object t14,
+        ppom_user t15,
+        pd9_projectfolder t16,
+        ptc_project t17,
+        pproject_list t18,
+        spas_info t19
+        where t5.puid = t1.puid
+        --and t5.puid = t4.puid
+        and t6.puid = t2.puid
+        and t7.puid = t3.puid
+        and t7.puid = t9.puid
+        and t9.pvalu_0 = t6.puid
+        and t6.puid = t8.puid
+        and t8.pvalu_0 = t5.puid
+        and t12.puid = t10.puid
+        and t12.ritems_tagu = t11.puid
+        and t5.puid = t13.puid
+        and t13.pvalu_0 = t12.puid
+        and t12.puid = t14.puid
+        and t14.rowning_useru = t15.puid
+        and t16.puid = t7.puid
+        and t2.pobject_name like 'SIM%'
+        and t10.pdate_released is not null
+        and t10.pactive_seq = 1
+        and t12.puid = t18.puid
+        and t18.pvalu_0 = t17.puid
+        and t17.pproject_id = upper(t16.pd9_spas_id)
+        and t19.project_id = t16.pd9_spas_id
+        and t1.pobject_name not in ( '參考文檔','參考資料', 'DCN') --參考和DCN資料夾不納入統計
+        and (t1.pobject_desc &lt;&gt; 'KPI' OR t1.pobject_desc is null) -- KPI 資料夾不納入專案統計
+        and t17.pis_active = 1
+        )
+        union
+        (--三级文件夹归档Item
+        select t11.pitem_id as Item_ID,
+        t10.pobject_name as Revision_Name,
+        t10.pobject_type as Revision_Type,
+        t12.pitem_revision_id as Revision_ID,
+        t15.puser_name as Owner,
+        t3.pobject_name as projectName,
+        null as phase,
+        t2.pobject_name as functionName,
+        t19.project_id as pid
+        from pworkspaceobject t1,
+        pworkspaceobject t2,
+        pworkspaceobject t3,
+        pfolder t4,
+        pd9_archivefolder t5,
+        pd9_functionfolder t6,
+        pd9_platformfoundfolder t7,
+        pcontents t8,
+        pcontents t9,
+        pworkspaceobject t10,
+        pitem t11,
+        pitemrevision t12,
+        pcontents t13,
+        ppom_application_object t14,
+        ppom_user t15,
+        pd9_projectfolder t16,
+        ptc_project t17,
+        pproject_list t18,
+        spas_info t19
+        where t5.puid = t1.puid
+        and t5.puid = t4.puid
+        and t6.puid = t2.puid
+        and t7.puid = t3.puid
+        and t7.puid = t9.puid
+        and t9.pvalu_0 = t6.puid
+        and t6.puid = t8.puid
+        and t8.pvalu_0 = t5.puid
+        and t12.puid = t10.puid
+        and t11.puid = t12.ritems_tagu
+        and t5.puid = t13.puid
+        and t13.pvalu_0 = t11.puid
+        and t12.puid = t14.puid
+        and t14.rowning_useru = t15.puid
+        and t16.puid = t7.puid
+        and t2.pobject_name like 'SIM%'
+        and t10.pdate_released is not null
+        and t10.pactive_seq = 1
+        and t12.puid = t18.puid
+        and t18.pvalu_0 = t17.puid
+        and t17.pproject_id = upper(t16.pd9_spas_id)
+        and t19.project_id = t16.pd9_spas_id
+        and t1.pobject_name not in ( '參考文檔','參考資料', 'DCN') --參考和DCN資料夾不納入統計
+        and (t1.pobject_desc &lt;&gt; 'KPI' OR t1.pobject_desc is null) -- KPI 資料夾不納入專案統計
+        and t17.pis_active = 1
+        )
+        union
+        ( --四级文件夹归档ItemRevision
+        select t14.pitem_id as Item_ID,
+        t13.pobject_name as Revision_Name,
+        t13.pobject_type as Revision_Type,
+        t15.pitem_revision_id as Revision_ID,
+        t18.puser_name as Owner,
+        t4.pobject_name as projectName,
+        substr(t2.pobject_name,1,2) as phase,
+        t3.pobject_name as functionName,
+        t19.pd9_spas_id as pid
+        from pworkspaceobject t1,
+        pworkspaceobject t2,
+        pworkspaceobject t3,
+        pworkspaceobject t4,
+        pfolder t5,
+        pd9_archivefolder t6,
+        pd9_phasefolder t7,
+        pd9_functionfolder t8,
+        pd9_platformfoundfolder t9,
+        pcontents t10,
+        pcontents t11,
+        pcontents t12,
+        pworkspaceobject t13,
+        pitem t14,
+        pitemrevision t15,
+        pcontents t16,
+        ppom_application_object t17,
+        ppom_user t18,
+        pd9_projectfolder t19,
+        ptc_project t20,
+        pproject_list t21,
+        spas_info t22
+        where t6.puid = t1.puid
+        and t6.puid = t5.puid
+        and t7.puid = t2.puid
+        and t8.puid = t3.puid
+        and t9.puid = t4.puid
+        and t7.puid = t10.puid
+        and t10.pvalu_0 = t6.puid
+        and t8.puid = t11.puid
+        and t11.pvalu_0 = t7.puid
+        and t9.puid = t12.puid
+        and t12.pvalu_0 = t8.puid
+        and t15.puid = t13.puid
+        and t14.puid = t15.ritems_tagu
+        and t6.puid = t16.puid
+        and t16.pvalu_0 = t15.puid
+        and t15.puid = t17.puid
+        and t17.rowning_useru = t18.puid
+        and t9.puid = t19.puid
+        and t13.pdate_released is not null
+        and t13.pactive_seq = 1
+        and t15.puid = t21.puid
+        and t21.pvalu_0 = t20.puid
+        and t20.pproject_id = upper(t19.pd9_spas_id)
+        and t22.project_id = t19.pd9_spas_id
+        and t1.pobject_name not in ( '參考文檔','參考資料', 'DCN') --參考和DCN資料夾不納入統計
+        and (t1.pobject_desc &lt;&gt; 'KPI' OR t1.pobject_desc is null) -- KPI 資料夾不納入專案統計
+        and t20.pis_active = 1
+        )
+        union
+        (--四级文件夹归档Item
+        select t14.pitem_id as Item_ID,
+        t13.pobject_name as Revision_Name,
+        t13.pobject_type as Revision_Type,
+        t16.pitem_revision_id as Revision_ID,
+        t18.puser_name as Owner,
+        t4.pobject_name as projectName,
+        substr(t2.pobject_name,1,2) as phase,
+        t3.pobject_name as functionName,
+        t19.pd9_spas_id as pid
+        from pworkspaceobject t1,
+        pworkspaceobject t2,
+        pworkspaceobject t3,
+        pworkspaceobject t4,
+        pfolder t5,
+        pd9_archivefolder t6,
+        pd9_phasefolder t7,
+        pd9_functionfolder t8,
+        pd9_platformfoundfolder t9,
+        pcontents t10,
+        pcontents t11,
+        pcontents t12,
+        pworkspaceobject t13,
+        pitem t14,
+        pcontents t15,
+        pitemrevision t16,
+        ppom_application_object t17,
+        ppom_user t18,
+        pd9_projectfolder t19,
+        ptc_project t20,
+        pproject_list t21,
+        spas_info t22
+        where t6.puid = t1.puid
+        and t6.puid = t5.puid
+        and t7.puid = t2.puid
+        and t8.puid = t3.puid
+        and t9.puid = t4.puid
+        and t7.puid = t10.puid
+        and t10.pvalu_0 = t6.puid
+        and t8.puid = t11.puid
+        and t11.pvalu_0 = t7.puid
+        and t9.puid = t12.puid
+        and t12.pvalu_0 = t8.puid
+        and t16.puid = t13.puid
+        and t6.puid = t15.puid
+        and t15.pvalu_0 = t14.puid
+        and t14.puid = t16.ritems_tagu
+        and t16.puid = t17.puid
+        and t17.rowning_useru = t18.puid
+        and t9.puid = t19.puid
+        and t13.pdate_released is not null
+        and t13.pactive_seq = 1
+        and t16.puid = t21.puid
+        and t21.pvalu_0 = t20.puid
+        and t20.pproject_id = upper(t19.pd9_spas_id)
+        and t22.project_id = t19.pd9_spas_id
+        and t1.pobject_name not in ( '參考文檔','參考資料', 'DCN') --參考和DCN資料夾不納入統計
+        and (t1.pobject_desc &lt;&gt; 'KPI' OR t1.pobject_desc is null) -- KPI 資料夾不納入專案統計
+        and t20.pis_active = 1
+        )
+        order by projectName asc, phase asc, functionName asc, Owner asc
+
+    </select>
+
+    <select id="getLov" resultType="com.foxconn.plm.tcservice.projectReport.LovEntity">
+        SELECT DISTINCT s.CUSTOMER,s.PRODUCT_LINE as productLine,s.SERIES_NAME as seriesName FROM SPAS_INFO s
+    </select>
+
+    <select id="getFunction" resultType="java.lang.String">
+        select distinct t1.pobject_name
+        from pworkspaceobject t1,
+        pd9_functionfolder t2
+        where t1.puid = t2.puid
+        order by t1.pobject_name asc
+    </select>
+</mapper>

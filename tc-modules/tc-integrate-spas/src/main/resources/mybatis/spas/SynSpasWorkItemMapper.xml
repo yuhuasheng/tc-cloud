@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.spas.mapper.SynSpasWorkItemMapper">
+
+    <delete id="delete">
+        delete from SPAS_WORK_ITEM wi where wi.RECORD_DATE between to_date(#{param1},'yyyy-MM-dd') and to_date(#{param2} || ' 23:59:59','yyyy-MM-dd HH24:MI:SS')
+    </delete>
+
+    <insert id="saveWorkItem" parameterType="com.foxconn.plm.spas.bean.SpasWorkItem">
+        insert into SPAS_WORK_ITEM(ID,USER_ID,"GROUP","FUNCTION",CUSTOMER,PRODUCT_LINE,PROJECT_ID,CUR_PHASE,WORK_ITEM_ID,WORK_ITEM,WORKED_HOURS,START_TIME,END_TIME,RECORD_DATE)
+        values (#{id},#{userId},#{group},#{function},#{customer},#{productLine},#{projectId},#{curPhase},#{workItemId},#{workItem},#{workedHours},#{startTime},#{endTime},#{recordDate})
+    </insert>
+
+    <select id="tcProjectList" resultType="java.lang.String">
+        select LOWER(pproject_id) as id from infodba.ptc_project where pis_active = 1
+    </select>
+
+</mapper>

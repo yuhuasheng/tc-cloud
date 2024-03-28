@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/tc-common/tc-api/tc-api.iml" filepath="$PROJECT_DIR$/tc-common/tc-api/tc-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tc-cloud.iml" filepath="$PROJECT_DIR$/tc-cloud.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tc-common/tc-common.iml" filepath="$PROJECT_DIR$/tc-common/tc-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tc-common/tc-entity/tc-entity.iml" filepath="$PROJECT_DIR$/tc-common/tc-entity/tc-entity.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tc-common/tc-feign/tc-feign.iml" filepath="$PROJECT_DIR$/tc-common/tc-feign/tc-feign.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tc-modules/tc-fileservice/tc-fileservice.iml" filepath="$PROJECT_DIR$/tc-modules/tc-fileservice/tc-fileservice.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tc-gateway/tc-gateway.iml" filepath="$PROJECT_DIR$/tc-gateway/tc-gateway.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tc-modules/tc-hdfs/tc-hdfs.iml" filepath="$PROJECT_DIR$/tc-modules/tc-hdfs/tc-hdfs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tc-modules/tc-health/tc-health.iml" filepath="$PROJECT_DIR$/tc-modules/tc-health/tc-health.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tc-modules/tc-integrate/tc-integrate.iml" filepath="$PROJECT_DIR$/tc-modules/tc-integrate/tc-integrate.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tc-modules/tc-integrate-b2b/tc-integrate-b2b.iml" filepath="$PROJECT_DIR$/tc-modules/tc-integrate-b2b/tc-integrate-b2b.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tc-modules/tc-integrate-cis/tc-integrate-cis.iml" filepath="$PROJECT_DIR$/tc-modules/tc-integrate-cis/tc-integrate-cis.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tc-modules/tc-integrate-spas/tc-integrate-spas.iml" filepath="$PROJECT_DIR$/tc-modules/tc-integrate-spas/tc-integrate-spas.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tc-modules/tc-integrate-sso/tc-integrate-sso.iml" filepath="$PROJECT_DIR$/tc-modules/tc-integrate-sso/tc-integrate-sso.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tc-modules/tc-mail/tc-mail.iml" filepath="$PROJECT_DIR$/tc-modules/tc-mail/tc-mail.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tc-modules/tc-modules.iml" filepath="$PROJECT_DIR$/tc-modules/tc-modules.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tc-modules/tc-ops/tc-ops.iml" filepath="$PROJECT_DIR$/tc-modules/tc-ops/tc-ops.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tc-common/tc-private/tc-private.iml" filepath="$PROJECT_DIR$/tc-common/tc-private/tc-private.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tc-common/tc-rabbitmq/tc-rabbitmq.iml" filepath="$PROJECT_DIR$/tc-common/tc-rabbitmq/tc-rabbitmq.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tc-common/tc-redis/tc-redis.iml" filepath="$PROJECT_DIR$/tc-common/tc-redis/tc-redis.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tc-modules/tc-report/tc-report.iml" filepath="$PROJECT_DIR$/tc-modules/tc-report/tc-report.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tc-modules/tc-service/tc-service.iml" filepath="$PROJECT_DIR$/tc-modules/tc-service/tc-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tc-modules/tc-sync-folder/tc-sync-folder.iml" filepath="$PROJECT_DIR$/tc-modules/tc-sync-folder/tc-sync-folder.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tc-common/tc-util/tc-util.iml" filepath="$PROJECT_DIR$/tc-common/tc-util/tc-util.iml" />
+    </modules>
+  </component>
+</project>

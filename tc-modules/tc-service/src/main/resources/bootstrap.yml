@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: tc-service
+  profiles:
+    active: local

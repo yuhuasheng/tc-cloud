@@ -1,0 +1,51 @@
+{
+  "code": "0000",
+  "msg": "成功!",
+  "data": [
+    {
+      "value": "DT",
+      "childs": [
+        {
+          "value": "湯聰(F1619045)",
+          "childs": [
+            {
+              "value": "P1284-BPS FY23 G10 D4 TWR DominoR(RPL)",
+              "childs": []
+            },
+            {
+              "value": "P1457-D13 MTP Alexandria High",
+              "childs": []
+            }
+          ]
+        },
+        {
+          "value": "艾新成(F1008960)",
+          "childs": [
+            {
+              "value": "P2044-TEST20230111_DELL",
+              "childs": []
+            }
+          ]
+        },
+        {
+          "value": "付昊(W0107979)",
+          "childs": [
+            {
+              "value": "P1457-D13 MTP Alexandria High",
+              "childs": []
+            }
+          ]
+        },
+        {
+          "value": "鮑文麟(W0110021)",
+          "childs": [
+            {
+              "value": "P2044-TEST20230111_DELL",
+              "childs": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

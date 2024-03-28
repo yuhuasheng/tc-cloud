@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.tcservice.mapper.master.ElectronicDispatcherMapper">
+
+    <select id="getElectDispatcherList" resultMap="ResultMap" parameterType="java.util.List">
+        SELECT request.pprovidername AS providerName, request.pservicename AS serviceName, pom.rowning_useru AS
+        ownUserUid, user2.puser_id AS userId, user2.PUSER_NAME as userName,
+        person.PPA9 AS email, request.ptaskid as taskUid, request.pcurrentstate as states, p.pvalu_0 AS primaryUid,
+        s.pvalu_0 AS secondryUid
+        FROM infodba.Pdispatcherrequest request,
+        infodba.pprimaryobjects p,
+        infodba.psecondaryobjects s,
+        infodba.ppom_application_object pom,
+        infodba.puser user1,
+        infodba.ppom_user user2,
+        infodba.pperson person
+        WHERE request.puid = p.puid(+)
+        AND request.puid = s.puid(+)
+        AND request.puid = pom.puid(+)
+        AND user1.RPERSONU = person.PUID
+        AND user1.puid = pom.rowning_useru
+        AND user1.puid = user2.puid
+        <if test="serverNameList != null and serverNameList.size()!=0 ">
+            AND request.pservicename in
+            <foreach collection="serverNameList" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+
+        <if test="stateList != null and stateList.size()!=0 ">
+            AND request.pcurrentstate in
+            <foreach collection="stateList" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <resultMap id="ResultMap" type="java.util.Map">
+        <result property="providerName" column="providerName"/>
+        <result property="serviceName" column="serviceName"/>
+        <result property="ownUserUid" column="ownUserUid"/>
+        <result property="userId" column="userId"/>
+        <result property="userName" column="userName"/>
+        <result property="email" column="email"/>
+        <result property="taskUid" column="taskUid"/>
+        <result property="states" column="states"/>
+        <result property="primaryUid" column="primaryUid"/>
+        <result property="secondryUid" column="secondryUid"/>
+    </resultMap>
+</mapper>

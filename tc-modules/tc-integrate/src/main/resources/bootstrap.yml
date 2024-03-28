@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: tc-integrate
+  profiles:
+    active: local
+
+
+

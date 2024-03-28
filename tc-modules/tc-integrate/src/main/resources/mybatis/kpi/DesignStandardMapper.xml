@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.integrate.dgkpi.mapper.DesignStandardMapper">
+
+    <select id="getSubType" resultType="java.lang.String">
+        select
+        decode(pcid,'FX401007001',psm02,'FX401007002',psm02,'FX401001002',psm01,psm01) subType
+        from infodba.PICM0 p where p.puid =#{uid}
+    </select>
+
+
+</mapper>

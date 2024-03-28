@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.integrate.spas.mapper.SpasMapper">
+
+    <select id="queryProjects" resultType="com.foxconn.plm.integrate.spas.domain.ReportPojo">
+        select p .id projectId,
+        p.name projectName,
+        c.name customer ,
+        l.name productLine ,
+        GET_project_level(p.id,ps.id) levels,
+        ps.phase_sn phase
+        from
+        spas_platform_found p,
+        spas_product_line l,
+        spas_customer c,
+        spas_series s,
+        spas_product_line_phase ps ,
+        spas_project_schedule sh
+        where
+        p.product_line_id=l.id
+        and p.project_series_id=s.id
+        and s.customer_id=c.id
+        and p.id=sh.project_id
+        and sh.phase_id=ps.id
+        and (sh.status=3 or sh.status=2)
+        and sh.end_time &gt;= to_date(#{sdt},'yyyy/MM/dd')
+        and sh.end_time &lt;= to_date(#{edt},'yyyy/MM/dd')
+        order by p.id desc
+    </select>
+
+
+    <select id="queryProjectById" resultType="com.foxconn.plm.integrate.spas.domain.ReportPojo">
+
+        select p .id projectId,
+        p.name projectName,
+        c.name customer ,
+        l.name productLine ,
+        GET_project_level(p.id,p.cur_phase_id) levels,
+        pl.phase_sn phase ,
+        to_char(sh.start_time,'yyyy-MM-dd') startTime,
+        to_char(sh.end_time,'yyyy-MM-dd') endTime,
+        s.series_name series,
+        u.name ownerName
+        from
+        spas_platform_found p,
+        spas_product_line l,
+        spas_customer c,
+        spas_series s,
+        spas_project_schedule sh,
+        spas_product_line_phase pl,
+        spas_user u
+        where p.id=#{projectId}
+        and p.product_line_id=l.id
+        and p.project_series_id=s.id
+        and s.customer_id=c.id
+        and p.id=sh.project_id
+        and p.cur_phase_id=sh.phase_id
+        and p.cur_phase_id=pl.id
+        and p.owner=u.id
+    </select>
+
+    <select id="queryProjectPhases" resultType="com.foxconn.plm.integrate.spas.domain.ReportPojo">
+      select * from (
+         select  pl.phase_sn phase ,
+                 pl.name phaseName,
+                 to_date('2018','yyyy') dat
+           from  spas_platform_found p,
+                 spas_product_line_phase pl
+           where p.id=#{projectId}
+             and p.cur_phase_id=pl.id
+           union
+          select pl.phase_sn phase ,
+                 pl.name phaseName,
+                 sh.created_time dat
+           from  spas_project_schedule sh,
+                 spas_product_line_phase pl
+           where sh.project_id=#{projectId}
+             and sh.phase_id=pl.id
+             and sh.phase_id not in(
+                select p.cur_phase_id
+                  from spas_platform_found p
+                  where p.id=#{projectId}
+           ))order by dat asc
+    </select>
+
+    <select id="getPhases" resultType="com.foxconn.plm.integrate.spas.domain.PhasePojo">
+        select
+        ps.phase_sn name ,
+        to_char(s.start_time,'yyyy-MM-dd') startDate,
+        to_char( s.end_time,'yyyy-MM-dd') endDate
+        from spas_project_schedule s,
+        spas_product_line_phase ps,
+        spas_platform_found p
+        where s.project_id=#{projectId}
+        and s.phase_id=ps.id
+        and s.project_id=p.id
+    </select>
+
+
+    <select id="getProjectInfo" resultType="com.foxconn.plm.integrate.spas.domain.STIProject">
+        select p.id platformFoundId,
+        c.name customerName,
+        l.name platformFoundProductLine
+        from spas_platform_found p ,
+        spas_series s,
+        spas_customer c,
+        spas_product_line l
+        where p.id=#{projId}
+        and p.project_series_id=s.id
+        and s.customer_id=c.id
+        and p.product_line_id=l.id
+    </select>
+
+
+    <select id="queryTeamRoster" resultType="com.foxconn.plm.integrate.spas.domain.SPASUser">
+        select distinct id,work_id,name,notes,dept_name ,is_active,created_time ,last_update_time ,section_name from (
+        select u.id,u.work_id,u.name,u.notes,u.dept_name,u.is_active,u.created_time,u.last_update_time,s.project_id as pid,nvl(o.name,'') section_name
+        from spas_project_person s,spas_user u,spas_dept_group g ,spas_organization o
+        where  s.work_id = u.work_id and u.is_active = 1 and u.group_id=g.id and g.section_id=o.id
+        union
+        select u.id,u.work_id,u.name,u.notes,u.dept_name,u.is_active,u.created_time,u.last_update_time,p.id as pid,nvl(o.name,'') section_name
+        from spas_platform_found p,spas_user u,spas_dept_group g,spas_organization o
+        where p.owner = u.id and  u.is_active = 1 and u.group_id=g.id and g.section_id=o.id
+        ) t
+        where t.pid in
+        <foreach collection="array" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+
+        order by section_name
+    </select>
+
+    <select id="queryTeamRosterByEmpId" resultType="com.foxconn.plm.integrate.spas.domain.SPASUser">
+        select u.id,u.work_id,u.name,u.notes,u.dept_name,u.is_active,u.created_time,u.last_update_time
+        from spas_user u where work_id = #{empId}
+    </select>
+
+    <select id="selectSPASUser" resultType="com.foxconn.plm.integrate.spas.domain.SPASUser">
+        select
+        work_id,name,notes
+        from spas_user_table where is_active = '1'
+    </select>
+
+    <select id="findMailUsers" resultType="com.foxconn.plm.integrate.mail.domain.MailUser">
+        SELECT distinct u.work_id AS empId,u.name userName, od.name||'/'||ode.name||'/'||os.name as dept,u.notes mail,
+        (CASE substr(od.name,0,5) WHEN '成像技術群' THEN 'PRT' WHEN '顯示技術群' THEN 'MNT' ELSE 'DT' END) AS bu
+        FROM spas_user u
+        INNER JOIN spas_dept_group g ON g.id = u.group_id AND g.is_active = 1
+        LEFT JOIN spas_organization od ON od.id = g.division_id AND od.is_active = 1
+        LEFT JOIN spas_organization ode ON ode.id = g.department_id AND ode.is_active = 1
+        LEFT JOIN spas_organization os ON os.id = g.section_id AND os.is_active = 1
+        INNER JOIN spas_user_role r ON r.user_id = u.id
+        WHERE u.is_active = 1
+        <if test="keyWords != null and keyWords!=''">
+            and ( upper (u.name ) like upper('%'||#{keyWords}||'%') or upper (u.work_id ) like
+            upper('%'||#{keyWords}||'%') or upper (u.notes ) like upper('%'||#{keyWords}||'%') )
+        </if>
+
+    </select>
+
+    <select id="getSpasUserInfoByDate" resultType="com.foxconn.plm.integrate.spas.domain.SPASUser">
+        SELECT
+            u.work_id,
+            u.name,
+            u.is_active,
+            u.created_time,
+            u.last_update_time,
+            u.notes  notes
+        FROM
+            xplm.spas_user u
+        WHERE
+            regexp_like (work_id, '^['||#{prefix}||']')
+        <if test="startDate != null">
+            AND LAST_UPDATE_TIME &gt;= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND LAST_UPDATE_TIME &lt;= #{endDate}
+        </if>
+            ORDER BY work_id DESC
+    </select>
+
+</mapper>

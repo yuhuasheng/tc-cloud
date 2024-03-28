@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="plugins">
+    <CLASSES>
+      <root url="file://C:/Siemens/Teamcenter14/portal/plugins" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="file://C:/Siemens/Teamcenter14/portal/plugins/com.siemens.softwareanalytics/javadocs" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="file://C:/Siemens/Teamcenter14/portal/plugins" />
+    </SOURCES>
+    <jarDirectory url="file://C:/Siemens/Teamcenter14/portal/plugins" recursive="false" />
+    <jarDirectory url="file://C:/Siemens/Teamcenter14/portal/plugins" recursive="false" type="SOURCES" />
+  </library>
+</component>

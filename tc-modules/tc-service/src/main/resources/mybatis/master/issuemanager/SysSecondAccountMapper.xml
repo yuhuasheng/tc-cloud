@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.tcservice.mapper.master.SysSecondAccountMapper">
+
+    <resultMap id="BaseResultMap" type="com.foxconn.plm.tcservice.issuemanagement.entity.SysSecondAccount">
+        <result property="id" column="id"/>
+        <result property="no" column="no"/>
+        <result property="name" column="name"/>
+        <result property="bu" column="bu"/>
+        <result property="platform" column="platform"/>
+        <result property="dept" column="dept"/>
+        <result property="tcUid" column="tc_uid"/>
+        <result property="delFlag" column="del_flag"/>
+    </resultMap>
+
+    <resultMap id="ResultMap" type="com.foxconn.plm.tcservice.issuemanagement.bean.AccountBean">
+        <result property="accountId" column="id"/>
+        <result property="no" column="no"/>
+        <result property="name" column="name"/>
+        <result property="bu" column="bu"/>
+        <result property="platform" column="platform"/>
+        <result property="dept" column="dept"/>
+    </resultMap>
+
+    <select id="getId" resultType="long">
+        select su_user_seq.nextval from dual
+    </select>
+
+    <select id="getAdminAccount" resultMap="ResultMap">
+        SELECT a.ID ,a.NO,a.NAME ,a.BU ,a.PLATFORM ,a.DEPT
+        FROM su_user a
+        WHERE a.DEPT = 'PLM'
+        AND a.BU = 'ES'
+        AND a.del_flag = '0'
+    </select>
+
+    <select id="getAll" resultMap="BaseResultMap">
+        SELECT a.ID ,a.NO,a.NAME ,a.BU ,a.PLATFORM ,a.DEPT,a.tc_uid
+        FROM su_user a
+        WHERE a.del_flag = '0'
+    </select>
+
+    <insert id="insertEntity" parameterType="com.foxconn.plm.tcservice.issuemanagement.entity.SysSecondAccount">
+        INSERT INTO su_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != '' ">
+                id,
+            </if>
+            <if test="no != null and no != '' ">
+                no,
+            </if>
+            <if test="name != null and name != '' ">
+                name,
+            </if>
+            <if test="bu != null and bu != '' ">
+                bu,
+            </if>
+            <if test="platform != null and platform != '' ">
+                platform,
+            </if>
+            <if test="dept != null and dept != '' ">
+                dept,
+            </if>
+            <if test="tcUid != null and tcUid != '' ">
+                tc_uid,
+            </if>
+            <if test="delFlag != null and delFlag != '' ">
+                del_flag
+            </if>
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != '' ">
+                #{id},
+            </if>
+            <if test="no != null and no != '' ">
+                #{no},
+            </if>
+            <if test="name != null and name != '' ">
+                #{name},
+            </if>
+            <if test="bu != null and bu != '' ">
+                #{bu},
+            </if>
+            <if test="platform != null and platform != '' ">
+                #{platform},
+            </if>
+            <if test="dept != null and dept != '' ">
+                #{dept},
+            </if>
+            <if test="tcUid != null and tcUid != '' ">
+                #{tcUid},
+            </if>
+            <if test="delFlag != null and delFlag != '' ">
+                #{delFlag}
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateById" parameterType="com.foxconn.plm.tcservice.issuemanagement.entity.SysSecondAccount">
+        UPDATE su_user
+        <set>
+            <if test="no != null and no != '' ">
+                no = #{no},
+            </if>
+            <if test="no == null or no == '' ">
+                no = NULL,
+            </if>
+            <if test="name != null and name != '' ">
+                name = #{name},
+            </if>
+            <if test="name == null or name == '' ">
+                name = NULL,
+            </if>
+            <if test="bu != null and bu != '' ">
+                bu = #{bu},
+            </if>
+            <if test="bu == null or bu == '' ">
+                bu = NULL,
+            </if>
+            <if test="platform != null and platform != '' ">
+                platform = #{platform},
+            </if>
+            <if test="platform == null or platform == '' ">
+                platform = NULL,
+            </if>
+            <if test="dept != null and dept != '' ">
+                dept = #{dept},
+            </if>
+            <if test="dept == null or dept == '' ">
+                dept = NULL,
+            </if>
+            <if test="tcUid != null and tcUid != '' ">
+                tc_uid = #{tcUid},
+            </if>
+            <if test="tcUid == null or tcUid == '' ">
+                tc_uid = NULL,
+            </if>
+            <if test="delFlag != null and delFlag != '' ">
+                del_flag = #{delFlag},
+            </if>
+            <if test="delFlag == null or delFlag == '' ">
+                del_flag = NULL,
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="getbyId" resultMap="BaseResultMap">
+        SELECT a.ID ,a.NO,a.NAME ,a.BU ,a.PLATFORM ,a.DEPT,a.tc_uid,a.del_flag
+        FROM su_user a
+        WHERE a.del_flag = '0'
+        AND a.id = #{accountId}
+    </select>
+
+    <select id="getAllTcUser" resultType="com.foxconn.plm.tcservice.issuemanagement.bean.TcUserBean">
+        SELECT puid, puser_id userId, puser_name userName
+        FROM infodba.ppom_user
+        WHERE pstatus = '0'
+        <if test="puid != null and puid != '' ">
+            AND puid = #{puid}
+        </if>
+    </select>
+
+    <select id="getAllTcAccountUser" resultType="com.foxconn.plm.tcservice.issuemanagement.bean.TcAccountUserBean">
+        select t5.puid,
+        t5.pitem_id itemId,
+        t4.pobject_name objectName,
+        t6.pd9_userinfo userInfo,
+        t6.pd9_englishname enName
+      from INFODBA.pworkspaceobject t1,
+           INFODBA.pfolder          t2,
+           INFODBA.pcontents        t3,
+           INFODBA.pworkspaceobject t4,
+           INFODBA.pitem            t5,
+           INFODBA.Pd9_Actualuser   t6
+     where t1.puid = t2.puid
+       and t1.pobject_name = 'SPAS Active User'
+       and t2.puid = t3.puid
+       and t3.pvalu_0 = t5.puid
+       and t4.puid = t5.puid
+       and t4.pobject_desc = 'Y'
+       and t4.pobject_type = 'D9_ActualUser'
+       and t5.puid = t6.puid
+        <if test="puid != null and puid != '' ">
+            AND t5.puid = #{puid}
+        </if>
+    </select>
+
+
+    <delete id="deleteById">
+        UPDATE su_user a
+        SET a.del_flag = '1'
+        WHERE a.del_flag = '0'
+        AND a.id = #{id}
+    </delete>
+
+</mapper>

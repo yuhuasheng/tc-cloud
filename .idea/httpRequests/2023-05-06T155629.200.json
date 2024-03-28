@@ -1,0 +1,5 @@
+{
+  "code": "4002",
+  "msg": "\r\n### Error querying database.  Cause: java.sql.SQLSyntaxErrorException: ORA-00904: \"-\": 标识符无效\n\r\n### The error may exist in file [D:\\maxnerva\\TC\\Code\\TC14.2\\tc-modules\\tc-service\\target\\classes\\mybatis\\master\\dcnreport\\DCNReportMapper.xml]\r\n### The error may involve defaultParameterMap\r\n### The error occurred while setting parameters\r\n### SQL: SELECT             DISTINCT t.BU, t.OWNER, t.PROJECT_ID || \"-\" || t.PROJECT_NAME         FROM             XPLM.DCN_FEE_RECORD t         WHERE             BU IS NOT NULL\r\n### Cause: java.sql.SQLSyntaxErrorException: ORA-00904: \"-\": 标识符无效\n\n; bad SQL grammar []; nested exception is java.sql.SQLSyntaxErrorException: ORA-00904: \"-\": 标识符无效\n",
+  "data": null
+}

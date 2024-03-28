@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.integrate.cis.mapper.cis.CISMapper">
+
+    <select id="getNotSyncPart" resultType="com.foxconn.plm.integrate.cis.domain.PartEntity">
+        SELECT
+        m.Id Id,
+        m.Category Category,
+        m.MFG MFG,
+        m.MFG_PART_NUMBER MfgPartNumber,
+        m.IsFrequency IsFrequency,
+        m.PART_TYPE PartType,
+        m.VALUE VALUE,
+        m.[FUNCTION] FunctionAlias,
+        m.PACKAGE_TYPE PackageType,
+        m.PACKAGE_SIZE PackageSize,
+        m.DATASHEET DATASHEET,
+        m.PART_NUMBER PartNumber,
+        m.ROHS_STATUS RohsStatus,
+        m.FOXCONN_PART_NUMBER FoxconnPartNumber,
+        m.CRITICAL CRITICAL,
+        m.CCL CCL,
+        m.DESCRIPTION DESCRIPTION,
+        m.SCHEMATIC_PART SchematicPart,
+        m.FPCategory FPCategory,
+        m.PCB_FOOTPRINT PCBFootprint,
+        m.BOM BOM,
+        m.SUB_SYSTEM SubSystem,
+        m.REMARK REMARK,
+        m.SIDE SIDE,
+        m.STANDARD_PN StandardPN,
+        m.VOLTAGE VOLTAGE,
+        m.TOLERANCE TOLERANCE,
+        m.REFLOW_TEMPERATURE ReflowTemperature,
+        m.CONTACT_GENDER ContactGender,
+        m.POWER_DISSIPATION PowerDissipation,
+        m.FOXCONN_PART_NUMBER_NODT FoxconnPartNumberNodt,
+        m.FOXCONN_PART_NUMBER_PRT FoxconnPartNumberPrt,
+        m.ORIGINAL_DRAWING_FILE OriginalDrawingFile,
+        m.MODIFIED_DRAWING_FILE ModifiedDrawingFile,
+        m.SYNC_FLAG SyncFlag,
+        m.CreatedTime CreatedTime,
+        m.UpdatedTime UpdatedTime,
+        m.INSERTION_TYPE insertionType
+        FROM TC_Sync m
+        where m.SYNC_FLAG = 0
+    </select>
+
+    <select id="getPartById" resultType="com.foxconn.plm.integrate.cis.domain.PartEntity"
+            parameterType="java.lang.Integer">
+        SELECT
+        m.Id Id,
+        m.Category Category,
+        m.MFG MFG,
+        m.MFG_PART_NUMBER MfgPartNumber,
+        m.IsFrequency IsFrequency,
+        m.PART_TYPE PartType,
+        m.VALUE VALUE,
+        m.[FUNCTION] FunctionAlias,
+        m.PACKAGE_TYPE PackageType,
+        m.PACKAGE_SIZE PackageSize,
+        m.DATASHEET DATASHEET,
+        m.PART_NUMBER PartNumber,
+        m.ROHS_STATUS RohsStatus,
+        m.FOXCONN_PART_NUMBER FoxconnPartNumber,
+        m.CRITICAL CRITICAL,
+        m.CCL CCL,
+        m.DESCRIPTION DESCRIPTION,
+        m.SCHEMATIC_PART SchematicPart,
+        m.FPCategory FPCategory,
+        m.PCB_FOOTPRINT PCBFootprint,
+        m.BOM BOM,
+        m.SUB_SYSTEM SubSystem,
+        m.REMARK REMARK,
+        m.SIDE SIDE,
+        m.STANDARD_PN StandardPN,
+        m.VOLTAGE VOLTAGE,
+        m.TOLERANCE TOLERANCE,
+        m.REFLOW_TEMPERATURE ReflowTemperature,
+        m.CONTACT_GENDER ContactGender,
+        m.POWER_DISSIPATION PowerDissipation,
+        m.FOXCONN_PART_NUMBER_NODT FoxconnPartNumberNodt,
+        m.FOXCONN_PART_NUMBER_PRT FoxconnPartNumberPrt,
+        m.ORIGINAL_DRAWING_FILE OriginalDrawingFile,
+        m.MODIFIED_DRAWING_FILE ModifiedDrawingFile,
+        m.SYNC_FLAG SyncFlag,
+        m.CreatedTime CreatedTime,
+        m.UpdatedTime UpdatedTime
+        FROM TC_Sync m
+        where m.Id = #{id}
+    </select>
+
+    <update id="updateSync" parameterType="java.lang.Integer">
+        update TC_Sync set SYNC_FLAG = 1 where id = #{id}
+    </update>
+
+    <!--查找当前的cis料号信息-->
+    <select id="getThreeDDrawingRecord" resultType="com.foxconn.plm.integrate.cis.domain.ThreeDDrawingBean">
+        SELECT
+        MFG mfg, MFG_PN mfgPN, MCAD_NAME AS itemId, Creator as creator, StartTime startTime, EndTime endTime
+        FROM ThreeDDrawingRecord
+        WHERE
+        DATEDIFF(day, CreatedTime, GETDATE()) = 0
+        AND
+        (MFG is not null and LTrim(RTrim(MFG)) !='')
+        AND
+        (MFG_PN is not null and LTrim(RTrim(MFG)) !='')
+        AND
+        (StartTime is not null and LTrim(RTrim(StartTime)) !='')
+
+    </select>
+
+    <!--查找当前cis同步的料号信息-->
+    <select id="getTCSyncRecord" resultType="com.foxconn.plm.integrate.cis.domain.TCSyncBean">
+        SELECT
+        MFG AS mfg, MFG_PART_NUMBER AS mfgPN, FOXCONN_PART_NUMBER AS HHPN, SCHEMATIC_PART AS schematicPart,
+        PCB_FOOTPRINT AS pcbFootprint, CreatedTime AS startTime
+        FROM [dbo].[TC_Sync]
+        WHERE
+        DATEDIFF(day, CreatedTime, GETDATE()) = 0
+        AND
+        (MFG is not null and LTrim(RTrim(MFG)) !='')
+        AND
+        (MFG_PART_NUMBER is not null and LTrim(RTrim(MFG_PART_NUMBER)) !='')
+        AND
+        ((SCHEMATIC_PART is not null and LTrim(RTrim(SCHEMATIC_PART)) !='') OR (PCB_FOOTPRINT is not null and
+        LTrim(RTrim(PCB_FOOTPRINT)) !=''))
+        AND
+        CreatedTime IS NOT NULL
+
+
+    </select>
+
+    <select id="getSCHEMATICPARTRecord" resultType="java.lang.Integer">
+        select count(*)
+        from
+        (select * from (select SCHEMATIC_PART, COUNT(SCHEMATIC_PART)-1 as total from PDMCIS.dbo.Material where
+        ProductLineId = #{productLineId} and UpdatedTime > '2022-06-13' group by SCHEMATIC_PART) t where t.total > 1) t2
+        where t2.SCHEMATIC_PART = #{schematicPart};
+    </select>
+
+    <select id="getPCBFOOTPRINTRecord" resultType="java.lang.Integer">
+        select count(*)
+        from
+        (select * from (select PCB_FOOTPRINT, COUNT(PCB_FOOTPRINT)-1 as total from PDMCIS.dbo.Material where
+        ProductLineId = #{productLineId} and UpdatedTime > '2022-06-13' group by PCB_FOOTPRINT) t where t.total > 1) t2
+        where t2.PCB_FOOTPRINT = #{pcbFootprint};
+    </select>
+
+</mapper>

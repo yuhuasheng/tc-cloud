@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: tc-gateway
+  profiles:
+    active: local
+
+
+
+
+
+
+

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.spas.mapper.SynTcChangeDataMapper">
+
+    <select id="querySynSpasChangeData" flushCache="true" resultType="com.foxconn.plm.spas.bean.SynSpasChangeData">
+        select
+        id, customer_id customerId, customer_name customerName, customer_operation_type customerOperationType
+        ,series_id seriesId, series_name seriesName, series_operation_type seriesOperationType
+        ,project_id platformFoundId, project_name platformFoundName, project_operation_type platformOperationType
+        ,project_creator_emp_id creatorEmpId, project_creator_name creatorEmpName
+        ,project_level platformLevel, project_phase platformPhase
+        ,project_product_line_id productLineId, project_product_line productLine
+        ,project_last_update_time lastUpdateTime
+        from spas_project_action where handle_state = 0 order by id desc
+    </select>
+
+    <select id="getHandleStatusCnt" flushCache="true" resultType="java.lang.Integer">
+       select count(*) from spas_project_action  p where p.id=#{projectId} and  (p.handle_state=2 or p.handle_state=3)
+    </select>
+
+
+    <select id="getManPowerFunction" flushCache="true" resultType="com.foxconn.plm.spas.bean.ManpowerPhaseInfo">
+       select distinct c.tc_function_name deptName,ps.phase_sn phase
+              from spas_manpower_standard p ,
+                   spas_function_config  c,
+                   spas_product_line_phase  ps
+              where p.project_id=#{projectId}
+                and p.factor &gt; '0.0'
+                and p.function_id=c.spas_function_id
+                and p.group_id=c.spas_group_id
+                and p.phase_id=ps.id
+                and p.is_active=1
+                and c.is_active=1
+    </select>
+
+
+
+    <update id="addSynSpasChangeDataHandleResults" parameterType="com.foxconn.plm.spas.bean.SynSpasHandleResults">
+        update spas_project_action
+        <set>
+            <if test="state != null">
+                handle_state = #{state},
+            </if>
+            <if test="exceptionMessage != null">
+                handle_exception_message = #{exceptionMessage},
+            </if>
+            <if test="completeTime != null">
+                handle_complete_time = #{completeTime}
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>

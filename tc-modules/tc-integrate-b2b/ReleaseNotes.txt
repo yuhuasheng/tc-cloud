@@ -1,0 +1,47 @@
+Release Notes
+版本 1.0.1 （Build 2）
+-发行时间 2024/01/17
+-新增功能
+    1. 新增MNT L6 PCA EBOM增加抛转逻辑：MFG欄位，用户如果填写 NA， 抛转SAP时，将MFG 设置为 null 进行抛转#763[Dev:黎鹏, SA：Leo]
+-解决问题
+   -N/A
+-升级/优化
+   -N/A
+
+-发行时间 2023/10/20
+-新增功能
+    1.新增MNT L10 DCN 抛转BOM Part功能[Dev:黎鹏，SA：Leo]
+    2.新增MNT 如果location超过100个需截取，并邮件通知功能[Dev:黎鹏，SA：Leo]
+-解决问题
+   -N/A
+-升级/优化
+   -N/A
+
+版本 1.0.1 （Build 2）
+-发行时间 2023/09/27
+-新增功能
+   1.新增MNT L10 DCN 抛转SAP功能#3257[Dev:黎鹏，SA：Leo]
+   2.新增MNT DCN 抛转SAP，TC拋轉新料給SAP，TC拋什麼數據值，SAP接什麼數據值
+   3.新增MNT DCN 抛转SAP，TC拋轉舊料給SAP，SAP只接收 Supplier中文 欄位（只拋Supplier 中文有差異的物料）
+-解决问题
+   -N/A
+-升级/优化
+    -N/A
+
+版本 1.0.1 （Build 2）
+-发行时间 2022/12/24
+-新增功能
+   1.去掉MNT L6 DCN 拋 BOM Parts的邏輯
+-解决问题
+   -N/A
+-升级/优化
+   -N/A
+
+版本 1.0.0 （Build 1）
+-发行时间 2022/11/24
+-新增功能
+    2.新增MNT DCN 抛轉B2B功能
+-解决问题
+   -N/A
+-升级/优化
+   -N/A

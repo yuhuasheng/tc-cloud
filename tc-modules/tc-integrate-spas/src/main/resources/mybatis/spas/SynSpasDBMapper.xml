@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.spas.mapper.SynSpasDBMapper">
+
+    <delete id="deleteUserRole">
+        delete from spas_user_role where id=#{id}
+    </delete>
+
+    <insert id="saveUserRole">
+        insert into spas_user_role(ID,USER_ID,ROLE_ID,CREATOR,CREATED_TIME,UPDATOR,UPDATED_TIME,WORK_ID)
+        values (
+        #{id,jdbcType=INTEGER},#{userId,jdbcType=INTEGER}
+        ,#{roleId,jdbcType=INTEGER},#{creator,jdbcType=VARCHAR}
+        ,to_date(#{createTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+        ,#{updator,jdbcType=VARCHAR}
+        ,to_date(#{updateTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+        ,#{workId,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <delete id="deleteUser">
+        delete from spas_user where id=#{id}
+    </delete>
+
+    <insert id="saveUser">
+        insert into spas_user(ID,WORK_ID,NAME,GROUP_ID,NOTES,DEPT_NAME,IS_ACTIVE,CREATED_TIME,LAST_UPDATE_TIME)
+        values (
+        #{id,jdbcType=INTEGER},#{workId,jdbcType=VARCHAR},#{userName,jdbcType=VARCHAR}
+        ,#{groupId,jdbcType=INTEGER},#{notes,jdbcType=VARCHAR}
+        ,#{deptName,jdbcType=VARCHAR},#{isActive,jdbcType=INTEGER}
+        ,to_date(#{createTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+        ,to_date(#{updateTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+        )
+    </insert>
+
+    <delete id="deleteRole">
+        delete from spas_role where id=#{id}
+    </delete>
+
+    <insert id="saveRole">
+        insert into spas_role(ID,NAME,IS_ACTIVE,CREATOR,CREATED_TIME,UPDATOR,UPDATED_TIME)
+        values (
+        #{id,jdbcType=INTEGER},#{name,jdbcType=VARCHAR}
+        ,#{isActive,jdbcType=INTEGER},#{creator,jdbcType=INTEGER}
+        ,to_date(#{createTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+        ,#{updator,jdbcType=VARCHAR}
+        ,to_date(#{updateTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+        )
+    </insert>
+
+    <delete id="deleteOrganization">
+        delete from spas_organization where id=#{id}
+    </delete>
+
+    <insert id="saveOrganization">
+        insert into
+        spas_organization(ID,NUM,PARENT_ID,NAME,DISPLAY_NAME,IS_ACTIVE,CREATOR,CREATED_TIME,UPDATOR,UPDATED_TIME)
+        values (
+        #{id,jdbcType=INTEGER},#{num,jdbcType=INTEGER},#{parentId,jdbcType=INTEGER}
+        ,#{name,jdbcType=VARCHAR},#{displayName,jdbcType=VARCHAR},#{isActive,jdbcType=INTEGER}
+        ,#{creator,jdbcType=INTEGER}
+        ,to_date(#{createTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+        ,#{updator,jdbcType=VARCHAR}
+        ,to_date(#{updateTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+        )
+    </insert>
+
+    <delete id="deleteDeptGroup">
+        delete from spas_dept_group where id=#{id}
+    </delete>
+
+    <insert id="saveDeptGroup">
+        insert into spas_dept_group(ID,BUSINESSUNIT_ID,DIVISION_ID,DEPARTMENT_ID,SECTION_ID,
+        FUNCTION_ID,IS_ACTIVE,CREATOR,CREATED_TIME,UPDATOR,UPDATED_TIME,IS_YELLOW,DEPT_CODE,PROD_ID)
+        values (
+        #{id,jdbcType=INTEGER},#{businessUnitId,jdbcType=INTEGER},#{divisionId,jdbcType=INTEGER}
+        ,#{departmentId,jdbcType=INTEGER},#{sectionId,jdbcType=VARCHAR},#{functionId,jdbcType=INTEGER}
+        ,#{isActive,jdbcType=INTEGER},#{creator,jdbcType=INTEGER}
+        ,to_date(#{createTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+        ,#{updator,jdbcType=VARCHAR}
+        ,to_date(#{updateTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+        ,#{isYellow,jdbcType=INTEGER},#{deptCode,jdbcType=VARCHAR},#{prodId,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <delete id="deleteProjectSeries">
+        delete from spas_series where id=#{id}
+    </delete>
+
+    <insert id="saveProjectSeries">
+        insert into spas_series(ID,CUSTOMER_ID,SERIES_NAME,CREATOR,CREATED_TIME,UPDATOR,UPDATED_TIME,OWNER)
+        values (
+        #{id,jdbcType=INTEGER},#{customerId,jdbcType=INTEGER},#{name,jdbcType=VARCHAR}
+        ,#{creator,jdbcType=INTEGER}
+        ,to_date(#{createTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+        ,#{updator,jdbcType=VARCHAR}
+        ,to_date(#{updateTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+        ,#{owner,jdbcType=INTEGER}
+        )
+    </insert>
+
+    <delete id="deleteProjectSchedule">
+        delete from spas_project_schedule where id=#{id}
+    </delete>
+
+    <insert id="saveProjectSchedule">
+        insert into spas_project_schedule(ID,PROJECT_ID,PHASE_ID,START_TIME,END_TIME,STATUS
+        ,CREATOR,CREATED_TIME,UPDATOR,UPDATED_TIME)
+        values (
+        #{id,jdbcType=INTEGER},#{projectId,jdbcType=INTEGER},#{phaseId,jdbcType=INTEGER}
+        ,to_date(#{startTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+        ,to_date(#{endTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+        ,#{status,jdbcType=INTEGER},#{creator,jdbcType=INTEGER}
+        ,to_date(#{createTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+        ,#{updator,jdbcType=VARCHAR}
+        ,to_date(#{updateTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+        )
+    </insert>
+
+    <delete id="deleteProjectPerson">
+        delete from spas_project_person where id=#{id}
+    </delete>
+
+    <insert id="saveProjectPerson">
+        insert into spas_project_person(ID,PROJECT_ID,WORK_ID,GROUP_ID,IS_MAINCONTACT,CREATOR,CREATED_TIME)
+        values (
+        #{id,jdbcType=INTEGER},#{projectId,jdbcType=INTEGER},#{workId,jdbcType=VARCHAR}
+        ,#{groupId,jdbcType=INTEGER},#{isMainContact,jdbcType=INTEGER},#{creator,jdbcType=VARCHAR}
+        ,to_date(#{createTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+        )
+    </insert>
+
+    <delete id="deleteProjectAttribute">
+        delete from spas_project_attribute where id=#{id}
+    </delete>
+
+    <insert id="saveProjectAttribute">
+        insert into spas_project_attribute(ID,PROJECT_ID,ATTRIBUTE_CATEGORY_ID,CREATOR,CREATED_TIME,BUSINESS_STAGE_ID)
+        values (
+        #{id,jdbcType=INTEGER},#{projectId,jdbcType=INTEGER}
+        ,#{attributeCategoryId,jdbcType=INTEGER},#{creator,jdbcType=INTEGER}
+        ,to_date(#{createTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+        ,#{businessStageId,jdbcType=INTEGER}
+        )
+    </insert>
+
+    <delete id="deleteProductLinePhase">
+        delete from spas_product_line_phase where id=#{id}
+    </delete>
+
+    <insert id="saveProductLinePhase">
+        insert into
+        spas_product_line_phase(id,PRODUCT_LINE_ID,PHASE_SN,NAME,is_active,BUSINESS_STAGE_ID,creator,created_time,updator,updated_time)
+        values
+        (#{id},#{productLineId,jdbcType=INTEGER},#{phaseSn},#{name},#{isActive},#{businessStageId,jdbcType=INTEGER},#{creator},to_date(#{createTime},'yyyy-MM-dd
+        hh24:mi:ss'),#{updator},to_date(#{updateTime},'yyyy-MM-dd hh24:mi:ss'))
+    </insert>
+
+    <delete id="deleteProductLine">
+        delete from spas_product_line where id=#{id}
+    </delete>
+
+    <insert id="saveProductLine">
+        insert into spas_product_line(id,customer_id,name,is_share,is_active,creator,created_time,updator,updated_time)
+        values
+        (#{id},#{customerId,jdbcType=INTEGER},#{name},#{isShare,jdbcType=INTEGER},#{isActive},#{creator},to_date(#{createTime},'yyyy-MM-dd
+        hh24:mi:ss'),#{updator},to_date(#{updateTime},'yyyy-MM-dd hh24:mi:ss'))
+    </insert>
+
+    <delete id="deletePlatformFound">
+        delete from spas_platform_found where id=#{id}
+    </delete>
+
+    <insert id="savePlatformFound">
+        insert into
+        spas_platform_found(id,PROJECT_SERIES_ID,PRODUCT_LINE_ID,NAME,STATUS,CUR_PHASE_ID,CLOSE_CAUSE,TYPE,IS_ACTIVE,OWNER,creator,created_time,updator,updated_time,START_DATE,process)
+        values
+        (#{id},#{seriesId,jdbcType=INTEGER},#{productLineId,jdbcType=INTEGER},#{name},#{status,jdbcType=INTEGER},#{curPhaseId,jdbcType=INTEGER},#{closeCause,jdbcType=VARCHAR},#{type,jdbcType=INTEGER},#{isActive,jdbcType=INTEGER},#{owner,jdbcType=INTEGER},#{creator,jdbcType=INTEGER},to_date(#{createTime},'yyyy-MM-dd
+        hh24:mi:ss'),#{updator},to_date(#{updateTime},'yyyy-MM-dd
+        hh24:mi:ss'),to_date(#{startTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss'),#{process,jdbcType=INTEGER})
+    </insert>
+
+    <delete id="deleteCustomer">
+        DELETE FROM SPAS_CUSTOMER WHERE ID = #{id}
+    </delete>
+
+    <insert id="saveCustomer">
+        INSERT INTO SPAS_CUSTOMER (ID, NAME, TYPE_ID, IS_ACTIVE, CREATOR, CREATED_TIME, UPDATOR, UPDATED_TIME)
+        VALUES
+        (#{id,jdbcType=INTEGER},#{name,jdbcType=VARCHAR},#{typeId,jdbcType=INTEGER},#{isActive,jdbcType=INTEGER},#{creator,jdbcType=VARCHAR},to_date(#{createTime},'yyyy-MM-dd
+        hh24:mi:ss'),#{updator,jdbcType=VARCHAR},to_date(#{updateTime},'yyyy-MM-dd hh24:mi:ss'))
+    </insert>
+
+    <delete id="deleteCusAttributeCategory">
+        DELETE FROM spas_cus_attribute_category WHERE ID = #{id}
+    </delete>
+
+    <insert id="saveCusAttributeCategory">
+        INSERT INTO spas_cus_attribute_category (ID, CUS_ATTRIBUTE_ID, CATEGORY_NAME, SORT, IS_ACTIVE
+        , CREATOR, CREATED_TIME, UPDATOR, UPDATED_TIME)
+        VALUES (
+        #{id,jdbcType=INTEGER},#{attributeId,jdbcType=INTEGER},#{categoryName,jdbcType=VARCHAR}
+        ,#{sort,jdbcType=INTEGER},#{isActive,jdbcType=INTEGER},#{creator,jdbcType=INTEGER}
+        ,to_date(#{createTime},'yyyy-MM-dd hh24:mi:ss')
+        ,#{updator,jdbcType=INTEGER}
+        ,to_date(#{updateTime},'yyyy-MM-dd hh24:mi:ss'))
+    </insert>
+
+    <delete id="deleteCusAttribute">
+        DELETE FROM spas_cus_attribute WHERE ID = #{id}
+    </delete>
+
+    <insert id="saveCusAttribute">
+        INSERT INTO spas_cus_attribute (ID, CUSTOMER_ID, ATTRIBUTE, IS_ACTIVE, CREATOR
+        , CREATED_TIME, UPDATOR, UPDATED_TIME)
+        VALUES (
+        #{id,jdbcType=INTEGER},#{customerId,jdbcType=INTEGER},#{attribute,jdbcType=VARCHAR}
+        ,#{isActive,jdbcType=INTEGER},#{creator,jdbcType=INTEGER}
+        ,to_date(#{createTime},'yyyy-MM-dd hh24:mi:ss')
+        ,#{updator,jdbcType=INTEGER}
+        ,to_date(#{updateTime},'yyyy-MM-dd hh24:mi:ss'))
+    </insert>
+
+    <delete id="deleteStiTeamRoster">
+        DELETE FROM spas_team_roster WHERE ID = #{id}
+    </delete>
+
+    <insert id="saveStiTeamRoster">
+        INSERT INTO spas_team_roster (ID, PLATFORM_FOUND_ID, PLATFORM_FOUND_NAME, TEAM_MEMBER_EMP_ID
+        , TEAM_MEMBER_NAME, PROJECT_OPERATION_TYPE, DEPARTMENT, LAST_UPDATE_TIME)
+        VALUES (
+        #{id,jdbcType=INTEGER},#{platformFoundId,jdbcType=VARCHAR},#{platformFoundName,jdbcType=VARCHAR}
+        ,#{teammemberEmpId,jdbcType=VARCHAR},#{teammemberName,jdbcType=VARCHAR}
+        ,#{operationType,jdbcType=VARCHAR},#{department,jdbcType=VARCHAR}
+        ,to_date(#{lastUpdateTime},'yyyy-MM-dd hh24:mi:ss'))
+    </insert>
+
+    <delete id="deleteManpowerStandard">
+        DELETE FROM spas_manpower_standard WHERE ID = #{id}
+    </delete>
+
+    <insert id="saveManpowerStandard">
+        INSERT INTO spas_manpower_standard (ID, PROJECT_ID, PHASE_ID, FUNCTION_ID
+        , FUN_NAME, GROUP_ID, IS_ACTIVE, CREATED_TIME,FACTOR,UPDATED_TIME,CREATOR)
+        VALUES (
+        #{id,jdbcType=INTEGER},#{projectId,jdbcType=INTEGER},#{phaseId,jdbcType=INTEGER}
+        ,#{functionId,jdbcType=INTEGER},#{funName,jdbcType=VARCHAR}
+        ,#{groupId,jdbcType=INTEGER},#{isActive,jdbcType=INTEGER}
+        ,to_date(#{createdTime},'yyyy-MM-dd hh24:mi:ss'),#{factor,jdbcType=VARCHAR},to_date(#{updateTime},'yyyy-MM-dd hh24:mi:ss'),#{creator,jdbcType=INTEGER})
+    </insert>
+
+    <update id="updateManpowerStandard">
+        update spas_manpower_standard
+        set is_active = 0
+        where id = #{id}
+    </update>
+
+    <delete id="deleteFunction">
+        DELETE FROM spas_function WHERE ID = #{id}
+    </delete>
+
+    <insert id="saveFunction">
+        INSERT INTO spas_function (ID, NAME, IS_ACTIVE, CREATOR
+        , CREATED_TIME, UPDATOR, UPDATED_TIME)
+        VALUES (
+        #{id,jdbcType=INTEGER},#{name,jdbcType=VARCHAR},#{isActive,jdbcType=INTEGER},#{creator,jdbcType=INTEGER}
+        ,to_date(#{createTime},'yyyy-MM-dd hh24:mi:ss')
+        ,#{updator,jdbcType=INTEGER}
+        ,to_date(#{updateTime},'yyyy-MM-dd hh24:mi:ss'))
+    </insert>
+
+    <insert id="addSpasActionHis">
+        INSERT INTO spas_action_his (snap_id, project_id, dept, phase, archive, RESOURCE_FROM, ACTION_DO)
+        VALUES (
+        #{snapId,jdbcType=VARCHAR},#{projectId,jdbcType=VARCHAR},#{dept,jdbcType=VARCHAR},#{phase,jdbcType=VARCHAR}
+        ,#{archive,jdbcType=VARCHAR} ,#{resource,jdbcType=VARCHAR},#{action,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <insert id="addSnap">
+        INSERT INTO spas_snap (snap_id, project_id, dept_name, phase, is_active, factor)
+        VALUES (
+        #{snapId,jdbcType=VARCHAR},#{projectId,jdbcType=VARCHAR},#{deptName,jdbcType=VARCHAR},#{phase,jdbcType=VARCHAR}
+        ,#{isActive,jdbcType=INTEGER} ,#{factor,jdbcType=FLOAT}
+        )
+    </insert>
+
+    <insert id="addSnapHis">
+        INSERT INTO spas_snap_his (snap_id,project_id,msg)
+        VALUES (
+        #{snapId,jdbcType=VARCHAR},#{projectId,jdbcType=INTEGER},#{msg,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <select id="getManpowerDiff"  flushCache="true" resultType="java.lang.Integer">
+     select  distinct p.project_id
+              from spas_manpower_standard p ,
+                   spas_function_config  c,
+                   spas_product_line_phase  ps
+             where p.function_id=c.spas_function_id
+               and p.group_id=c.spas_group_id
+               and p.phase_id=ps.id
+              and (p.created_time> to_date(#{srartDate},'yyyy-mm-dd') or p.updated_time>to_date(#{srartDate},'yyyy-mm-dd') )
+    </select>
+
+    <select id="getManpowerAction" flushCache="true"  resultType="com.foxconn.plm.spas.bean.ManpowerRawInfo">
+     select  p.created_time createDate ,p.updated_time updateDate, p.project_id projectId ,c.tc_function_name deptName,ps.phase_sn phase,p.is_active isActive,p.factor
+              from spas_manpower_standard p ,
+                   spas_function_config  c,
+                   spas_product_line_phase  ps
+              where p.function_id=c.spas_function_id
+                and p.group_id=c.spas_group_id
+                and p.phase_id=ps.id
+                and p.project_id=#{projectId}
+                and (
+                    p.created_time > nvl((select max(create_date) from spas_action_date d where d.project_id=p.project_id),to_date(to_char(sysdate,'yyyy-mm-dd'),'yyyy-mm-dd'))
+                 or p.updated_time > nvl((select max(update_date) from spas_action_date d where d.project_id=p.project_id),to_date(to_char(sysdate,'yyyy-mm-dd'),'yyyy-mm-dd'))
+                  )
+    </select>
+
+    <insert id="addActionDate">
+        INSERT INTO spas_action_date (snap_id, project_id, create_date, update_date)
+        VALUES (
+         #{snapId,jdbcType=VARCHAR},#{projectId,jdbcType=INTEGER} ,to_date(#{createDate,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss'),to_date(#{updateDate,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+        )
+    </insert>
+
+    <select id="getHandleState" flushCache="true" resultType="java.lang.Integer">
+    select p.handle_state handleState
+     from spas_project_action  p where p.id = (select max(id) from spas_project_action where project_id=#{projectId}  and  project_operation_type='A' )
+    </select>
+
+    <select id="getSpasProject"  flushCache="true" resultType="com.foxconn.plm.spas.bean.PlatformFound">
+    select p.customer_name cName ,p.project_level platformFoundLevel,p.project_product_line productLineName ,p.project_phase platformFoundPhase
+    from spas_project_action  p where p.id = (select max(id) from spas_project_action where project_id=#{projectId})
+    </select>
+
+    <select id="getSpasProject2"  flushCache="true" resultType="com.foxconn.plm.spas.bean.PlatformFound">
+     select c.name cName,l.name productLineName ,get_project_level(p.id,p.cur_phase_id) platformFoundLevel
+     from spas_platform_found  p ,spas_series s,spas_customer c,spas_product_line l
+     where p.id=#{projectId} and p.project_series_id=s.id and s.customer_id =c.id and p.product_line_id=l.id
+    </select>
+
+    <delete id="deleteStru">
+        delete from folder_structure s where s.fld_stru_sn=#{struId}
+    </delete>
+
+    <update id="deleteFolder">
+       update  obj_folder f  set f.del_flag =1 where  f.fld_sn=#{folderId}
+    </update>
+
+    <select id="getDeptFolders" flushCache="true" resultType="com.foxconn.plm.spas.bean.FolderInfo">
+        select p.folder_id parentFolderId,f.fld_name name ,f.fld_sn id ,s.fld_stru_sn struId
+          from obj_project p ,
+               folder_structure s,
+               obj_folder f
+        where  p.proj_spas_id=#{projectId}
+           and p.folder_id =s.fld_id
+           and s.fld_child_id=f.fld_sn
+           and f.del_flag=0
+           and p.del_flag=0
+    </select>
+
+
+    <select id="getProjectInfo"  flushCache="true" resultType="com.foxconn.plm.spas.bean.STIProject">
+          select p.id platformFoundId,
+                 c.name customerName,
+                 l.name platformFoundProductLine,
+                 get_project_level(p.id,p.cur_phase_id) platformFoundLevel,
+                 p.process
+            from spas_platform_found p ,
+                 spas_series s,
+                 spas_customer c,
+                 spas_product_line l
+           where p.id=#{projectId}
+             and p.project_series_id=s.id
+             and s.customer_id=c.id
+             and p.product_line_id=l.id
+    </select>
+
+
+    <select id="getChildFolders" flushCache="true"  resultType="com.foxconn.plm.spas.bean.FolderInfo">
+        select s.fld_id parentFolderId,
+              f.fld_name name ,
+               f.fld_sn id ,
+               s.fld_stru_sn struId
+          from folder_structure s,
+               obj_folder f
+        where s.fld_id=#{folderId}
+          and s.fld_child_id=f.fld_sn
+          and f.del_flag=0
+    </select>
+
+    <select id="getDocumentCnt" flushCache="true" resultType="java.lang.Integer">
+       select count(*) from obj_document_rev r where r.fld_id=#{folderId} and r.del_flag=0
+    </select>
+
+    <select id="getNoHandleCnt" flushCache="true" resultType="java.lang.Integer">
+      select count (*) from spas_project_action p  where p.project_id=#{projectId}  and ( p.handle_state=1 or p.handle_state=0 )
+    </select>
+
+
+    <select id="getManpower" flushCache="true" resultType="java.lang.Integer">
+     select count(*)
+       from spas_function_config fc ,
+            Spas_Manpower_Standard sm ,
+            spas_product_line_phase sp
+      where fc.tc_function_name=#{functionName}
+        and sm.project_id=#{projectId}
+        and sm.function_id=fc.spas_function_id
+        and sm.group_id=fc.spas_group_id
+        and sm.is_active=1
+        and sm.factor &gt; '0.0'
+        and sm.phase_id=sp.id
+        and sp.phase_sn=#{phaseName}
+    </select>
+
+
+    <insert id="insertFolder"  parameterType="com.foxconn.plm.spas.bean.FolderInfo">
+        <selectKey keyProperty="id" resultType="java.lang.Integer" order="BEFORE">
+            select obj_folder_seq.Nextval from dual
+        </selectKey>
+        insert into OBJ_FOLDER(FLD_SN,FLD_NAME,CREATOR,ref_id,fld_desc)values(#{id},#{name,jdbcType=VARCHAR},1,#{uid,jdbcType=VARCHAR},#{descr,jdbcType=VARCHAR})
+    </insert>
+
+
+    <insert id="insertFolderStruct" parameterType="com.foxconn.plm.spas.bean.FolderInfo">
+        <selectKey keyProperty="struId" resultType="java.lang.Integer" order="BEFORE">
+            select folder_structure_seq.Nextval from dual
+        </selectKey>
+        insert into FOLDER_STRUCTURE(FLD_STRU_SN,FLD_ID,FLD_CHILD_ID,CREATOR)values(#{struId},#{parentFolderId}, #{id}, 1)
+    </insert>
+
+    <update id="upRouting">
+        update spas_project_routing  set IS_ACTIVE= #{isActive,jdbcType=INTEGER}  where id=#{id}
+    </update>
+
+    <delete id="deleteRouting">
+        delete from spas_project_routing where id=#{id}
+    </delete>
+
+    <insert id="saveRouting">
+        insert into
+        spas_project_routing(ID,PROJECT_ID,WORK_ITEM_STATUS,PHASE_ID,PHASE_SN,WORK_ITEM,START_TIME,END_TIME,CREATE_TIME,UPDATE_TIME,IS_ACTIVE)
+        values (
+        #{id,jdbcType=INTEGER},#{projectId,jdbcType=VARCHAR},#{workItemStatus,jdbcType=INTEGER}
+        ,#{phaseId,jdbcType=INTEGER},#{phase,jdbcType=VARCHAR},#{workitem,jdbcType=VARCHAR}
+        ,to_date(#{startTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+        ,to_date(#{endTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+        ,to_date(#{createTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+        ,to_date(#{updateTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+        ,#{isActive,jdbcType=INTEGER}
+        )
+    </insert>
+
+</mapper>

@@ -1,0 +1,10 @@
+#initial success !
+#Sat Feb 04 03:00:03 CST 2023
+jco.client.lang=ZF
+jco.client.passwd=1707sap
+jco.client.sysnr=00
+jco.destination.pool_capacity=3
+jco.client.client=801
+jco.destination.peak_limit=22
+jco.client.user=accadm
+jco.client.ashost=10.134.28.112

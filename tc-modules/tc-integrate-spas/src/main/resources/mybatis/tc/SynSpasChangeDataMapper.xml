@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.spas.mapper.SynSpasChangeDataMapper">
+
+    <select id="querySynSpasChangeDataRecord" flushCache="true" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select count(*) from spas_project_action where id = #{id}
+    </select>
+
+    <insert id="addSynSpasChangeData" useGeneratedKeys="false" parameterType="java.util.List">
+        insert all
+        <foreach collection="list" item="item" index="index">
+            into spas_project_action
+            (id,customer_id,customer_name,customer_operation_type
+            ,series_id,series_name,series_operation_type
+            ,project_id,project_name,project_creator_emp_id
+            ,project_creator_name,project_level,project_phase
+            ,project_product_line_id,project_product_line
+            ,project_operation_type,project_last_update_time,creation_time,handle_state)
+            values
+            (#{item.id},#{item.customerId},#{item.customerName},#{item.customerOperationType}
+            ,#{item.seriesId,jdbcType=VARCHAR},#{item.seriesName,jdbcType=VARCHAR},#{item.seriesOperationType,jdbcType=VARCHAR}
+            ,#{item.platformFoundId,jdbcType=VARCHAR},#{item.platformFoundName,jdbcType=VARCHAR},#{item.creatorEmpId,jdbcType=VARCHAR}
+            ,#{item.creatorEmpName,jdbcType=VARCHAR},#{item.platformLevel,jdbcType=VARCHAR},#{item.platformPhase,jdbcType=VARCHAR}
+            ,#{item.productLineId,jdbcType=VARCHAR},#{item.productLine,jdbcType=VARCHAR}
+            ,#{item.platformOperationType,jdbcType=VARCHAR},#{item.lastUpdateTime,jdbcType=VARCHAR}
+            ,#{item.creationTime,jdbcType=VARCHAR},#{item.handleState})
+        </foreach>
+        select 1 from dual
+    </insert>
+
+
+    <select id="querySpasTML"  flushCache="true"  resultType="com.foxconn.plm.spas.bean.ProjectPersonl">
+      select v.id userNumber,'A' operationType  from v_project_tml v  where
+       v.bu=#{bu}
+        <if test="bu == 'Desktop'">
+            and v.customer like '%'||#{customerName}||'%'
+        </if>
+        union
+        select v.id userNumber,'A' operationType  from v_project_tml v  where v.bu='dba'
+    </select>
+
+
+</mapper>

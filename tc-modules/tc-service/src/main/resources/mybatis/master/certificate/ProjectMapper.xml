@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.tcservice.mapper.master.ProjectPMMapper">
+    <cache type="com.foxconn.plm.tcservice.certificate.ProjectCache"/>
+
+    <select id="getProjectPMInfo" resultMap="ProjectResultMap">
+        select su.WORK_ID ,su.NAME as pmName ,su.NOTES as pmMail,p.NAME as projectName ,p.id as projectId,cf.code AS bu
+        from spas_platform_found p ,
+        spas_product_line l,
+        SPAS_BU_CONFIG bc,
+        Config cf,
+        SPAS_USER su
+        where  cf.id = bc.bu_id
+        and bc.IS_ACTIVE = 1
+        and bc.productline_id = l.id
+        and p.product_line_id=l.id
+        and p.OWNER  = su.id
+        and p.id= #{pId}
+    </select>
+
+    <select id="getUserMail" resultType="string">
+        SELECT notes FROM xplm.spas_user where (  name || '('  || work_id || ')' )  = #{userName}
+    </select>
+
+    <resultMap id="ProjectResultMap" type="com.foxconn.plm.tcservice.certificate.ProjectPojo">
+        <result property="pmWorkId" column="WORK_ID"/>
+        <result property="pmName" column="pmName"/>
+        <result property="pmMail" column="pmMail"/>
+        <result property="projectName" column="projectName"/>
+        <result property="projectId" column="projectId"/>
+        <result property="bu" column="bu"/>
+    </resultMap>
+
+</mapper>

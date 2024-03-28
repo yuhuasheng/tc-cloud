@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.tcservice.mapper.master.SysAccountRelMapper">
+
+    <resultMap id="BaseResultMap" type="com.foxconn.plm.tcservice.issuemanagement.entity.SysAccountRel">
+        <result property="id" column="id"/>
+        <result property="uid" column="user_uid"/>
+        <result property="accountId" column="account_id"/>
+    </resultMap>
+
+    <resultMap id="ResultMap" type="com.foxconn.plm.tcservice.issuemanagement.bean.AccountBean">
+        <result property="tcUid" column="user_uid"/>
+        <result property="accountId" column="account_id"/>
+        <result property="no" column="no"/>
+        <result property="name" column="name"/>
+        <result property="bu" column="bu"/>
+        <result property="platform" column="platform"/>
+        <result property="dept" column="dept"/>
+        <result property="secondAccountUid" column="tc_uid"/>
+    </resultMap>
+
+    <select id="getId" resultType="long">
+        select su_tcuser_user_rel_seq.nextval from dual
+    </select>
+
+    <select id="getAll" resultMap="ResultMap">
+        SELECT ar.USER_UID ,ar.ACCOUNT_ID ,a.NO,a.NAME ,a.BU ,a.PLATFORM ,a.DEPT ,a.TC_UID
+        FROM su_tcuser_user_rel ar,su_user a
+        WHERE ar.ACCOUNT_ID = a.id
+        AND a.del_flag = '0'
+    </select>
+
+    <select id="getAccountByUid" resultMap="ResultMap">
+        SELECT ar.USER_UID ,ar.ACCOUNT_ID ,a.NO,a.NAME ,a.BU ,a.PLATFORM ,a.DEPT ,a.TC_UID
+        FROM su_tcuser_user_rel ar,su_user a
+        WHERE ar.ACCOUNT_ID = a.id
+        AND ar.USER_UID = #{uid}
+        AND a.del_flag = '0'
+    </select>
+
+    <select id="getByNo" resultType="string">
+        SELECT distinct ar.USER_UID
+        FROM su_tcuser_user_rel ar,su_user a
+        WHERE ar.ACCOUNT_ID = a.id
+        AND a.NO = #{no}
+        AND a.del_flag = '0'
+    </select>
+
+    <select id="getByUid" resultType="string">
+        SELECT distinct ar.USER_UID
+        FROM su_tcuser_user_rel ar,su_user a
+        WHERE ar.ACCOUNT_ID = a.id
+        AND a.TC_UID = #{uid}
+        AND a.del_flag = '0'
+    </select>
+
+    <insert id="insertEntity" parameterType="com.foxconn.plm.tcservice.issuemanagement.entity.SysAccountRel">
+        INSERT INTO su_tcuser_user_rel (id,user_uid,account_id)
+        VALUES (#{id},#{uid},#{accountId})
+    </insert>
+
+    <update id="updateById" parameterType="com.foxconn.plm.tcservice.issuemanagement.entity.SysAccountRel">
+        UPDATE su_tcuser_user_rel
+        <set>
+            <if test="uid != null and uid != '' ">
+                uid = #{uid},
+            </if>
+            <if test="uid == null or uid == '' ">
+                uid = NULL,
+            </if>
+            <if test="accountId != null and accountId != '' ">
+                account_id = #{accountId},
+            </if>
+            <if test="accountId == null or accountId == '' ">
+                account_id = NULL,
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteByAccountId">
+        DELETE FROM su_tcuser_user_rel
+        WHERE account_id = #{accountId}
+    </delete>
+
+    <select id="searchAccount" resultMap="ResultMap" parameterType="com.foxconn.plm.tcservice.issuemanagement.param.SearchAccountParam">
+        SELECT ar.USER_UID ,a.id AS ACCOUNT_ID ,a.NO,a.NAME ,a.BU ,a.PLATFORM ,a.DEPT ,a.TC_UID
+        FROM su_user a
+        LEFT JOIN su_tcuser_user_rel ar ON a.id = ar.ACCOUNT_ID
+        WHERE a.del_flag = '0'
+        <if test="param.no != null and param.no != '' ">
+            AND lower(a.no) like CONCAT(CONCAT('%',lower(#{param.no})),'%')
+        </if>
+        <if test="param.name != null and param.name != '' ">
+            AND lower(a.name) like CONCAT(CONCAT('%',lower(#{param.name})),'%')
+        </if>
+        <if test="param.bu != null and param.bu != '' ">
+            AND lower(a.bu) like CONCAT(CONCAT('%',lower(#{param.bu})),'%')
+        </if>
+        <if test="param.platform != null and param.platform != '' ">
+            AND lower(a.platform) like CONCAT(CONCAT('%',lower(#{param.platform})),'%')
+        </if>
+        <if test="param.dept != null and param.dept != '' ">
+            AND lower(a.dept) like CONCAT(CONCAT('%',lower(#{param.dept})),'%')
+        </if>
+        <if test="param.tcUid != null and param.tcUid != '' ">
+            AND ar.USER_UID = #{param.tcUid}
+        </if>
+        ORDER BY a.id DESC
+    </select>
+
+    <select id="countAccount" resultType="integer">
+        SELECT COUNT(1)
+        FROM su_tcuser_user_rel ar,su_user a
+        WHERE ar.ACCOUNT_ID = a.id
+        AND ar.USER_UID = #{tcUid}
+        AND a.no = #{no}
+        AND a.del_flag = '0'
+    </select>
+
+    <select id="getByUids" resultMap="ResultMap">
+        SELECT ar.USER_UID ,ar.ACCOUNT_ID ,a.NO,a.NAME ,a.BU ,a.PLATFORM ,a.DEPT ,a.TC_UID
+        FROM su_tcuser_user_rel ar,su_user a
+        WHERE ar.ACCOUNT_ID = a.id
+        AND a.del_flag = '0'
+        AND ar.USER_UID IN
+        <foreach collection="uids" item="item" separator="," close=")" open="(">
+            #{item}
+        </foreach>
+    </select>
+
+
+    <select id="get1stUser" resultType="com.foxconn.plm.tcservice.issuemanagement.response.AccountRes">
+       select t1.puid puid,
+              t1.puser_id  item_id,
+              t1.puser_name object_name,
+              t1.puser_name||'('||t1.puser_id ||')' user_info
+         from INFODBA.ppom_user t1,
+              INFODBA.puser     t2
+        where t1.puid = t2.puid
+          and t1.pstatus = 0
+          and t2.pos_username like '%'||#{customer}||'%'
+    </select>
+
+
+    <select id="get2ndUser" resultType="com.foxconn.plm.tcservice.issuemanagement.response.AccountRes">
+      select t5.puid puid,
+       t5.pitem_id item_id,
+       t4.pobject_name object_name,
+       t6.pd9_userinfo user_info,
+       t7.user_uid user_uid
+  from INFODBA.pworkspaceobject t1,
+       INFODBA.pfolder          t2,
+       INFODBA.pcontents        t3,
+       INFODBA.pworkspaceobject t4,
+       INFODBA.pitem            t5,
+       INFODBA.Pd9_Actualuser   t6,
+       ( SELECT a.TC_UID puid,ar.user_uid
+        FROM su_tcuser_user_rel ar,su_user a
+        WHERE ar.ACCOUNT_ID = a.id
+        AND a.del_flag = '0'
+        AND ar.USER_UID IN(
+        select t1.puid
+         from INFODBA.ppom_user t1,
+              INFODBA.puser     t2
+        where t1.puid = t2.puid
+          and t1.pstatus = 0
+          and t2.pos_username like '%'||#{customer}||'%')
+       )t7
+ where t1.puid = t2.puid
+   and t1.pobject_name = 'SPAS Active User'
+   and t2.puid = t3.puid
+   and t3.pvalu_0 = t5.puid
+   and t4.puid = t5.puid
+   and t4.pobject_desc = 'Y'
+   and t4.pobject_type = 'D9_ActualUser'
+   and t5.puid = t6.puid
+   and t5.puid = t7.puid
+    </select>
+
+
+    <select id="getAccountByNoAndUid" resultMap="BaseResultMap">
+        SELECT ar.id,ar.user_uid,ar.account_id
+        FROM su_tcuser_user_rel ar,su_user a
+        WHERE ar.ACCOUNT_ID = a.id
+        AND ar.USER_UID = #{tcUid}
+        AND a.no = #{no}
+        AND a.del_flag = '0'
+    </select>
+
+    <delete id="deleteById">
+        DELETE FROM su_tcuser_user_rel
+        WHERE id = #{id}
+    </delete>
+</mapper>

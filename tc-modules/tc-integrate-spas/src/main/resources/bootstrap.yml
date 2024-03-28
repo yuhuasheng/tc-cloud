@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: tc-integrate-spas
+  profiles:
+    active: local
+

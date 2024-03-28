@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.dp.plm.hdfs.dao.xplm.UserMapper">
+
+    <select id="getUserInfoInSpas" resultType="com.foxconn.dp.plm.hdfs.domain.entity.UserEntity">
+        SELECT u.work_id AS id,u.name, (od.name || NVL2(ode.name,'/' || ode.name,'') || NVL2(os.name,'/' || os.name,''))
+        as dept,
+        (CASE substr(od.name,1,5) WHEN '成像技術群' THEN 'PRT' WHEN '顯示技術群' THEN 'MNT' WHEN '智能應用群' THEN 'SH' ELSE 'DT' END) AS bu,r.role_id AS role
+        FROM SPAS_USER u
+        INNER JOIN SPAS_DEPT_GROUP g ON g.id = u.group_id AND g.is_active = 1
+        LEFT JOIN spas_organization od ON od.id = g.division_id AND od.is_active = 1
+        LEFT JOIN spas_organization ode ON ode.id = g.department_id AND ode.is_active = 1
+        LEFT JOIN spas_organization os ON os.id = g.section_id AND os.is_active = 1
+        INNER JOIN SPAS_USER_ROLE r ON r.user_id = u.id
+        WHERE u.is_active = 1
+        <if test="list.size()==0">
+            AND 1=0
+        </if>
+        <if test="list.size()>0">
+            AND u.work_id in
+            <foreach collection="list" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+
+    </select>
+
+
+</mapper>

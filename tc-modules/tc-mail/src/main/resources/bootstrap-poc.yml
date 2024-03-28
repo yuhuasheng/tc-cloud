@@ -1,0 +1,14 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        enabled: true
+        server-addr: http://10.203.163.243:8848
+        namespace: poc
+      # 配置中心配置
+      config:
+        enabled: true
+        server-addr: http://10.203.163.243:8848
+        namespace: poc
+        file-extension: yaml
+        shared-configs: tc-rabbit.yaml

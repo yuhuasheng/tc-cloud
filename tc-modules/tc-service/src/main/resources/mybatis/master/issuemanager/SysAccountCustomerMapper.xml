@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.tcservice.mapper.master.SysAccountCustomerMapper">
+
+    <resultMap id="BaseResultMap" type="com.foxconn.plm.tcservice.issuemanagement.entity.SysAccountCustomer">
+        <result property="id" column="id"/>
+        <result property="customerId" column="customer_id"/>
+        <result property="accountId" column="account_id"/>
+    </resultMap>
+
+    <select id="getId" resultType="long">
+        select su_user_customer_rel_seq.nextval from dual
+    </select>
+
+    <insert id="insertEntity" parameterType="com.foxconn.plm.tcservice.issuemanagement.entity.SysAccountCustomer">
+        INSERT INTO su_user_customer_rel (id,customer_id,account_id)
+        VALUES (#{id},#{customerId},#{accountId})
+    </insert>
+
+    <update id="updateById" parameterType="com.foxconn.plm.tcservice.issuemanagement.entity.SysAccountCustomer">
+        UPDATE su_user_customer_rel
+        <set>
+            <if test="customerId != null and customerId != '' ">
+                customer_id = #{customerId},
+            </if>
+            <if test="customerId == null or customerId == '' ">
+                customer_id = NULL,
+            </if>
+            <if test="accountId != null and accountId != '' ">
+                account_id = #{accountId},
+            </if>
+            <if test="accountId == null or accountId == '' ">
+                account_id = NULL,
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+</mapper>

@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.dp.plm.hdfs.dao.xplm.FolderMapper">
+
+    <resultMap id="itemRevMap" type="com.foxconn.dp.plm.hdfs.domain.entity.ItemRevEntity">
+        <association property="parentFolder" column="folderId"
+                     select="com.foxconn.dp.plm.hdfs.dao.xplm.FolderMapper.getFolderById"></association>
+    </resultMap>
+
+    <resultMap id="parentFolderMap" type="com.foxconn.dp.plm.hdfs.domain.entity.FolderEntity">
+        <result property="id" column="FLD_CHILD_ID"></result>
+        <result property="name" column="FLD_NAME"></result>
+        <association property="parentFolder" column="fld_id"
+                     select="com.foxconn.dp.plm.hdfs.dao.xplm.FolderMapper.getFolderById"></association>
+    </resultMap>
+
+    <resultMap id="subFolderMap" type="com.foxconn.dp.plm.hdfs.domain.entity.FolderEntity">
+        <result property="id" column="id"></result>
+        <result property="name" column="name"></result>
+        <result property="fldDesc" column="FLD_DESC"></result>
+        <collection property="subFolder" column="{folderId=id}"
+                    select="com.foxconn.dp.plm.hdfs.dao.xplm.FolderMapper.getSubFolder"></collection>
+    </resultMap>
+
+    <select id="getFolderById" resultMap="parentFolderMap">
+        SELECT
+        fs.fld_id,
+        fs.FLD_CHILD_ID,
+        fld.FLD_NAME
+        FROM
+        FOLDER_STRUCTURE fs,
+        OBJ_FOLDER fld
+        WHERE 1=1
+        AND fs.FLD_CHILD_ID = #{0}
+        AND fld.FLD_SN = fs.FLD_CHILD_ID
+        AND fld.DEL_FLAG = 0
+    </select>
+
+
+    <select id="getProjectFolder" resultType="com.foxconn.dp.plm.hdfs.domain.entity.FolderEntity">
+        SELECT
+        f.FLD_SN AS id ,
+        f.FLD_NAME as name,
+        f.fld_desc,
+        f.CREATOR AS creatorId,
+        'XXX' AS creatorName,
+        f.CREATED as created,
+        f.MODIFIED AS modifierId,
+        'XXX' AS modifierName,
+        f.LAST_UPD AS lastUpdateDate
+        FROM
+        OBJ_PROJECT p,
+        OBJ_FOLDER f
+        WHERE 1=1
+        AND p.PROJ_SPAS_ID = #{0}
+        AND f.FLD_SN = p.FOLDER_ID
+        AND f.DEL_FLAG = 0
+        AND p.DEL_FLAG = 0
+    </select>
+
+    <select id="getSubFolder" resultMap="subFolderMap">
+        SELECT
+        f.FLD_SN AS id ,
+        to_char(f.FLD_NAME) as name,
+        f.fld_desc,
+        f.CREATOR AS creatorId,
+        'XXX' AS creatorName,
+        f.CREATED as created,
+        f.MODIFIED AS modifierId,
+        (
+        SELECT
+        count(1)
+        FROM
+        OBJ_DOCUMENT_REV v
+        WHERE 1=1
+        AND v.FLD_ID = fs.FLD_CHILD_ID
+        AND v.DEL_FLAG = 0
+        AND v.REV_NUM = (SELECT MAX(ov.REV_NUM) FROM OBJ_DOCUMENT_REV ov WHERE ov.FLD_ID = v.FLD_ID AND ov.DOC_ID =
+        v.DOC_ID AND ov.DEL_FLAG = 0)
+        ) as itemCount,
+        'XXX' AS modifierName,
+        f.LAST_UPD AS lastUpdateDate
+        FROM
+        FOLDER_STRUCTURE fs,
+        OBJ_FOLDER f
+        WHERE 1=1
+        AND fs.FLD_ID = #{folderId}
+        AND f.FLD_SN = fs.FLD_CHILD_ID
+        AND f.DEL_FLAG = 0
+        <if test="showAll == 0 and dept != null and dept != ''">
+            AND f.FLD_NAME = #{dept}
+        </if>
+        order by name
+
+    </select>
+
+    <select id="getItem" resultMap="itemRevMap">
+        SELECT
+        v.REV_SN AS id,
+        v.FLD_ID as folderId,
+        o.DOC_SN AS docId,
+        o.DOC_NUM AS num ,
+        v.REV_NAME AS docName,
+        v.REF_TYPE as origin,
+        v.REV_NUM AS verNum,
+        v.LIFECYCLE_PHASE AS status,
+        v.CREATED AS created,
+        v.CREATOR as creatorId,
+        v.CREATOR_NAME as creatorName
+        FROM
+        OBJ_DOCUMENT_REV v,
+        OBJ_DOCUMENT o
+        WHERE 1=1
+        <if test="folderIds.size()==0">
+            AND 1=0
+        </if>
+        <if test="folderIds.size()>0">
+            AND v.FLD_ID IN
+            <foreach collection="folderIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        AND v.DOC_ID = o.DOC_SN
+        AND o.DEL_FLAG = 0
+        AND v.DEL_FLAG = 0
+        AND v.REV_NUM = (SELECT MAX(ov.REV_NUM) FROM OBJ_DOCUMENT_REV ov WHERE ov.FLD_ID = v.FLD_ID AND ov.DOC_ID =
+        o.DOC_SN AND ov.DEL_FLAG = 0)
+        <if test="docNum != null and docNum != ''">
+            AND UPPER(o.DOC_NUM) LIKE UPPER('%' || #{docNum} || '%')
+        </if>
+        <if test="docName != null and docName != ''">
+            AND UPPER(v.REV_NAME) LIKE UPPER('%' || #{docName} || '%')
+        </if>
+        ORDER BY num
+
+    </select>
+
+    <select id="getAllItemRevisionByDocId" resultMap="itemRevMap">
+        SELECT
+        v.REV_SN AS id,
+        v.FLD_ID AS folderId,
+        o.DOC_NUM AS num ,
+        v.REV_NAME AS docName,
+        'C:\222.jpg' AS fullPath,
+        o.CHECKOUT_USER AS checkOutUserId,
+        o.DOC_ORIGIN as origin,
+        'XXX' AS checkOutUserName,
+        o.CHECKOUT_DT AS checkOutDate,
+        o.CHECKIN_DT AS checkInDate,
+        v.REV_NUM AS verNum,
+        v.LIFECYCLE_PHASE AS status,
+        v.CREATED AS created,
+        v.CREATOR as creatorId,
+        v.CREATOR_NAME as creatorName
+        FROM
+        OBJ_DOCUMENT_REV v,
+        OBJ_DOCUMENT o
+        WHERE 1=1
+        AND v.DOC_ID = #{0}
+        AND o.DOC_SN = v.DOC_ID
+        AND v.DEL_FLAG = 0
+        AND o.DEL_FLAG = 0
+        order by v.REV_NUM desc
+    </select>
+
+    <select id="nextFolderSeq" resultType="long">
+        select OBJ_FOLDER_SEQ.NEXTVAL from dual
+    </select>
+
+    <insert id="insertFolder" parameterType="com.foxconn.dp.plm.hdfs.domain.rp.CreateFolderRp">
+        insert into OBJ_FOLDER(FLD_SN,FLD_NAME,FLD_DESC,CREATOR)values(#{fid},#{folderName,jdbcType=VARCHAR},#{fldDesc,jdbcType=VARCHAR}, #{userId})
+    </insert>
+
+    <select id="existFolder" resultType="int">
+        select count(1) from folder_structure fs,obj_folder f where fs.fld_id = #{parentFolderId} AND f.fld_sn =
+        fs.fld_child_id AND f.fld_name = #{folderName}
+    </select>
+
+    <select id="nextFolderStructSeq" resultType="long">
+        select FOLDER_STRUCTURE_SEQ.NEXTVAL from dual
+    </select>
+
+    <insert id="insertFolderStruct" parameterType="com.foxconn.dp.plm.hdfs.domain.rp.CreateFolderRp">
+        insert into FOLDER_STRUCTURE(FLD_STRU_SN,FLD_ID,FLD_CHILD_ID,CREATOR)values(#{fsId},#{parentFolderId}, #{fid}, #{userId})
+    </insert>
+
+    <update id="delFolder">
+        update OBJ_FOLDER set DEL_FLAG = 1 where FLD_SN = #{0}
+    </update>
+
+    <delete id="delFolderStruct">
+        delete FOLDER_STRUCTURE fs where fs.FLD_ID = #{parentId} and fs.FLD_CHILD_ID = #{fldId}
+    </delete>
+
+    <update id="updateFolder" parameterType="com.foxconn.dp.plm.hdfs.domain.rp.ModifyFolderRp">
+        update OBJ_FOLDER set FLD_NAME = #{folderName}, FLD_DESC = #{fldDesc} where FLD_SN = #{folderId}
+    </update>
+
+    <select id="folderCount" resultType="java.lang.Integer">
+        SELECT
+        count(1)
+        FROM
+        FOLDER_STRUCTURE fs JOIN OBJ_FOLDER f ON f.FLD_SN = fs.FLD_CHILD_ID
+        WHERE
+        1 = 1
+        AND fs.FLD_ID = #{0}
+        AND f.DEL_FLAG = 0
+    </select>
+
+    <select id="documentCount" resultType="java.lang.Integer">
+        SELECT
+        count(1)
+        FROM
+        OBJ_DOCUMENT_REV d
+        WHERE 1=1
+        AND d.FLD_ID = #{0}
+        AND d.DEL_FLAG = 0
+    </select>
+
+    <select id="getParentId" resultType="java.lang.Integer">
+        SELECT
+        FLD_ID
+        FROM
+        FOLDER_STRUCTURE fs
+        WHERE 1=1
+        AND fs.FLD_CHILD_ID = #{0}
+    </select>
+
+    <select id="getFileList" resultType="com.foxconn.dp.plm.hdfs.domain.entity.DatasetEntity">
+        SELECT b.AOID puid,'1' origin,g.POBJECT_NAME fileName
+        FROM INFODBA.PIMANRELATION a,INFODBA.PDATASET b ,xplm.OBJ_DOCUMENT_REV f,INFODBA.PWORKSPACEOBJECT g
+        WHERE f.REV_SN =#{docRevId}
+        AND f.REF_ID =a.RPRIMARY_OBJECTU
+        AND a.RSECONDARY_OBJECTU=b.PUID
+        AND b.PUID =g.PUID
+        AND g.pobject_name &lt;&gt;'publicMail.txt'
+        UNION
+        SELECT ''||f.FILE_VERSION_SN puid ,'0' origin ,fl.FILE_NAME||'.'||fl.FILE_TYPE fileName
+        FROM xplm.OBJ_FILE_VERSION f,xplm.OBJ_FILE fl
+        WHERE f.DOC_REV_ID =#{docRevId}
+        AND f.FILE_ID =fl.FILE_SN
+    </select>
+
+    <update id="modifyDocName" parameterType="java.lang.String">
+        update OBJ_DOCUMENT set doc_name = #{docName} where doc_num = #{docId}
+    </update>
+
+    <select id="getDocSn" parameterType="java.lang.String" resultType="java.lang.String">
+        select doc_sn from OBJ_DOCUMENT where doc_num = #{docId}
+    </select>
+
+    <update id="modifyDocRevName" parameterType="java.lang.String">
+        update OBJ_DOCUMENT_REV set rev_name = #{docName} where
+        doc_id = #{docSn,jdbcType=VARCHAR} and rev_num = #{docRev}
+    </update>
+
+
+    <select id="getFileInfo" flushCache="true" resultType="com.foxconn.dp.plm.hdfs.domain.entity.FileEntity">
+        SELECT b.FILE_SN fileId,
+        b.FILE_NAME fileName,
+        b.FILE_TYPE fileType,
+        b.IFS_FILEPATH filePath,
+        b.SERVER_ID serverId
+        FROM OBJ_FILE_VERSION a ,OBJ_FILE b
+        WHERE a.FILE_VERSION_SN =#{fileVersionId} AND a.FILE_ID =b.FILE_SN AND b.DEL_FLAG =0
+    </select>
+
+</mapper>

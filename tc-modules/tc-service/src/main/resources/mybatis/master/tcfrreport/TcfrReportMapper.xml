@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.tcservice.mapper.master.TCFRReportMapper">
+
+    <select id="getBU"  resultType="com.foxconn.plm.tcservice.tcfr.BUBean" flushCache="true">
+        SELECT
+            c.id,
+            c.code as name
+        FROM
+            CONFIG c
+        WHERE 1=1
+          AND c.name = 'BU'
+          AND c.DEL_FLAG = 0
+        ORDER BY c.sort
+    </select>
+    <select id="getCustomer"  resultType="com.foxconn.plm.tcservice.tcfr.BUBean" flushCache="true">
+        SELECT
+            DISTINCT c.id,c.name
+        FROM
+            SPAS_BU_CONFIG b,
+            SPAS_Customer c
+        WHERE 1=1
+          AND b.bu_id = #{0}
+          AND b.is_active = 1
+          AND c.id = b.customer_id
+          and c.is_active = 1
+        ORDER BY c.name
+    </select>
+
+    <select id="getProductLine"  resultType="com.foxconn.plm.tcservice.tcfr.BUBean" flushCache="true">
+        SELECT pl.id,pl.name FROM SPAS_PRODUCT_LINE pl WHERE pl.CUSTOMER_ID = #{0} AND pl.IS_ACTIVE = 1 order by pl.name
+    </select>
+    <select id="getList" parameterType="com.foxconn.plm.tcservice.tcfr.TFCRReportRp" resultType="com.foxconn.plm.tcservice.tcfr.TCFRReportBean" flushCache="true">
+        SELECT
+        p.BU ,
+        p.Customer ,
+        p.ProductLine ,
+        p.numOfProject ,
+        nvl(w.w0,0) AS w0,
+        nvl(w.w1,0) AS w1,
+        nvl(w.w2,0) AS w2,
+        nvl(w.w3,0) AS w3,
+        0 AS numOfAccumulatedHeld ,
+        nvl(w.numOfAccumulatedNotHeld,0) AS numOfAccumulatedNotHeld,
+        nvl(w.numOfShouldHeld,0) AS numOfShouldHeld
+        FROM
+        (
+            SELECT
+            cf.CODE AS BU,
+            c.NAME AS Customer,
+            pl.NAME AS ProductLine,
+            count(1) AS numOfProject
+            FROM
+            SPAS_PLATFORM_FOUND p,
+            (
+                SELECT
+                    DISTINCT to_number(substr(r.PROJECT_ID,2)) as PROJECT_ID
+                FROM
+                    SPAS_PROJECT_ROUTING r,
+                    SPAS_CUSTOMER c,
+                    SPAS_SERIES s,
+                    SPAS_PLATFORM_FOUND p,
+                    (
+                        select t2.pobject_name as Customer,
+                        t3.pobject_name as Phase,
+                        t4.pobject_name as Keyword
+                        from infodba.pworkspaceobject t1,
+                        infodba.pworkspaceobject t2,
+                        infodba.pworkspaceobject t3,
+                        infodba.pworkspaceobject t4,
+                        infodba.pfolder          t5,
+                        infodba.pfolder          t6,
+                        infodba.pfolder          t7,
+                        infodba.pcontents        t8,
+                        infodba.pcontents        t9,
+                        infodba.pcontents        t10
+                        where t1.puid = t5.puid
+                        and t2.puid = t6.puid
+                        and t3.puid = t7.puid
+                        and t5.puid = t8.puid
+                        and t6.puid = t9.puid
+                        and t7.puid = t10.puid
+                        and t8.pvalu_0 = t6.puid
+                        and t9.pvalu_0 = t7.puid
+                        and t10.pvalu_0 = t4.puid
+                        and t1.pobject_name = 'TCFR Meeting Keywords'
+                        and t2.pobject_name in ('Dell', 'HP', 'Lenovo')
+                        and t4.pobject_type = 'Document Master'
+                        order by Customer ASC
+                    ) c2,
+                    spas_product_line_phase ph,
+                    (SELECT DISTINCT ps.PROJECT_ID ,max(ps.PHASE_ID) AS PHASE_ID,max(START_TIME) AS START_TIME,max(END_TIME) AS END_TIME FROM spas_project_schedule ps WHERE to_char(SYSDATE, 'yyyy-MM-dd') &gt;= to_char(ps.START_TIME , 'yyyy-MM-dd') AND to_char(SYSDATE, 'yyyy-MM-dd') &lt;= to_char(ps.END_TIME, 'yyyy-MM-dd') GROUP BY ps.PROJECT_ID) curps
+                WHERE 1=1
+                AND curps.PROJECT_ID(+) = TO_NUMBER(SUBSTR(r.PROJECT_ID,2))
+                AND ph.id(+) = CURPS.PHASE_ID
+                AND ph.PHASE_SN IN ('P3','P4','P5','P6')
+                AND r.PROJECT_ID = 'p' || p.ID
+                AND r.is_active = 1
+                AND p.PROJECT_SERIES_ID = s.id
+                AND c.ID=s.CUSTOMER_ID
+                AND c.name = c2.CUSTOMER
+                AND UPPER(r.WORK_ITEM) = UPPER(c2.Keyword)
+            ) r,
+            (SELECT distinct to_number(substr(a.PPROJECT_ID,2)) as PPROJECT_ID FROM infodba.ptc_project a WHERE a.pis_active = 1 AND REGEXP_LIKE(substr(a.PPROJECT_ID,2),'^[0-9]+$')) a,
+            SPAS_SERIES s,
+            SPAS_CUSTOMER c,
+            SPAS_BU_CONFIG b,
+            CONFIG cf,
+            SPAS_PRODUCT_LINE pl
+            WHERE 1=1
+            AND r.PROJECT_ID = p.ID
+            AND a.PPROJECT_ID = p.id
+            AND p.PROCESS = 2
+            -- AND p.STATUS = 2
+            AND p.PROJECT_SERIES_ID = s.id
+            AND c.ID=s.CUSTOMER_ID
+            AND b.CUSTOMER_ID = c.ID
+            AND b.PRODUCTLINE_ID = p.PRODUCT_LINE_ID
+            AND cf.ID = b.BU_ID
+            AND pl.id = p.PRODUCT_LINE_ID
+            <if test="bu != null and bu != ''">
+                and cf.CODE=#{bu}
+            </if>
+            <if test="customer != null and customer != ''">
+                and c.NAME=#{customer}
+            </if>
+            <if test="productLine != null and productLine != ''">
+                and pl.NAME = #{productLine}
+            </if>
+            <if test="project != null and project != ''">
+                and (upper(p.name) = UPPER(#{project}) or 'P' || p.id = UPPER(#{project}))
+            </if>
+            GROUP BY cf.code,c.name,pl.name
+        ) p,
+        (
+            SELECT
+            r.BU,
+            r."Customer",
+            r."ProductLine",
+            sum((CASE WHEN to_char(r.END_TIME,'yyyy-MM-dd') &gt;= #{date} AND to_char(r.END_TIME,'yyyy-MM-dd') &lt;= to_char(to_date(#{date},'yyyy-MM-dd')+6,'yyyy-MM-dd') AND ts.ID IS NULL THEN 1 ELSE 0 END)) AS W0,
+            sum((CASE WHEN to_char(r.END_TIME,'yyyy-MM-dd') &gt;= to_char(to_date(#{date},'yyyy-MM-dd')+7,'yyyy-MM-dd') AND to_char(r.END_TIME,'yyyy-MM-dd') &lt;= to_char(to_date(#{date},'yyyy-MM-dd')+13,'yyyy-MM-dd') AND ts.ID IS NULL THEN 1 ELSE 0 END)) AS W1,
+            sum((CASE WHEN to_char(r.END_TIME,'yyyy-MM-dd') &gt;= to_char(to_date(#{date},'yyyy-MM-dd')+14,'yyyy-MM-dd') AND to_char(r.END_TIME,'yyyy-MM-dd') &lt;= to_char(to_date(#{date},'yyyy-MM-dd')+20,'yyyy-MM-dd') AND ts.ID IS NULL THEN 1 ELSE 0 END)) AS W2,
+            sum((CASE WHEN to_char(r.END_TIME,'yyyy-MM-dd') &gt;= to_char(to_date(#{date},'yyyy-MM-dd')+21,'yyyy-MM-dd') AND to_char(r.END_TIME,'yyyy-MM-dd') &lt;= to_char(to_date(#{date},'yyyy-MM-dd')+27,'yyyy-MM-dd') AND ts.ID IS NULL THEN 1 ELSE 0 END)) AS W3,
+            sum((CASE WHEN to_char(r.END_TIME,'yyyy-MM-dd') &lt; #{date} AND ts.ID IS NULL THEN 1 ELSE 0 END))   AS numOfAccumulatedNotHeld,
+            sum((CASE WHEN to_char(r.END_TIME,'yyyy-MM-dd') &lt; #{date} THEN 1 ELSE 0 END))  AS numOfShouldHeld
+            FROM
+            V_TCFR_RUOTING r,
+            V_TCFR_STATUS ts,
+            (SELECT  a.PPROJECT_ID as PPROJECT_ID FROM infodba.ptc_project a WHERE a.pis_active = 1) a,
+            spas_product_line_phase ph,
+            (SELECT DISTINCT ps.PROJECT_ID ,max(ps.PHASE_ID) AS PHASE_ID,max(START_TIME) AS START_TIME,max(END_TIME) AS END_TIME FROM spas_project_schedule ps WHERE to_char(SYSDATE, 'yyyy-MM-dd') &gt;= to_char(ps.START_TIME , 'yyyy-MM-dd') AND to_char(SYSDATE, 'yyyy-MM-dd') &lt;= to_char(ps.END_TIME, 'yyyy-MM-dd') GROUP BY ps.PROJECT_ID) curps
+            WHERE 1=1
+            AND curps.PROJECT_ID(+) = r.PROJECT_ID_WITHOUT_P
+            AND ph.id(+) = CURPS.PHASE_ID
+            AND ph.PHASE_SN IN ('P3','P4','P5','P6')
+            AND r.PROJECT_ID = ts.PID(+)
+            AND r.PHASE_SN = ts."Phase"(+)
+            AND UPPER(r.WORK_ITEM) = UPPER(ts."Type"(+))
+            AND UPPER(a.PPROJECT_ID) = UPPER(r.PROJECT_ID)
+            <if test="bu != null and bu != ''">
+                and r.BU=#{bu}
+            </if>
+            <if test="customer != null and customer != ''">
+                and r."Customer"=#{customer}
+            </if>
+            <if test="productLine != null and productLine != ''">
+                and r."ProductLine"=#{productLine}
+            </if>
+            <if test="project != null and project != ''">
+                and (upper(r."ProjectName") = UPPER(#{project}) or UPPER(r.PROJECT_ID) = UPPER(#{project}))
+            </if>
+            GROUP BY r.BU,r."Customer",r."ProductLine"
+        ) w
+        WHERE 1=1
+        AND p.BU = w.BU(+)
+        AND p.Customer = w."Customer"(+)
+        AND p.ProductLine = w."ProductLine"(+)
+        order by p.BU,p.Customer,p.ProductLine
+    </select>
+
+    <select id="getDetailList"  resultType="com.foxconn.plm.tcservice.tcfr.TCFRReportDetailBean" flushCache="true">
+        SELECT
+            r.BU AS bu,
+            r."Customer" AS customer,
+            r."ProductLine" as productLine,
+            r."Series" AS series,
+            r."ProjectName" AS projectName ,
+            ph.PHASE_SN || '(' || to_char(CURPS.start_time,'yyyy/MM/dd') || '-' || to_char(CURPS.end_time,'yyyy/MM/dd') || ')' AS currentPhase,
+            r.PHASE_SN || '(' || to_char(ps.start_time,'yyyy/MM/dd') || '-' || to_char(ps.end_time,'yyyy/MM/dd') || ')' AS phase,
+            r.PHASE_SN AS shortPhase,
+            nvl2(ovr.numOfShouldHeld,TO_CHAR(ovr.numNotHeld / ovr.numOfShouldHeld * 100, 'FM9999999990.00')||'%','0.00%') AS overallNotHeldRate,
+            r.WORK_ITEM AS designReviewMeeting,
+            to_char(r.START_TIME,'yyyy-MM-dd')  AS startDate,
+            to_char(r.END_TIME,'yyyy-MM-dd') AS endDate,
+            (CASE WHEN ts."ID" is null  THEN 1 ELSE 0 END) AS numOfNotHeld,
+            1 AS numOfShouldHeld,
+            (CASE WHEN  (CASE WHEN ts."ID" is null  THEN 1 ELSE 0 END) =1  THEN '100%' ELSE '0.00%' END) AS numOfNotHeldRate,
+            u.name AS spm,
+            r.PROJECT_ID AS pid,
+            TO_CHAR(r.END_TIME ,'IW') AS needNotifyWeek,
+            TO_CHAR(r.END_TIME ,'yyyy') AS "year"
+        FROM
+            V_TCFR_RUOTING r,
+            V_TCFR_STATUS ts,
+            (SELECT a.PPROJECT_ID FROM infodba.ptc_project a WHERE a.pis_active = 1) a,
+            spas_project_schedule ps,
+            (SELECT DISTINCT ps.PROJECT_ID ,max(ps.PHASE_ID) AS PHASE_ID,max(START_TIME) AS START_TIME,max(END_TIME) AS END_TIME FROM spas_project_schedule ps WHERE to_char(SYSDATE, 'yyyy-MM-dd') &gt;= to_char(ps.START_TIME , 'yyyy-MM-dd') AND to_char(SYSDATE, 'yyyy-MM-dd') &lt;= to_char(ps.END_TIME, 'yyyy-MM-dd') GROUP BY ps.PROJECT_ID) curps,
+            spas_platform_found p,
+            (
+                SELECT
+                r.PROJECT_ID_WITHOUT_P,
+                r.PHASE_ID,
+                sum(CASE WHEN ts."ID" IS NULL THEN 1 ELSE 0 END) AS numNotHeld,
+                count(DISTINCT r.id) AS numOfShouldHeld
+                FROM
+                V_TCFR_RUOTING r,
+                V_TCFR_STATUS ts
+                WHERE
+                1 = 1
+                AND r.PROJECT_ID = ts.PID(+)
+                AND r.PHASE_SN = ts."Phase"(+)
+                AND UPPER(r.WORK_ITEM) LIKE UPPER(ts."Type"(+))
+                GROUP BY r.PROJECT_ID_WITHOUT_P ,r.PHASE_ID
+            ) ovr,
+            spas_product_line_phase ph,
+            spas_user u
+        WHERE 1=1
+            AND ph.PHASE_SN IN ('P3','P4','P5','P6')
+            AND r.PROJECT_ID = ts.PID(+)
+            AND r.PHASE_SN = ts."Phase"(+)
+            AND UPPER(r.WORK_ITEM) LIKE UPPER(ts."Type"(+))
+            and ps.PROJECT_ID (+) = r.PROJECT_ID_WITHOUT_P
+            and ps.PHASE_ID (+) = r.PHASE_ID
+            AND p.id(+) = r.PROJECT_ID_WITHOUT_P
+            AND curps.PROJECT_ID(+) = r.PROJECT_ID_WITHOUT_P
+            AND ovr.PROJECT_ID_WITHOUT_P(+) = r.PROJECT_ID_WITHOUT_P
+            AND ovr.PHASE_ID(+) = r.PHASE_ID
+            AND ph.id(+) = CURPS.PHASE_ID
+            AND u.id(+) = p.owner
+            AND UPPER(a.PPROJECT_ID) = UPPER(r.PROJECT_ID)
+            -- AND r.PROJECT_ID_WITHOUT_P  = 2512
+            <if test="bu != null and bu != ''">
+                and r.BU=#{bu}
+            </if>
+            <if test="customer != null and customer != ''">
+                and r."Customer"=#{customer}
+            </if>
+            <if test="productLine != null and productLine != ''">
+                and r."ProductLine"=#{productLine}
+            </if>
+            <if test="project != null and project != ''">
+                and (upper(r."ProjectName") = UPPER(#{project}) or UPPER(r.PROJECT_ID) = UPPER(#{project}))
+            </if>
+        ORDER BY r.BU,r."Customer",r."Series",r.PROJECT_ID,r."ProjectName",r.PHASE_SN,r.WORK_ITEM
+    </select>
+
+</mapper>

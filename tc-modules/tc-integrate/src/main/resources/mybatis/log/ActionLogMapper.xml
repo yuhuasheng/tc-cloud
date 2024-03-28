@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.integrate.log.mapper.ActionLogMapper">
+
+
+    <select id="selectActionLog" resultType="com.foxconn.plm.integrate.log.domain.ActionLog">
+        select id,creator,project,start_time startTime,end_time endTime,item_id itemId from action_log where
+        handle_result is null and project is not null
+    </select>
+
+
+    <select id="selectNonProj" resultType="com.foxconn.plm.integrate.log.domain.ActionLog">
+        select id,creator,project,start_time startTime,end_time endTime ,item_id itemId from action_log where project is
+        null
+    </select>
+
+
+    <update id="updateProj">
+        update action_log
+        set
+        project=#{project,jdbcType=VARCHAR}
+        where id =#{id}
+    </update>
+
+
+    <update id="updateActionLog">
+        update action_log
+        set handle_result=#{handleResult,jdbcType=VARCHAR},
+        exception_msg=#{msg,jdbcType=VARCHAR},
+        bu=#{bu,jdbcType=VARCHAR},
+        phase=#{phase,jdbcType=VARCHAR},
+        customer=#{customer,jdbcType=VARCHAR},
+        proj_level=#{projLevel,jdbcType=VARCHAR},
+        dept=#{dept,jdbcType=VARCHAR},
+        phase_end_date=#{phaseEndDate,jdbcType=VARCHAR}
+        where id =#{id}
+    </update>
+
+    <insert id="addLog">
+        <selectKey keyProperty="id" resultType="java.lang.Long" order="BEFORE">
+            select ACTION_LOG_SEQ.nextval id from dual
+        </selectKey>
+        insert into ACTION_LOG(ID,
+        FUNCTION_NAME,CREATOR,CREATOR_NAME,PROJECT,PHASE,ITEM_ID,ITEM_REV_UID,START_TIME,END_TIME,ITEM_REV)
+        values(#{id},#{functionName,jdbcType=VARCHAR},#{creator,jdbcType=VARCHAR},#{creatorName,jdbcType=VARCHAR},#{project,jdbcType=VARCHAR},
+        #{phase,jdbcType=VARCHAR},#{itemId,jdbcType=VARCHAR},#{revUid,jdbcType=VARCHAR},#{startTime},#{endTime},#{rev,jdbcType=VARCHAR})
+    </insert>
+
+    <select id="getActionLogRecord" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM ACTION_LOG WHERE 1 = 1
+        <if test="functionName != null and functionName != ''">
+            AND FUNCTION_NAME = #{functionName}
+        </if>
+        <if test="project != null and project != ''">
+            AND PROJECT = #{project}
+        </if>
+        <if test="itemId != null and itemId != ''">
+            AND ITEM_ID = #{itemId}
+        </if>
+        <if test="rev != null and rev != ''">
+            AND ITEM_REV = #{rev}
+        </if>
+        <if test="itemId != null and itemId != ''">
+            AND ITEM_REV_UID = #{revUid}
+        </if>
+        <if test="startTime != null and startTime != ''">
+            AND START_TIME = #{startTime}
+        </if>
+    </select>
+
+    <insert id="insertCISPart">
+        <selectKey keyProperty="id" resultType="java.lang.Long" order="BEFORE">
+            SELECT CIS_ACTION_LOG_SEQ.nextval id from dual
+        </selectKey>
+        INSERT INTO CIS_ACTION_LOG
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            ID,
+            <if test="functionName != null">
+                FUNCTION_NAME,
+            </if>
+            <if test="itemId != null">
+                ITEM_ID,
+            </if>
+            <if test="rev != null">
+                ITEM_REV,
+            </if>
+            <if test="revUid != null">
+                ITEM_REV_UID,
+            </if>
+            <if test="creator != null">
+                CREATOR,
+            </if>
+            <if test="creatorName != null">
+                CREATOR_NAME,
+            </if>
+            <if test="startTime != null">
+                START_TIME,
+            </if>
+            <if test="endTime != null">
+                END_TIME,
+            </if>
+            <if test="bu != null">
+                BU,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{id},
+            <if test="functionName != null">
+                #{functionName,jdbcType=VARCHAR},
+            </if>
+            <if test="itemId != null">
+                #{itemId,jdbcType=VARCHAR},
+            </if>
+            <if test="rev != null">
+                #{rev,jdbcType=VARCHAR},
+            </if>
+            <if test="revUid != null">
+                #{revUid,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="creatorName != null">
+                #{creatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="startTime != null">
+                #{startTime,jdbcType=VARCHAR},
+            </if>
+            <if test="endTime != null">
+                #{endTime,jdbcType=VARCHAR},
+            </if>
+            <if test="bu != null">
+                #{bu,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="getCISActionLogRecord" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM CIS_ACTION_LOG WHERE 1 = 1
+        <if test="functionName != null and functionName != ''">
+            AND FUNCTION_NAME = #{functionName}
+        </if>
+        <if test="itemId != null and itemId != ''">
+            AND ITEM_ID = #{itemId}
+        </if>
+        <if test="rev != null and rev != ''">
+            AND ITEM_REV = #{rev}
+        </if>
+        <if test="itemId != null and itemId != ''">
+            AND ITEM_REV_UID = #{revUid}
+        </if>
+        <if test="startTime != null and startTime != ''">
+            AND START_TIME = #{startTime}
+        </if>
+    </select>
+
+    <select id="getCISActionLogData" resultType="com.foxconn.plm.integrate.log.domain.ActionLogRp">
+        SELECT FUNCTION_NAME AS functionName, ITEM_ID AS itemId,
+        ITEM_REV AS rev, ITEM_REV_UID AS revUid, CREATOR AS creator,
+        CREATOR_NAME AS creatorName, START_TIME AS startTime, END_TIME AS endTime
+        FROM CIS_ACTION_LOG
+    </select>
+
+    <select id="getCISActionLog" resultType="com.foxconn.plm.integrate.log.domain.ActionLogRp">
+        SELECT FUNCTION_NAME AS functionName, ITEM_ID AS itemId,
+        ITEM_REV AS rev, ITEM_REV_UID AS revUid, CREATOR AS creator,
+        CREATOR_NAME AS creatorName, START_TIME AS startTime,
+        END_TIME AS endTime FROM CIS_ACTION_LOG WHERE ITEM_ID = #{id} AND ITEM_REV = #{revision}
+    </select>
+
+    <insert id="setActionLog" useGeneratedKeys="false" parameterType="java.util.List">
+        INSERT ALL
+        <foreach collection="list" item="item" index="index">
+            INTO ACTION_LOG
+            (FUNCTION_NAME,CREATOR,CREATOR_NAME,PROJECT,PHASE,ITEM_ID,ITEM_REV_UID,START_TIME,END_TIME,ITEM_REV,BU)
+            VALUES
+            (#{item.functionName,jdbcType=VARCHAR},#{item.creator,jdbcType=VARCHAR},
+            #{item.creatorName,jdbcType=VARCHAR},#{item.project,jdbcType=VARCHAR},
+            #{item.phase,jdbcType=VARCHAR},#{item.itemId,jdbcType=VARCHAR},
+            #{item.revUid,jdbcType=VARCHAR},#{item.startTime,jdbcType=DATE},
+            #{item.endTime,jdbcType=DATE},#{item.rev,jdbcType=DATE},
+            #{item.bu,jdbcType=VARCHAR})
+        </foreach>
+        SELECT 1 FROM DUAL
+    </insert>
+
+</mapper>

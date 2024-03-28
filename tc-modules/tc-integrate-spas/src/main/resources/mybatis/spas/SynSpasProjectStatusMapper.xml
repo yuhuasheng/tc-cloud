@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.spas.mapper.SynSpasProjectStatusMapper">
+
+    <select id="getProjectSPASIdAll" flushCache="true" resultType="java.lang.String">
+        SELECT TAB3.PD9_SPAS_ID FROM (
+            SELECT TAB1.PUID,TAB1.PD9_SPAS_ID,TO_CHAR(TAB2.PCREATION_DATE + 8/24,'YYYY-MM-DD HH24:MI:SS') CREATE_DATE FROM (
+                SELECT D9.PUID ,D9.PD9_SPAS_ID FROM INFODBA.PD9_PROJECTFOLDER D9
+                LEFT JOIN INFODBA.PWORKSPACEOBJECT W ON D9.PUID = W.PUID WHERE W.POBJECT_TYPE = 'D9_PlatformFoundFolder'
+            ) TAB1 LEFT JOIN INFODBA.PPOM_APPLICATION_OBJECT TAB2 ON TAB1.PUID = TAB2.PUID
+        ) TAB3 WHERE TAB3.CREATE_DATE > '2022-01-01 00:00:00'
+    </select>
+
+    <select id="getProjectInfoById" flushCache="true" parameterType="java.util.List"
+            resultType="com.foxconn.plm.spas.bean.ProjectInfo">
+        select pi.project_id,pi.project_name,pi.current_phase,pi.project_status,pi.project_end_time,pi.phase_end_time
+        from (
+        select f.id project_id, f.name project_name, f.cur_phase_id current_phase, f.status project_status,
+        f.updated_time project_end_time, s.end_time phase_end_time from spas_platform_found f
+        left join spas_project_schedule s on f.id = s.project_id and f.cur_phase_id = s.phase_id
+        ) pi where pi.project_id in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+</mapper>

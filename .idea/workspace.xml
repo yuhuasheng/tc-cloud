@@ -1,0 +1,1094 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="b359ff2c-a69a-48e2-8c8c-c4be6e6610f3" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/tc-modules/tc-integrate-cis/tc-integrate-cis.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tc-common/tc-api/tc-api.iml" beforeDir="false" afterPath="$PROJECT_DIR$/tc-common/tc-api/tc-api.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tc-common/tc-feign/tc-feign.iml" beforeDir="false" afterPath="$PROJECT_DIR$/tc-common/tc-feign/tc-feign.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tc-common/tc-util/tc-util.iml" beforeDir="false" afterPath="$PROJECT_DIR$/tc-common/tc-util/tc-util.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tc-gateway/tc-gateway.iml" beforeDir="false" afterPath="$PROJECT_DIR$/tc-gateway/tc-gateway.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tc-modules/tc-fileservice/tc-fileservice.iml" beforeDir="false" afterPath="$PROJECT_DIR$/tc-modules/tc-fileservice/tc-fileservice.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tc-modules/tc-hdfs/tc-hdfs.iml" beforeDir="false" afterPath="$PROJECT_DIR$/tc-modules/tc-hdfs/tc-hdfs.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tc-modules/tc-health/tc-health.iml" beforeDir="false" afterPath="$PROJECT_DIR$/tc-modules/tc-health/tc-health.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tc-modules/tc-integrate-b2b/tc-integrate-b2b.iml" beforeDir="false" afterPath="$PROJECT_DIR$/tc-modules/tc-integrate-b2b/tc-integrate-b2b.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tc-modules/tc-integrate/tc-integrate.iml" beforeDir="false" afterPath="$PROJECT_DIR$/tc-modules/tc-integrate/tc-integrate.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tc-modules/tc-mail/src/main/resources/log4j2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/tc-modules/tc-mail/src/main/resources/log4j2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tc-modules/tc-mail/tc-mail.iml" beforeDir="false" afterPath="$PROJECT_DIR$/tc-modules/tc-mail/tc-mail.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tc-modules/tc-ops/tc-ops.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tc-modules/tc-report/src/test/java/VerifyTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/tc-modules/tc-report/src/test/java/VerifyTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tc-modules/tc-report/tc-report.iml" beforeDir="false" afterPath="$PROJECT_DIR$/tc-modules/tc-report/tc-report.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tc-modules/tc-service/tc-service.iml" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="localRepository" value="D:\apache-maven-3.3.9\repository" />
+        <option name="mavenHome" value="D:\apache-maven-3.3.9" />
+        <option name="userSettingsFile" value="D:\apache-maven-3.3.9\conf\settings.xml" />
+      </MavenGeneralSettings>
+    </option>
+    <option name="disabledProfiles">
+      <list>
+        <option value="nexus" />
+      </list>
+    </option>
+  </component>
+  <component name="MavenRunner">
+    <option name="skipTests" value="true" />
+  </component>
+  <component name="ProjectId" id="2OE77480DMLVJrZkrpAiHlABh5e" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ChangesTree.GroupingKeys" value="module&#10;directory" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatOrder0" value="0" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatOrder1" value="1" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatOrder2" value="2" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatOrder3" value="3" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatOrder4" value="4" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatOrder5" value="5" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatWidth0" value="304" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatWidth1" value="304" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatWidth2" value="304" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatWidth3" value="304" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatWidth4" value="305" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatWidth5" value="304" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_treeOrder0" value="0" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_treeOrder1" value="1" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_treeOrder2" value="2" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_treeOrder3" value="3" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_treeOrder4" value="4" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_treeOrder5" value="5" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_treeWidth0" value="304" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_treeWidth1" value="304" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_treeWidth2" value="304" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_treeWidth3" value="304" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_treeWidth4" value="305" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_treeWidth5" value="304" />
+    <property name="RequestMappingsPanelOrder0" value="0" />
+    <property name="RequestMappingsPanelOrder1" value="1" />
+    <property name="RequestMappingsPanelWidth0" value="75" />
+    <property name="RequestMappingsPanelWidth1" value="75" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="extract.method.default.visibility" value="private" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="project.structure.last.edited" value="Libraries" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.69086254" />
+    <property name="settings.editor.selected.configurable" value="background.image.plus" />
+  </component>
+  <component name="ReactorSettings">
+    <option name="notificationShown" value="true" />
+  </component>
+  <component name="RestClientSettings">
+    <option name="REQUEST_HISTORY">
+      <list>
+        <RestClientRequest>
+          <option name="httpMethod" value="GET" />
+          <option name="urlBase" value="http://localhost:8274/DCNReport/getFeeLovList" />
+          <option name="urlPath" value="" />
+          <option name="textToSend" value="" />
+          <option name="filesToSend" value="" />
+        </RestClientRequest>
+        <RestClientRequest>
+          <option name="httpMethod" value="GET" />
+          <option name="urlBase" value="http://localhost:8605/DCNReport/getFeeLovList" />
+          <option name="urlPath" value="" />
+          <option name="textToSend" value="" />
+          <option name="filesToSend" value="" />
+        </RestClientRequest>
+        <RestClientRequest>
+          <option name="httpMethod" value="GET" />
+          <option name="urlBase" value="http://localhost:8288/DCNReport/getFeeLovList" />
+          <option name="urlPath" value="" />
+          <option name="textToSend" value="" />
+          <option name="filesToSend" value="" />
+        </RestClientRequest>
+        <RestClientRequest>
+          <option name="httpMethod" value="GET" />
+          <option name="urlBase" value="http://localhost:8804/DCNReport/getFeeLovList" />
+          <option name="urlPath" value="" />
+          <option name="textToSend" value="" />
+          <option name="filesToSend" value="" />
+        </RestClientRequest>
+        <RestClientRequest>
+          <option name="httpMethod" value="GET" />
+          <option name="urlBase" value="http://localhost:8661/DCNReport/getFeeLovList" />
+          <option name="urlPath" value="" />
+          <option name="textToSend" value="" />
+          <option name="filesToSend" value="" />
+        </RestClientRequest>
+        <RestClientRequest>
+          <option name="httpMethod" value="GET" />
+          <option name="urlBase" value="http://localhost:8702/DCNReport/getFeeLovList" />
+          <option name="urlPath" value="" />
+          <option name="textToSend" value="" />
+          <option name="filesToSend" value="" />
+        </RestClientRequest>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="JUnit.VerifyTest.testMap">
+    <configuration name="VerifyTest.modifyDate" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="tc-report" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="VerifyTest" />
+      <option name="METHOD_NAME" value="modifyDate" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="VerifyTest.test" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="tc-report" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="VerifyTest" />
+      <option name="METHOD_NAME" value="test" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="VerifyTest.testExecuteQuery" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="tc-report" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="VerifyTest" />
+      <option name="METHOD_NAME" value="testExecuteQuery" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="VerifyTest.testListEqual" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="tc-report" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="VerifyTest" />
+      <option name="METHOD_NAME" value="testListEqual" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="VerifyTest.testMap" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="tc-report" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="VerifyTest" />
+      <option name="METHOD_NAME" value="testMap" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="App" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="tc-private" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.foxconn.dp.plm.privately.App" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Application (1)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="tc-integrate-cis" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.foxconn.plm.cis.Application" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Application (2)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="tc-ops" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.foxconn.plm.ops.Application" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Application (3)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="tc-integrate-sso" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.foxconn.plm.sso.Application" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="tc-sync-folder" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.foxconn.plm.tcsyncfolder.Application" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TCGateway" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="tc-gateway" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.foxconn.plm.gateway.TCGateway" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TCIntegrateB2BApp" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="tc-integrate-b2b" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.foxconn.plm.TCIntegrateB2BApp" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TCMailApp" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="tc-mail" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.foxconn.plm.TCMailApp" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TcFileServiceApp" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="tc-fileservice" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.foxconn.dp.plm.fileservice.TcFileServiceApp" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TcHDFSApp" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="tc-hdfs" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.foxconn.dp.plm.hdfs.TcHDFSApp" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TcHealthApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="tc-health" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.foxconn.dp.plm.health.TcHealthApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TcIntegrateApp" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="tc-integrate" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.foxconn.plm.TcIntegrateApp" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TcIntegrateSpasApp" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="tc-integrate-spas" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.foxconn.plm.TcIntegrateSpasApp" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TcReportApp" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="tc-report" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.foxconn.plm.TcReportApp" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TcServiceApp" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="tc-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.foxconn.plm.TcServiceApp" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.VerifyTest.testMap" />
+        <item itemvalue="JUnit.VerifyTest.testListEqual" />
+        <item itemvalue="JUnit.VerifyTest.testExecuteQuery" />
+        <item itemvalue="JUnit.VerifyTest.test" />
+        <item itemvalue="JUnit.VerifyTest.modifyDate" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SvnConfiguration" cleanupOnStartRun="true">
+    <configuration>C:\Users\HuashengYu.LAPTOP-SM9UEGPV\AppData\Roaming\Subversion</configuration>
+    <supportedVersion>125</supportedVersion>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b359ff2c-a69a-48e2-8c8c-c4be6e6610f3" name="Default Changelist" comment="" />
+      <created>1681113718159</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1681113718159</updated>
+      <workItem from="1681113719862" duration="148000" />
+      <workItem from="1681113876324" duration="18091000" />
+      <workItem from="1681183104319" duration="8798000" />
+      <workItem from="1681201197237" duration="133740000" />
+      <workItem from="1681894678050" duration="8359000" />
+      <workItem from="1682036973893" duration="1371000" />
+      <workItem from="1682058313550" duration="16120000" />
+      <workItem from="1682148417264" duration="6453000" />
+      <workItem from="1682405102967" duration="4450000" />
+      <workItem from="1682480679346" duration="17220000" />
+      <workItem from="1682668728880" duration="1053000" />
+      <workItem from="1683160774533" duration="5441000" />
+      <workItem from="1683255902628" duration="72948000" />
+      <workItem from="1683794122559" duration="50695000" />
+      <workItem from="1684461030521" duration="479000" />
+      <workItem from="1684463113438" duration="24616000" />
+      <workItem from="1684811452568" duration="6013000" />
+      <workItem from="1684888541325" duration="707000" />
+      <workItem from="1684890960570" duration="27385000" />
+      <workItem from="1685606485936" duration="39000" />
+      <workItem from="1685606605373" duration="505000" />
+      <workItem from="1685690165619" duration="1188000" />
+      <workItem from="1685691370305" duration="5522000" />
+      <workItem from="1686021251375" duration="4911000" />
+      <workItem from="1686190775202" duration="1390000" />
+      <workItem from="1686215199278" duration="17819000" />
+      <workItem from="1686558128219" duration="15786000" />
+      <workItem from="1686637950785" duration="7487000" />
+      <workItem from="1686702957674" duration="56647000" />
+      <workItem from="1687744613629" duration="29000" />
+      <workItem from="1687744652385" duration="3327000" />
+      <workItem from="1687764371640" duration="3218000" />
+      <workItem from="1687825590007" duration="5878000" />
+      <workItem from="1688108328882" duration="2087000" />
+      <workItem from="1688347919888" duration="3506000" />
+      <workItem from="1688544909026" duration="32170000" />
+      <workItem from="1689919071144" duration="17000" />
+      <workItem from="1689919097863" duration="13934000" />
+      <workItem from="1691112364843" duration="2945000" />
+      <workItem from="1691475921431" duration="6631000" />
+      <workItem from="1691547413023" duration="1664000" />
+      <workItem from="1691975927584" duration="19000" />
+      <workItem from="1691975954765" duration="4854000" />
+      <workItem from="1692079179998" duration="9819000" />
+      <workItem from="1692147081676" duration="6948000" />
+      <workItem from="1692319149854" duration="9708000" />
+      <workItem from="1692581152247" duration="22847000" />
+      <workItem from="1692689143327" duration="11672000" />
+      <workItem from="1693209349318" duration="16381000" />
+      <workItem from="1693468103163" duration="9286000" />
+      <workItem from="1693893560757" duration="3355000" />
+      <workItem from="1694393801271" duration="14000" />
+      <workItem from="1694393827820" duration="3564000" />
+      <workItem from="1695005888899" duration="17215000" />
+      <workItem from="1695702288389" duration="1614000" />
+      <workItem from="1695804507730" duration="595000" />
+      <workItem from="1696820140483" duration="26000" />
+      <workItem from="1696820177626" duration="11923000" />
+      <workItem from="1697529024401" duration="3644000" />
+      <workItem from="1699515325157" duration="11000" />
+      <workItem from="1699515355199" duration="594000" />
+      <workItem from="1700116546573" duration="9485000" />
+      <workItem from="1700439974431" duration="3000" />
+      <workItem from="1700554014253" duration="2000" />
+      <workItem from="1700786977135" duration="303000" />
+      <workItem from="1701659199829" duration="7474000" />
+      <workItem from="1701739274353" duration="26538000" />
+      <workItem from="1701920861326" duration="5335000" />
+      <workItem from="1701932549500" duration="7961000" />
+      <workItem from="1702350881569" duration="7423000" />
+      <workItem from="1702372939051" duration="14115000" />
+      <workItem from="1702536174762" duration="4645000" />
+      <workItem from="1702605024528" duration="1218000" />
+      <workItem from="1702631154937" duration="1932000" />
+      <workItem from="1702787100967" duration="4959000" />
+      <workItem from="1702946983676" duration="644000" />
+      <workItem from="1702957422116" duration="2454000" />
+      <workItem from="1703216747195" duration="1517000" />
+      <workItem from="1703297863451" duration="610000" />
+      <workItem from="1703316870506" duration="966000" />
+      <workItem from="1703556283412" duration="640000" />
+      <workItem from="1703745660249" duration="884000" />
+      <workItem from="1704331423024" duration="7956000" />
+      <workItem from="1704433366416" duration="3086000" />
+      <workItem from="1704761966887" duration="3478000" />
+      <workItem from="1704765491536" duration="1007000" />
+      <workItem from="1704766535111" duration="231000" />
+      <workItem from="1704766801731" duration="454000" />
+      <workItem from="1704767278954" duration="11869000" />
+      <workItem from="1704870977001" duration="14182000" />
+      <workItem from="1705043149964" duration="4247000" />
+      <workItem from="1705365935095" duration="2746000" />
+      <workItem from="1705634003937" duration="4249000" />
+      <workItem from="1705974503277" duration="1275000" />
+      <workItem from="1706145254781" duration="5584000" />
+      <workItem from="1706359943767" duration="179000" />
+      <workItem from="1706513022273" duration="911000" />
+      <workItem from="1706594382813" duration="1882000" />
+      <workItem from="1708908028184" duration="38000" />
+      <workItem from="1708908085656" duration="693000" />
+      <workItem from="1711097552355" duration="1388000" />
+      <workItem from="1711529606278" duration="762000" />
+    </task>
+    <task id="LOCAL-00295">
+      <created>1692689259045</created>
+      <option name="number" value="00295" />
+      <option name="presentableId" value="LOCAL-00295" />
+      <option name="project" value="LOCAL" />
+      <updated>1692689259045</updated>
+    </task>
+    <task id="LOCAL-00296">
+      <created>1692689264956</created>
+      <option name="number" value="00296" />
+      <option name="presentableId" value="LOCAL-00296" />
+      <option name="project" value="LOCAL" />
+      <updated>1692689264956</updated>
+    </task>
+    <task id="LOCAL-00297">
+      <created>1692689282503</created>
+      <option name="number" value="00297" />
+      <option name="presentableId" value="LOCAL-00297" />
+      <option name="project" value="LOCAL" />
+      <updated>1692689282503</updated>
+    </task>
+    <task id="LOCAL-00298">
+      <created>1692690857446</created>
+      <option name="number" value="00298" />
+      <option name="presentableId" value="LOCAL-00298" />
+      <option name="project" value="LOCAL" />
+      <updated>1692690857446</updated>
+    </task>
+    <task id="LOCAL-00299">
+      <created>1692691181971</created>
+      <option name="number" value="00299" />
+      <option name="presentableId" value="LOCAL-00299" />
+      <option name="project" value="LOCAL" />
+      <updated>1692691181971</updated>
+    </task>
+    <task id="LOCAL-00300">
+      <created>1692692490211</created>
+      <option name="number" value="00300" />
+      <option name="presentableId" value="LOCAL-00300" />
+      <option name="project" value="LOCAL" />
+      <updated>1692692490211</updated>
+    </task>
+    <task id="LOCAL-00301">
+      <created>1692846367272</created>
+      <option name="number" value="00301" />
+      <option name="presentableId" value="LOCAL-00301" />
+      <option name="project" value="LOCAL" />
+      <updated>1692846367272</updated>
+    </task>
+    <task id="LOCAL-00302">
+      <created>1693295584219</created>
+      <option name="number" value="00302" />
+      <option name="presentableId" value="LOCAL-00302" />
+      <option name="project" value="LOCAL" />
+      <updated>1693295584219</updated>
+    </task>
+    <task id="LOCAL-00303">
+      <created>1693299256409</created>
+      <option name="number" value="00303" />
+      <option name="presentableId" value="LOCAL-00303" />
+      <option name="project" value="LOCAL" />
+      <updated>1693299256409</updated>
+    </task>
+    <task id="LOCAL-00304">
+      <created>1693299270922</created>
+      <option name="number" value="00304" />
+      <option name="presentableId" value="LOCAL-00304" />
+      <option name="project" value="LOCAL" />
+      <updated>1693299270922</updated>
+    </task>
+    <task id="LOCAL-00305">
+      <created>1693299305292</created>
+      <option name="number" value="00305" />
+      <option name="presentableId" value="LOCAL-00305" />
+      <option name="project" value="LOCAL" />
+      <updated>1693299305292</updated>
+    </task>
+    <task id="LOCAL-00306">
+      <created>1693362559867</created>
+      <option name="number" value="00306" />
+      <option name="presentableId" value="LOCAL-00306" />
+      <option name="project" value="LOCAL" />
+      <updated>1693362559867</updated>
+    </task>
+    <task id="LOCAL-00307">
+      <created>1693896050837</created>
+      <option name="number" value="00307" />
+      <option name="presentableId" value="LOCAL-00307" />
+      <option name="project" value="LOCAL" />
+      <updated>1693896050838</updated>
+    </task>
+    <task id="LOCAL-00308">
+      <created>1694398142239</created>
+      <option name="number" value="00308" />
+      <option name="presentableId" value="LOCAL-00308" />
+      <option name="project" value="LOCAL" />
+      <updated>1694398142239</updated>
+    </task>
+    <task id="LOCAL-00309">
+      <created>1694398189361</created>
+      <option name="number" value="00309" />
+      <option name="presentableId" value="LOCAL-00309" />
+      <option name="project" value="LOCAL" />
+      <updated>1694398189361</updated>
+    </task>
+    <task id="LOCAL-00310">
+      <created>1695194274116</created>
+      <option name="number" value="00310" />
+      <option name="presentableId" value="LOCAL-00310" />
+      <option name="project" value="LOCAL" />
+      <updated>1695194274116</updated>
+    </task>
+    <task id="LOCAL-00311">
+      <created>1695276993253</created>
+      <option name="number" value="00311" />
+      <option name="presentableId" value="LOCAL-00311" />
+      <option name="project" value="LOCAL" />
+      <updated>1695276993253</updated>
+    </task>
+    <task id="LOCAL-00312">
+      <created>1695288172597</created>
+      <option name="number" value="00312" />
+      <option name="presentableId" value="LOCAL-00312" />
+      <option name="project" value="LOCAL" />
+      <updated>1695288172597</updated>
+    </task>
+    <task id="LOCAL-00313">
+      <created>1696821459983</created>
+      <option name="number" value="00313" />
+      <option name="presentableId" value="LOCAL-00313" />
+      <option name="project" value="LOCAL" />
+      <updated>1696821459983</updated>
+    </task>
+    <task id="LOCAL-00314">
+      <created>1696822038248</created>
+      <option name="number" value="00314" />
+      <option name="presentableId" value="LOCAL-00314" />
+      <option name="project" value="LOCAL" />
+      <updated>1696822038248</updated>
+    </task>
+    <task id="LOCAL-00315">
+      <created>1696822141825</created>
+      <option name="number" value="00315" />
+      <option name="presentableId" value="LOCAL-00315" />
+      <option name="project" value="LOCAL" />
+      <updated>1696822141825</updated>
+    </task>
+    <task id="LOCAL-00316">
+      <created>1696822164836</created>
+      <option name="number" value="00316" />
+      <option name="presentableId" value="LOCAL-00316" />
+      <option name="project" value="LOCAL" />
+      <updated>1696822164836</updated>
+    </task>
+    <task id="LOCAL-00317">
+      <created>1697005652421</created>
+      <option name="number" value="00317" />
+      <option name="presentableId" value="LOCAL-00317" />
+      <option name="project" value="LOCAL" />
+      <updated>1697005652421</updated>
+    </task>
+    <task id="LOCAL-00318">
+      <created>1697005794869</created>
+      <option name="number" value="00318" />
+      <option name="presentableId" value="LOCAL-00318" />
+      <option name="project" value="LOCAL" />
+      <updated>1697005794869</updated>
+    </task>
+    <task id="LOCAL-00319">
+      <created>1697005807080</created>
+      <option name="number" value="00319" />
+      <option name="presentableId" value="LOCAL-00319" />
+      <option name="project" value="LOCAL" />
+      <updated>1697005807080</updated>
+    </task>
+    <task id="LOCAL-00320">
+      <created>1697250368649</created>
+      <option name="number" value="00320" />
+      <option name="presentableId" value="LOCAL-00320" />
+      <option name="project" value="LOCAL" />
+      <updated>1697250368649</updated>
+    </task>
+    <task id="LOCAL-00321">
+      <created>1702434105438</created>
+      <option name="number" value="00321" />
+      <option name="presentableId" value="LOCAL-00321" />
+      <option name="project" value="LOCAL" />
+      <updated>1702434105439</updated>
+    </task>
+    <task id="LOCAL-00322">
+      <created>1702434117295</created>
+      <option name="number" value="00322" />
+      <option name="presentableId" value="LOCAL-00322" />
+      <option name="project" value="LOCAL" />
+      <updated>1702434117295</updated>
+    </task>
+    <task id="LOCAL-00323">
+      <created>1702434261581</created>
+      <option name="number" value="00323" />
+      <option name="presentableId" value="LOCAL-00323" />
+      <option name="project" value="LOCAL" />
+      <updated>1702434261581</updated>
+    </task>
+    <task id="LOCAL-00324">
+      <created>1702434326117</created>
+      <option name="number" value="00324" />
+      <option name="presentableId" value="LOCAL-00324" />
+      <option name="project" value="LOCAL" />
+      <updated>1702434326117</updated>
+    </task>
+    <task id="LOCAL-00325">
+      <created>1702434841184</created>
+      <option name="number" value="00325" />
+      <option name="presentableId" value="LOCAL-00325" />
+      <option name="project" value="LOCAL" />
+      <updated>1702434841184</updated>
+    </task>
+    <task id="LOCAL-00326">
+      <created>1702449139704</created>
+      <option name="number" value="00326" />
+      <option name="presentableId" value="LOCAL-00326" />
+      <option name="project" value="LOCAL" />
+      <updated>1702449139704</updated>
+    </task>
+    <task id="LOCAL-00327">
+      <created>1702449496557</created>
+      <option name="number" value="00327" />
+      <option name="presentableId" value="LOCAL-00327" />
+      <option name="project" value="LOCAL" />
+      <updated>1702449496557</updated>
+    </task>
+    <task id="LOCAL-00328">
+      <created>1702632351450</created>
+      <option name="number" value="00328" />
+      <option name="presentableId" value="LOCAL-00328" />
+      <option name="project" value="LOCAL" />
+      <updated>1702632351450</updated>
+    </task>
+    <task id="LOCAL-00329">
+      <created>1702878950015</created>
+      <option name="number" value="00329" />
+      <option name="presentableId" value="LOCAL-00329" />
+      <option name="project" value="LOCAL" />
+      <updated>1702878950016</updated>
+    </task>
+    <task id="LOCAL-00330">
+      <created>1702878970135</created>
+      <option name="number" value="00330" />
+      <option name="presentableId" value="LOCAL-00330" />
+      <option name="project" value="LOCAL" />
+      <updated>1702878970135</updated>
+    </task>
+    <task id="LOCAL-00331">
+      <created>1704763500167</created>
+      <option name="number" value="00331" />
+      <option name="presentableId" value="LOCAL-00331" />
+      <option name="project" value="LOCAL" />
+      <updated>1704763500167</updated>
+    </task>
+    <task id="LOCAL-00332">
+      <created>1704764027251</created>
+      <option name="number" value="00332" />
+      <option name="presentableId" value="LOCAL-00332" />
+      <option name="project" value="LOCAL" />
+      <updated>1704764027251</updated>
+    </task>
+    <task id="LOCAL-00333">
+      <created>1704764458244</created>
+      <option name="number" value="00333" />
+      <option name="presentableId" value="LOCAL-00333" />
+      <option name="project" value="LOCAL" />
+      <updated>1704764458244</updated>
+    </task>
+    <task id="LOCAL-00334">
+      <created>1704764852163</created>
+      <option name="number" value="00334" />
+      <option name="presentableId" value="LOCAL-00334" />
+      <option name="project" value="LOCAL" />
+      <updated>1704764852163</updated>
+    </task>
+    <task id="LOCAL-00335">
+      <created>1704764922580</created>
+      <option name="number" value="00335" />
+      <option name="presentableId" value="LOCAL-00335" />
+      <option name="project" value="LOCAL" />
+      <updated>1704764922580</updated>
+    </task>
+    <task id="LOCAL-00336">
+      <created>1704780554669</created>
+      <option name="number" value="00336" />
+      <option name="presentableId" value="LOCAL-00336" />
+      <option name="project" value="LOCAL" />
+      <updated>1704780554669</updated>
+    </task>
+    <task id="LOCAL-00337">
+      <created>1704785603243</created>
+      <option name="number" value="00337" />
+      <option name="presentableId" value="LOCAL-00337" />
+      <option name="project" value="LOCAL" />
+      <updated>1704785603243</updated>
+    </task>
+    <task id="LOCAL-00338">
+      <created>1704874397206</created>
+      <option name="number" value="00338" />
+      <option name="presentableId" value="LOCAL-00338" />
+      <option name="project" value="LOCAL" />
+      <updated>1704874397206</updated>
+    </task>
+    <task id="LOCAL-00339">
+      <created>1704952171189</created>
+      <option name="number" value="00339" />
+      <option name="presentableId" value="LOCAL-00339" />
+      <option name="project" value="LOCAL" />
+      <updated>1704952171189</updated>
+    </task>
+    <task id="LOCAL-00340">
+      <created>1704952180987</created>
+      <option name="number" value="00340" />
+      <option name="presentableId" value="LOCAL-00340" />
+      <option name="project" value="LOCAL" />
+      <updated>1704952180987</updated>
+    </task>
+    <task id="LOCAL-00341">
+      <created>1704954697780</created>
+      <option name="number" value="00341" />
+      <option name="presentableId" value="LOCAL-00341" />
+      <option name="project" value="LOCAL" />
+      <updated>1704954697780</updated>
+    </task>
+    <task id="LOCAL-00342">
+      <created>1705975464245</created>
+      <option name="number" value="00342" />
+      <option name="presentableId" value="LOCAL-00342" />
+      <option name="project" value="LOCAL" />
+      <updated>1705975464245</updated>
+    </task>
+    <task id="LOCAL-00343">
+      <created>1705975469174</created>
+      <option name="number" value="00343" />
+      <option name="presentableId" value="LOCAL-00343" />
+      <option name="project" value="LOCAL" />
+      <updated>1705975469174</updated>
+    </task>
+    <option name="localTasksCounter" value="344" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="LAST_COMMIT_MESSAGE" value="" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-integrate/src/main/java/com/foxconn/plm/integrate/tcfr/interceptor/RequestInterceptor.java</url>
+          <line>154</line>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-integrate/src/main/java/com/foxconn/plm/integrate/tcfr/interceptor/RequestInterceptor.java</url>
+          <line>69</line>
+          <option name="timeStamp" value="13" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-integrate/src/main/java/com/foxconn/plm/integrate/tcfr/service/ScheduleTaskService.java</url>
+          <line>364</line>
+          <option name="timeStamp" value="25" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-common/tc-util/src/main/java/com/foxconn/plm/utils/tc/ScheduleTaskUtil.java</url>
+          <line>120</line>
+          <option name="timeStamp" value="26" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-common/tc-util/src/main/java/com/foxconn/plm/utils/ip/IpUtil.java</url>
+          <line>166</line>
+          <option name="timeStamp" value="27" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-integrate/src/main/java/com/foxconn/plm/integrate/tcfr/service/MeetService.java</url>
+          <line>175</line>
+          <option name="timeStamp" value="28" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-integrate/src/main/java/com/foxconn/plm/integrate/tcfr/service/MeetService.java</url>
+          <line>167</line>
+          <option name="timeStamp" value="29" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-integrate/src/main/java/com/foxconn/plm/integrate/tcfr/service/MeetService.java</url>
+          <line>213</line>
+          <option name="timeStamp" value="32" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-service/src/main/java/com/foxconn/plm/tcservice/ftebenefitreport/controller/FteReportController.java</url>
+          <line>34</line>
+          <option name="timeStamp" value="37" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-service/src/main/java/com/foxconn/plm/tcservice/ftebenefitreport/service/FetReportServce.java</url>
+          <line>205</line>
+          <option name="timeStamp" value="38" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-service/src/main/java/com/foxconn/plm/tcservice/ftebenefitreport/service/FetReportServce.java</url>
+          <line>208</line>
+          <option name="timeStamp" value="41" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-service/src/main/java/com/foxconn/plm/tcservice/ftebenefitreport/service/FetReportServce.java</url>
+          <line>221</line>
+          <option name="timeStamp" value="43" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-service/src/main/java/com/foxconn/plm/tcservice/ftebenefitreport/controller/FteReportController.java</url>
+          <line>62</line>
+          <option name="timeStamp" value="44" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-service/src/main/java/com/foxconn/plm/tcservice/ftebenefitreport/service/FetReportServce.java</url>
+          <line>363</line>
+          <option name="timeStamp" value="45" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-integrate/src/main/java/com/foxconn/plm/integrate/spas/controller/SpasController.java</url>
+          <line>57</line>
+          <option name="timeStamp" value="50" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-mail/src/main/java/com/foxconn/plm/mail/controller/TCMailController.java</url>
+          <line>103</line>
+          <option name="timeStamp" value="51" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-integrate/src/main/java/com/foxconn/plm/integrate/tcfr/exception/GolbException.java</url>
+          <line>13</line>
+          <option name="timeStamp" value="52" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-common/tc-util/src/main/java/com/foxconn/plm/utils/tc/ScheduleTaskUtil.java</url>
+          <line>315</line>
+          <option name="timeStamp" value="70" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-integrate/src/main/java/com/foxconn/plm/integrate/tcfr/scheduling/TCFRMailFollowUp.java</url>
+          <line>47</line>
+          <option name="timeStamp" value="73" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-integrate/src/main/java/com/foxconn/plm/integrate/tcfr/scheduling/TCFRMailFollowUp.java</url>
+          <line>102</line>
+          <option name="timeStamp" value="74" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-integrate/src/main/java/com/foxconn/plm/integrate/tcfr/scheduling/TCFRMailFollowUp.java</url>
+          <line>98</line>
+          <option name="timeStamp" value="75" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-service/src/main/java/com/foxconn/plm/tcservice/dcnreport/service/impl/DCNReportServiceImpl.java</url>
+          <line>287</line>
+          <option name="timeStamp" value="78" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-service/src/main/java/com/foxconn/plm/tcservice/dcnreport/service/impl/DCNReportServiceImpl.java</url>
+          <line>360</line>
+          <option name="timeStamp" value="83" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-integrate/src/main/java/com/foxconn/plm/integrate/spas/scheduled/SpasUserSyncTask.java</url>
+          <line>81</line>
+          <option name="timeStamp" value="95" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-integrate/src/main/java/com/foxconn/plm/integrate/spas/scheduled/SpasUserSyncTask.java</url>
+          <line>82</line>
+          <option name="timeStamp" value="97" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-integrate/src/main/java/com/foxconn/plm/integrate/spas/scheduled/SpasUserSyncTask.java</url>
+          <line>59</line>
+          <option name="timeStamp" value="98" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-integrate/src/main/java/com/foxconn/plm/integrate/spas/scheduled/SpasUserSyncTask.java</url>
+          <line>131</line>
+          <option name="timeStamp" value="99" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-service/src/main/java/com/foxconn/plm/tcservice/matrix/service/impl/MatrixServiceImpl.java</url>
+          <line>204</line>
+          <option name="timeStamp" value="111" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-report/src/test/java/VerifyTest.java</url>
+          <line>130</line>
+          <option name="timeStamp" value="120" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-service/src/main/java/com/foxconn/plm/tcservice/matrix/service/impl/MatrixServiceImpl.java</url>
+          <line>155</line>
+          <option name="timeStamp" value="125" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-service/src/main/java/com/foxconn/plm/tcservice/dcnreport/service/impl/DCNReportServiceImpl.java</url>
+          <line>383</line>
+          <option name="timeStamp" value="126" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-mail/src/main/java/com/foxconn/plm/mail/controller/TCMailController.java</url>
+          <line>139</line>
+          <option name="timeStamp" value="127" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-mail/src/main/java/com/foxconn/plm/mail/config/TCMailQueueListener.java</url>
+          <line>37</line>
+          <option name="timeStamp" value="128" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-mail/src/main/java/com/foxconn/plm/mail/service/impl/TCMailServiceImpl.java</url>
+          <line>447</line>
+          <option name="timeStamp" value="130" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-service/src/main/java/com/foxconn/plm/tcservice/benefitreport/controller/ReportController.java</url>
+          <line>172</line>
+          <option name="timeStamp" value="131" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-service/src/main/java/com/foxconn/plm/tcservice/benefitreport/service/impl/SpasProjectServiceImpl.java</url>
+          <line>74</line>
+          <option name="timeStamp" value="132" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-service/src/main/java/com/foxconn/plm/tcservice/benefitreport/service/impl/BenefitServiceImpl.java</url>
+          <line>55</line>
+          <option name="timeStamp" value="134" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-integrate/src/main/java/com/foxconn/plm/integrate/tcfr/service/ScheduleTaskService.java</url>
+          <line>68</line>
+          <option name="timeStamp" value="135" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-integrate/src/main/java/com/foxconn/plm/integrate/tcfr/scheduling/TCFRSyncScheduling.java</url>
+          <line>85</line>
+          <option name="timeStamp" value="137" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-service/src/main/java/com/foxconn/plm/tcservice/dcnreport/service/impl/DCNReportServiceImpl.java</url>
+          <line>377</line>
+          <option name="timeStamp" value="142" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-integrate/src/main/java/com/foxconn/plm/integrate/tcfr/scheduling/TCFRSyncScheduling.java</url>
+          <line>163</line>
+          <option name="timeStamp" value="144" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-integrate/src/main/java/com/foxconn/plm/integrate/tcfr/scheduling/TCFRSyncScheduling.java</url>
+          <line>189</line>
+          <option name="timeStamp" value="146" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-integrate/src/main/java/com/foxconn/plm/integrate/tcfr/scheduling/TCFRSyncScheduling.java</url>
+          <line>264</line>
+          <option name="timeStamp" value="147" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-integrate/src/main/java/com/foxconn/plm/integrate/dgkpi/service/DGKPIService.java</url>
+          <line>80</line>
+          <option name="timeStamp" value="148" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-service/src/main/java/com/foxconn/plm/tcservice/dcnreport/service/impl/DCNReportServiceImpl.java</url>
+          <line>367</line>
+          <option name="timeStamp" value="152" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-integrate/src/main/java/com/foxconn/plm/integrate/tcfr/domain/MeetBean.java</url>
+          <line>40</line>
+          <option name="timeStamp" value="153" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-common/tc-util/src/main/java/com/foxconn/plm/utils/tc/TCUtils.java</url>
+          <line>314</line>
+          <option name="timeStamp" value="156" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-common/tc-util/src/main/java/com/foxconn/plm/utils/tc/TCUtils.java</url>
+          <line>392</line>
+          <option name="timeStamp" value="157" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-integrate/src/main/java/com/foxconn/plm/integrate/tcfr/scheduling/TCFRSyncScheduling.java</url>
+          <line>111</line>
+          <option name="timeStamp" value="163" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-integrate/src/main/java/com/foxconn/plm/integrate/tcfr/scheduling/TCFRSyncScheduling.java</url>
+          <line>520</line>
+          <option name="timeStamp" value="164" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-common/tc-util/src/main/java/com/foxconn/plm/utils/tc/QueryUtil.java</url>
+          <line>25</line>
+          <option name="timeStamp" value="169" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-report/src/test/java/VerifyTest.java</url>
+          <line>230</line>
+          <option name="timeStamp" value="178" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-modules/tc-report/src/test/java/VerifyTest.java</url>
+          <line>222</line>
+          <option name="timeStamp" value="179" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tc-common/tc-api/src/main/java/com/foxconn/plm/tcapi/service/TCSOAServiceFactory.java</url>
+          <line>277</line>
+          <option name="timeStamp" value="180" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="JUnit">
+        <watch expression="k &lt; names.length" />
+        <watch expression="names.length" />
+        <watch expression="stringObjectMap" />
+      </configuration>
+      <configuration name="SpringBootApplicationConfigurationType">
+        <watch expression="task.toString()" />
+        <watch expression="map" />
+        <watch expression="benefitBeanList" />
+        <watch expression="getReworkCostTotal(yearsValue, true)" />
+        <watch expression="tcSessionInfo" />
+      </configuration>
+      <configuration name="Application">
+        <watch expression="jsonObject.toJSONString()" />
+      </configuration>
+    </watches-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>

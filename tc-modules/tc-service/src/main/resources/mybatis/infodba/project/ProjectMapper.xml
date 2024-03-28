@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.tcservice.mapper.infodba.ProjectMapper">
+
+    <select id="queryProjectByPrivilegeUser" resultType="com.foxconn.plm.tcservice.project.ProjectBean" flushCache="true">
+
+        select
+            a.pproject_id AS projectId,
+            a.pproject_name AS projectName,
+            c.productline AS productLine,
+            c.projectseries AS projectSeries,
+            b.userid
+        from infodba.ptc_project a,
+             (select distinct t3.pname as ProjectName,
+                              t5.puser_id 	     as UserID
+              from infodba.ppom_member t1,
+                   infodba.pgroupmember t2,
+                   infodba.ppom_group t3,
+                   infodba.pprojectteam t4,
+                   infodba.ppom_user t5
+              where t1.puid = t2.puid
+                and t1.rgroupu = t4.puid
+                and t1.ruseru = t5.puid
+                and t3.puid = t4.puid
+                and t5.puser_id = #{0}) b,
+             (select distinct t.project_id as ProjectID,
+                              t.product_line        as ProductLine,
+                              t.series_name         as ProjectSeries
+              from infodba.spas_info t) c
+        where a.pproject_name = b.projectname
+          and a.pis_active = 1
+          and lower(a.pproject_id) = c.projectid(+)
+
+    </select>
+</mapper>

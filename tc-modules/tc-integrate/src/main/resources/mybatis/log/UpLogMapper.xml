@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.integrate.log.mapper.UpLogMapper">
+
+
+    <update id="updateActionLog">
+        update action_log
+        set handle_result=#{handleResult,jdbcType=VARCHAR},
+        exception_msg=#{msg,jdbcType=VARCHAR},
+        bu=#{bu,jdbcType=VARCHAR},
+        phase=#{phase,jdbcType=VARCHAR},
+        customer=#{customer,jdbcType=VARCHAR},
+        proj_level=#{projLevel,jdbcType=VARCHAR},
+        dept=#{dept,jdbcType=VARCHAR},
+        phase_end_date=#{phaseEndDate,jdbcType=VARCHAR}
+        where id =#{id}
+    </update>
+
+
+    <update id="updateProj">
+        update action_log
+        set
+        project=#{project,jdbcType=VARCHAR}
+        where id =#{id}
+    </update>
+
+
+    <select id="selectActionLog" resultType="com.foxconn.plm.integrate.log.domain.ActionLog">
+        select id,creator,project,start_time startTime,end_time endTime,item_id itemId from action_log where
+        handle_result is null and project is not null
+    </select>
+
+
+    <select id="selectNonProj" resultType="com.foxconn.plm.integrate.log.domain.ActionLog">
+        select id,creator,project,start_time startTime,end_time endTime ,item_id itemId from action_log where project is
+        null
+    </select>
+
+
+    <select id="selectActiveProjInTC" resultType="java.lang.String">
+        select pproject_id from infodba.ptc_project t where t.pis_active = 1
+    </select>
+
+
+    <select id="getActualUsers" resultType="java.lang.String">
+        select t3.pd9_userinfo as UserInfo
+        from infodba.pworkspaceobject t1,
+        infodba.pitem t2,
+        infodba.pd9_actualuser t3
+        where t1.puid = t2.puid
+        and t1.puid = t3.puid
+        and t1.pobject_desc ='Y'
+    </select>
+
+
+    <select id="getProjsIntc" resultType="java.lang.String">
+        select pproject_id ||'-'||pproject_name from infodba.ptc_project t where t.pis_active = 1
+    </select>
+
+
+    <delete id="deleteProjectInfo">
+        delete from infodba. t where t.pis_active = 1
+    </delete>
+</mapper>

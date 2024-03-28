@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.cis.mapper.tc.TCMapper">
+
+    <resultMap id="BaseResultMap" type="com.foxconn.plm.cis.domain.EE3DReportBean">
+        <result column="BU" jdbcType="VARCHAR" property="bu"/>
+        <result column="CUSTOMER" jdbcType="VARCHAR" property="customer"/>
+        <result column="PROJECT_SERIES" jdbcType="VARCHAR" property="projectSeries"/>
+        <result column="PROJECT_NAME" jdbcType="VARCHAR" property="projectName"/>
+        <result column="PHASE" jdbcType="VARCHAR" property="phase"/>
+        <result column="VERSION" jdbcType="VARCHAR" property="version"/>
+        <result column="CATEGORY" jdbcType="VARCHAR" property="category"/>
+        <result column="PART_TYPE" jdbcType="VARCHAR" property="partType"/>
+        <result column="PART_COUNT" jdbcType="NUMERIC" property="partCount"/>
+        <result column="PART3D_COUNT" jdbcType="NUMERIC" property="part3DCount"/>
+        <result column="NOCISMODEL" javaType="java.util.Set" jdbcType="BLOB" property="noCisModel"
+                typeHandler="com.foxconn.plm.cis.config.StringToSetTypeHandler"/>
+        <result column="PART3D_PERCENT" jdbcType="VARCHAR" property="part3DPercent"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        BU, CUSTOMER, PROJECT_SERIES, PROJECT_NAME, PHASE, VERSION, CATEGORY, PART_TYPE,
+        PART3D_PERCENT, PART_COUNT, PART3D_COUNT,NOCISMODEL
+    </sql>
+
+
+    <select id="selectEE3DReportBean" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from EE3D_DRAWING_REPORT
+        <where>
+            <if test="bu!=null and bu!=''">and EE3D_DRAWING_REPORT.BU= #{bu,jdbcType=VARCHAR}</if>
+            <if test="customer!=null and customer!=''">and EE3D_DRAWING_REPORT.CUSTOMER= #{customer,jdbcType=VARCHAR}</if>
+            <if test="projectSeries!=null and projectSeries!=''">and EE3D_DRAWING_REPORT.PROJECT_SERIES= #{projectSeries,jdbcType=VARCHAR}</if>
+            <if test="projectName!=null and projectName!=''">and EE3D_DRAWING_REPORT.PROJECT_NAME= #{projectName,jdbcType=VARCHAR}</if>
+        </where>
+    </select>
+
+
+    <insert id="batchInsertEE3DReportBean" parameterType="java.util.List" useGeneratedKeys="false">
+        insert into EE3D_DRAWING_REPORT (BU, CUSTOMER, PROJECT_SERIES,
+        PROJECT_NAME, PHASE, VERSION,
+        CATEGORY, PART_TYPE, PART3D_PERCENT,
+        PART_COUNT, PART3D_COUNT, NOCISMODEL
+        )
+        <foreach collection="list" item="item" index="index" separator="union">
+            (select #{item.bu,jdbcType=VARCHAR}, #{item.customer,jdbcType=VARCHAR}, #{item.projectSeries,jdbcType=VARCHAR},
+            #{item.projectName,jdbcType=VARCHAR}, #{item.phase,jdbcType=VARCHAR}, #{item.version,jdbcType=VARCHAR},
+            #{item.category,jdbcType=VARCHAR}, #{item.partType,jdbcType=VARCHAR}, #{item.part3DPercent,jdbcType=VARCHAR},
+            #{item.partCount,jdbcType=NUMERIC}, #{item.part3DCount,jdbcType=NUMERIC}
+            ,#{item.noCisModel, javaType=java.util.Set,jdbcType=BLOB,typeHandler=com.foxconn.plm.cis.config.StringToSetTypeHandler} from dual )
+        </foreach>
+    </insert>
+
+    <delete id="deleteAllEE3DReportBean">
+		delete from  EE3D_DRAWING_REPORT
+	</delete>
+
+
+    <select id="selectConditionProject" resultType="string">
+        SELECT ${value}
+        FROM XPLM.EE3D_DRAWING_REPORT
+        <where>
+            <if test="bu!=null and bu!=''">and EE3D_DRAWING_REPORT.BU= #{bu,jdbcType=VARCHAR}</if>
+            <if test="customer!=null and customer!=''">and EE3D_DRAWING_REPORT.CUSTOMER= #{customer,jdbcType=VARCHAR}</if>
+            <if test="projectSeries!=null and projectSeries!=''">and EE3D_DRAWING_REPORT.PROJECT_SERIES= #{projectSeries,jdbcType=VARCHAR}</if>
+            <if test="projectName!=null and projectName!=''">and EE3D_DRAWING_REPORT.PROJECT_NAME= #{projectName,jdbcType=VARCHAR}</if>
+        </where>
+        GROUP BY ${value}
+    </select>
+
+
+
+    <select id="getChildFolderUidByName" parameterType="string" resultType="string">
+     SELECT p2.PUID AS Child_UID
+          FROM INFODBA.PFOLDER          p1,
+          	   INFODBA.PWORKSPACEOBJECT p2,
+          	   INFODBA.PCONTENTS        p3
+         WHERE p1.PUID = p3.PUID
+           AND p3.PVALU_0 = p2.PUID
+           AND p1.PUID  = #{parentFolderUid} AND p2.POBJECT_NAME  = #{folderName}
+    </select>
+
+
+</mapper>

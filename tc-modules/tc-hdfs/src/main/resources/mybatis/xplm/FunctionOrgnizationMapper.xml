@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.dp.plm.hdfs.dao.xplm.FunctionOrganizationMapper">
+
+    <select id="getConfigList" resultType="com.foxconn.dp.plm.hdfs.domain.rv.FunctionConfigRv">
+        select c.id id,
+        c.tc_function_name tcFunctionName,
+        f.id functionId,
+        f.name functionName,
+        g.id groupId,
+        (od.name || NVL2(ode.name,'/' || ode.name,'') || NVL2(os.name,'/' || os.name,'')) groupName,
+        c.is_active isActive,
+        c.TC_GROUP_NAME tcGroupName
+        from SPAS_FUNCTION_ORGANIZATION_CONFIG c,
+        spas_dept_group g ,
+        spas_function f,
+        spas_organization od,
+        spas_organization ode,
+        spas_organization os
+        where c.spas_function_id=f.id
+        and f.id=g.function_id(+)
+        and g.division_id=od.id(+)
+        and g.department_id=ode.id(+)
+        and g.section_id=os.id(+)
+        and c.spas_group_id=g.id(+)
+        and c.is_active=1
+        <if test="functionName != null and functionName != ''">
+            AND f.name like '%' || #{functionName} || '%'
+        </if>
+        <if test="tcFunctionName != null and tcFunctionName != ''">
+            AND c.tc_function_name like '%' || #{tcFunctionName} || '%'
+        </if>
+        <if test="groupName != null and groupName != ''">
+            AND (od.name || NVL2(ode.name,'/' || ode.name,'') || NVL2(os.name,'/' || os.name,'')) like '%' || #{groupName} || '%'
+        </if>
+        order by c.id
+    </select>
+
+    <select id="getFunctionList"    resultType="com.foxconn.dp.plm.hdfs.domain.rv.FunctionConfigRv">
+        select f.id functionId ,f.name  functionName from spas_function f where f.is_active=1
+    </select>
+
+    <select id="getTCFunctionList"    resultType="com.foxconn.dp.plm.hdfs.domain.rv.FunctionConfigRv">
+        select unique(org.function) as tcFunctionName
+        from (-- Whole Org
+                 (-- DT 4-Level Org
+                     select t4.pname as bu,
+                            t2.pname as department,
+                            t1.pname as function
+                     from infodba.ppom_group t1,
+                          infodba.ppom_group t2,
+                          infodba.ppom_group t3,
+                          infodba.ppom_group t4
+                     where t1.rparentu = t2.puid
+                       and t2.rparentu = t3.puid
+                       and t3.rparentu = t4.puid
+                       and t4.pname = 'Desktop'
+                     group by t4.pname, t2.pname, t1.pname
+                 )
+                 union
+                 (-- MNT/PRT/EV 3-Level Org
+                     select p3.pname        as bu,
+                            p2.pname        as department,
+                            p1.pname        as function
+                     from infodba.ppom_group p1,
+                          infodba.ppom_group p2,
+                          infodba.ppom_group p3
+                     where p1.rparentu = p2.puid
+                       and p2.rparentu = p3.puid
+                       and p3.pname in ('Monitor', 'Printer', 'EV')
+                     group by p3.pname, p2.pname, p1.pname
+                 )
+             ) org
+        order by tcFunctionName ASC
+    </select>
+
+    <select id="getGroupList"   resultType="com.foxconn.dp.plm.hdfs.domain.rv.FunctionConfigRv">
+
+   select f.id functionId,
+                f.name functionName,
+                g.id groupId,
+                (bu.name||'/'||od.name || NVL2(ode.name,'/' || ode.name,'') || NVL2(os.name,'/' || os.name,'')) groupName
+              from spas_dept_group g ,
+                   spas_function f,
+                   spas_organization od,
+                   spas_organization ode,
+                   spas_organization os,
+                   spas_organization bu
+                where f.id=#{functionId}
+                 and f.id=g.function_id
+                 and g.division_id=od.id(+)
+                 and g.department_id=ode.id(+)
+                 and g.section_id=os.id(+)
+                 and g.businessunit_id=bu.id(+)
+                  and (g.is_active=1 OR g.IS_ACTIVE IS NULL)
+                  and (od.is_active=1 OR od.IS_ACTIVE IS NULL)
+                  and (ode.is_active=1 OR ode.IS_ACTIVE IS NULL)
+                  and (os.is_active=1 OR os.IS_ACTIVE IS NULL)
+    </select>
+
+    <select id="getTCGroupList"   resultType="com.foxconn.dp.plm.hdfs.domain.rv.FunctionConfigRv">
+        select org.bu || '/' || org.department as tcGroupName
+        from (-- Whole Org
+                 (-- DT 4-Level Org
+                     select t4.pname as bu,
+                            t2.pname as department,
+                            t1.pname as function
+                     from INFODBA.ppom_group t1,
+                          INFODBA.ppom_group t2,
+                          INFODBA.ppom_group t3,
+                          INFODBA.ppom_group t4
+                     where t1.rparentu = t2.puid
+                       and t2.rparentu = t3.puid
+                       and t3.rparentu = t4.puid
+                       and t4.pname = 'Desktop'
+                     group by t4.pname, t2.pname, t1.pname
+                 )
+                 union
+                 (-- MNT/PRT/EV 3-Level Org
+                     select p3.pname        as bu,
+                            p2.pname        as department,
+                            p1.pname        as function
+                     from INFODBA.ppom_group p1,
+                          INFODBA.ppom_group p2,
+                          INFODBA.ppom_group p3
+                     where p1.rparentu = p2.puid
+                       and p2.rparentu = p3.puid
+                       and p3.pname in ('Monitor', 'Printer', 'EV')
+                     group by p3.pname, p2.pname, p1.pname
+                 )
+             ) org
+        where org.function = #{functionName}
+    </select>
+
+    <update id="modify" parameterType="com.foxconn.dp.plm.hdfs.domain.rv.FunctionConfigRv">
+        update SPAS_FUNCTION_ORGANIZATION_CONFIG set spas_group_id = #{groupId} ,spas_function_id = #{functionId} ,tc_function_name = #{tcFunctionName},TC_GROUP_NAME = #{tcGroupName} where
+        id = #{id}
+    </update>
+
+    <insert id="insert" parameterType="com.foxconn.dp.plm.hdfs.domain.rv.FunctionConfigRv">
+        <selectKey keyProperty="id" resultType="java.lang.Integer" order="BEFORE">
+            select SPAS_FUNCTION_ORGANIZATION_SEQ.nextval from dual
+        </selectKey>
+        insert into SPAS_FUNCTION_ORGANIZATION_CONFIG (id,spas_group_id,spas_function_id,tc_function_name,tc_group_name) values (#{id},#{groupId},#{functionId},#{tcFunctionName},#{tcGroupName})
+    </insert>
+
+    <delete id="delete"  parameterType="com.foxconn.dp.plm.hdfs.domain.rv.FunctionConfigRv">
+        delete from  SPAS_FUNCTION_ORGANIZATION_CONFIG  where id = #{id}
+    </delete>
+
+</mapper>

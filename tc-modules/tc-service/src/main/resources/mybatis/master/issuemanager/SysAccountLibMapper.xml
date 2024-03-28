@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.tcservice.mapper.master.SysAccountLibMapper">
+
+    <resultMap id="BaseResultMap" type="com.foxconn.plm.tcservice.issuemanagement.entity.SysAccountLib">
+        <result property="id" column="id"/>
+        <result property="libFolderId" column="lib_folder_id"/>
+        <result property="accountId" column="account_id"/>
+    </resultMap>
+
+    <select id="getId" resultType="long">
+        select su_user_lib_rel_seq.nextval from dual
+    </select>
+
+    <insert id="insertEntity" parameterType="com.foxconn.plm.tcservice.issuemanagement.entity.SysAccountLib">
+        INSERT INTO su_user_lib_rel (id,lib_folder_id,account_id)
+        VALUES (#{id},#{libFolderId},#{accountId})
+    </insert>
+
+    <update id="updateById" parameterType="com.foxconn.plm.tcservice.issuemanagement.entity.SysAccountLib">
+        UPDATE su_user_lib_rel
+        <set>
+            <if test="libFolderId != null and libFolderId != '' ">
+                lib_folder_id = #{libFolderId},
+            </if>
+            <if test="libFolderId == null or libFolderId == '' ">
+                lib_folder_id = NULL,
+            </if>
+            <if test="accountId != null and accountId != '' ">
+                account_id = #{accountId},
+            </if>
+            <if test="accountId == null or accountId == '' ">
+                account_id = NULL,
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>

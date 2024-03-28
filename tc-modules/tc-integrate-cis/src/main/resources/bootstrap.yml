@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: tc-integrate-cis
+  profiles:
+    active: local
+server:
+  port: 18087

@@ -1,0 +1,11 @@
+server:
+  port: 8235
+spring:
+  application:
+    name: tc-health
+  profiles:
+    active: local
+
+
+
+

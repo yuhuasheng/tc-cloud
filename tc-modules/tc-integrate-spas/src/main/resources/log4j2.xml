@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration monitorInterval="30" status="ERROR">
+    <Properties>
+        <Property name="fileName">myLog.log</Property>
+        <Property name="backupFilePatch">D:/logs/tc-integrate-spas</Property>
+    </Properties>
+    <!--先定义所有的appender-->
+    <appenders>
+        <!--这个输出控制台的配置-->
+        <Console name="Console" target="SYSTEM_OUT">
+            <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
+            <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            <!--这个都知道是输出日志的格式-->
+            <PatternLayout charset="UTF-8"
+                           pattern="[%d{yyyy-MM-dd HH:mm:ss:SSS}][%C] %m%n"/>
+        </Console>
+
+        <RollingFile fileName="${backupFilePatch}/debug.log"
+                     filePattern="${backupFilePatch}/$${date:yyyy-MM}/%d{yyyy-MM-dd}.debug.log"
+                     name="RollingFileDebug">
+            <Filters>
+                <ThresholdFilter level="INFO" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <PatternLayout charset="UTF-8"
+                           pattern="[%d{yyyy-MM-dd HH:mm:ss:SSS}] [%C] %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100MB"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile fileName="${backupFilePatch}/info.log"
+                     filePattern="${backupFilePatch}/%d{yyyy-MM-dd}/%d{yyyy-MM-dd}.info-%i.log"
+                     name="RollingFileInfo">
+            <Filters>
+                <ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <PatternLayout charset="UTF-8"
+                           pattern="[%d{yyyy-MM-dd HH:mm:ss:SSS}][%C] %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100MB"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile fileName="${backupFilePatch}/warn.log"
+                     filePattern="${backupFilePatch}/$${date:yyyy-MM}/%d{yyyy-MM-dd}.warn.log"
+                     name="RollingFileWarn">
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <!--  z 表示时区 -->
+            <PatternLayout charset="UTF-8"
+                           pattern="[%d{yyyy-MM-dd HH:mm:ss:SSS}][%C] %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100MB"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile fileName="${backupFilePatch}/error.log"
+                     filePattern="${backupFilePatch}/$${date:yyyy-MM}/%d{yyyy-MM-dd}.error.log"
+                     name="RollingFileError">
+            <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            <!--  z 表示时区 -->
+            <PatternLayout charset="UTF-8"
+                           pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%p] - %L - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100MB"/>
+            </Policies>
+        </RollingFile>
+    </appenders>
+
+    <!--然后定义logger，只有定义了logger并引入的appender，appender才会生效-->
+    <loggers>
+
+        <Logger level="DEBUG" name="com.ibatis">
+            <AppenderRef ref="RollingFileDebug"/>
+            <AppenderRef ref="RollingFileInfo"/>
+            <AppenderRef ref="RollingFileWarn"/>
+            <AppenderRef ref="RollingFileError"/>
+        </Logger>
+
+        <Root level="DEBUG">
+            <!--AppenderRef：Root的子节点，用来指定该日志输出到哪个Appender. -->
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFileDebug"/>
+            <AppenderRef ref="RollingFileInfo"/>
+            <AppenderRef ref="RollingFileWarn"/>
+            <AppenderRef ref="RollingFileError"/>
+        </Root>
+    </loggers>
+</configuration>

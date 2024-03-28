@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.integrateb2b.supplierPN.dao.SupplierPNToSAPMapper">
+
+    <select id="getMaterialList" resultType="com.foxconn.plm.entity.param.MakerPNRp">
+        select m.material_puid puid, m.material_num materialNum from material_table m where m.material_change_num=#{changeNum}
+         union
+        select a.after_change_material_puid puid,a.after_change_material_num materialNum  from bom_after_change_table a where a.after_change_change_num=#{changeNum}
+         union
+        select a.after_change_component_puid puid,a.after_change_component_num materialNum  from bom_after_change_table a where a.after_change_change_num=#{changeNum}
+         union
+        select b.before_change_material_puid puid,b.before_change_material_num materialNum from bom_before_change_table b where b.before_change_change_num=#{changeNum}
+         union
+        select b.before_change_component_puid puid,b.before_change_component_num materialNum from bom_before_change_table b where b.before_change_change_num=#{changeNum}
+    </select>
+
+</mapper>

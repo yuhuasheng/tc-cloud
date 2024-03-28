@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.tcservice.mapper.master.FunctionMapper">
+
+    <select id="getFunctionInfo" resultType="com.foxconn.plm.tcservice.tclicensereport.domain.FunctionInfo">
+        select u1.bu, u1.department, u1.function, u2.used_hours_in_day usedHoursInDay,
+        decode(((u1.active_lic_mainland * u3.working_day_mainland_num
+        + u1.active_lic_taiwan * u3.working_day_taiwan_num) * 8), 0, 0
+        , u2.used_hours_in_day / ((u1.active_lic_mainland * u3.working_day_mainland_num
+        + u1.active_lic_taiwan * u3.working_day_taiwan_num) * 8)) as lurInDay,
+        sysdate as recordDate
+        from (-- Organization of DTSA has 4 levels, others have 3
+        ( -- DTSA
+        select t1.bu,
+        t1.department,
+        t1.function,
+        t1.num as active_lic,
+        nvl(t2.num, 0) as active_lic_mainland,
+        nvl(t3.num, 0) as active_lic_taiwan,
+        sysdate as record_date
+        from (-- Total License
+        select a5.pname as bu,
+        a3.pname as department,
+        a2.pname as function,
+        count(*) as num
+        from infodba.ppom_user a1,
+        infodba.ppom_group a2,
+        infodba.ppom_group a3,
+        infodba.ppom_group a4,
+        infodba.ppom_group a5
+        where substr(a1.pdefault_group,1,14) = a2.puid
+        and a2.rparentu = a3.puid
+        and a3.rparentu = a4.puid
+        and a4.rparentu = a5.puid
+        and a5.pname = 'Desktop'
+        and a1.pstatus = 0
+        and a1.puser_id not in ('apadmin', 'dcproxy', 'dev', 'infodba', 'spas1', 'spas2', 'spas3', 'spas4', 'tcadmin',
+        'test1', 'test2')
+        group by a5.pname, a3.pname, a2.pname
+        ) t1,
+        (-- License in Mainland
+        select b5.pname as bu,
+        b3.pname as department,
+        b2.pname as function,
+        count(*) as num
+        from infodba.ppom_user b1,
+        infodba.ppom_group b2,
+        infodba.ppom_group b3,
+        infodba.ppom_group b4,
+        infodba.ppom_group b5
+        where substr(b1.pdefault_group,1,14) = b2.puid
+        and b2.rparentu = b3.puid
+        and b3.rparentu = b4.puid
+        and b4.rparentu = b5.puid
+        and b5.pname = 'Desktop'
+        and b1.pstatus = 0
+        and b1.puser_id not in ('apadmin', 'dcproxy', 'dev', 'infodba', 'spas1', 'spas2', 'spas3', 'spas4', 'tcadmin',
+        'test1', 'test2')
+        and regexp_like(b1.puser_id, '^{1}[a-z]')
+        group by b5.pname, b3.pname, b2.pname
+        ) t2,
+        (-- License in Taiwan
+        select c5.pname as bu,
+        c3.pname as department,
+        c2.pname as function,
+        count(*) as num
+        from infodba.ppom_user c1,
+        infodba.ppom_group c2,
+        infodba.ppom_group c3,
+        infodba.ppom_group c4,
+        infodba.ppom_group c5
+        where substr(c1.pdefault_group,1,14) = c2.puid
+        and c2.rparentu = c3.puid
+        and c3.rparentu = c4.puid
+        and c4.rparentu = c5.puid
+        and c5.pname = 'Desktop'
+        and c1.pstatus = 0
+        and c1.puser_id not in ('apadmin', 'dcproxy', 'dev', 'infodba', 'spas1', 'spas2', 'spas3', 'spas4', 'tcadmin',
+        'test1', 'test2')
+        and regexp_like(c1.puser_id, '^[0-9]')
+        group by c5.pname, c3.pname, c2.pname
+        ) t3
+        where t1.bu = t2.bu(+)
+        and t1.bu = t3.bu(+)
+        and t1.department = t2.department(+)
+        and t1.department = t3.department(+)
+        and t1.function = t2.function(+)
+        and t1.function = t3.function(+)
+        )
+        union
+        ( -- MNT PRT EV
+        select p1.bu,
+        p1.department,
+        p1.function,
+        p1.num as active_lic,
+        nvl(p2.num, 0) as active_lic_mainland,
+        nvl(p3.num, 0) as active_lic_taiwan,
+        sysdate as record_date
+        from (-- Total License
+        select e4.pname as bu,
+        e3.pname as department,
+        e2.pname as function,
+        count(*) as num
+        from infodba.ppom_user e1,
+        infodba.ppom_group e2,
+        infodba.ppom_group e3,
+        infodba.ppom_group e4
+        where substr(e1.pdefault_group,1,14) = e2.puid
+        and e2.rparentu = e3.puid
+        and e3.rparentu = e4.puid
+        and e4.pname in ('Monitor', 'Printer', 'EV')
+        and e1.pstatus = 0
+        and e1.puser_id not in ('apadmin', 'dcproxy', 'dev', 'infodba', 'spas1', 'spas2', 'spas3', 'spas4', 'tcadmin',
+        'test1', 'test2')
+        group by e4.pname, e3.pname, e2.pname
+        ) p1,
+        (-- License in Mainland
+        select f4.pname as bu,
+        f3.pname as department,
+        f2.pname as function,
+        count(*) as num
+        from infodba.ppom_user f1,
+        infodba.ppom_group f2,
+        infodba.ppom_group f3,
+        infodba.ppom_group f4
+        where substr(f1.pdefault_group,1,14) = f2.puid
+        and f2.rparentu = f3.puid
+        and f3.rparentu = f4.puid
+        and f4.pname in ('Monitor', 'Printer', 'EV')
+        and f1.pstatus = 0
+        and f1.puser_id not in ('apadmin', 'dcproxy', 'dev', 'infodba', 'spas1', 'spas2', 'spas3', 'spas4', 'tcadmin',
+        'test1', 'test2')
+        and regexp_like(f1.puser_id, '^{1}[a-z]')
+        group by f4.pname, f3.pname, f2.pname
+        ) p2,
+        (-- License in Taiwan
+        select g4.pname as bu,
+        g3.pname as department,
+        g2.pname as function,
+        count(*) as num
+        from infodba.ppom_user g1,
+        infodba.ppom_group g2,
+        infodba.ppom_group g3,
+        infodba.ppom_group g4
+        where substr(g1.pdefault_group,1,14) = g2.puid
+        and g2.rparentu = g3.puid
+        and g3.rparentu = g4.puid
+        and g4.pname in ('Monitor', 'Printer', 'EV')
+        and g1.pstatus = 0
+        and g1.puser_id not in ('apadmin', 'dcproxy', 'dev', 'infodba', 'spas1', 'spas2', 'spas3', 'spas4', 'tcadmin',
+        'test1', 'test2')
+        and regexp_like(g1.puser_id, '^[0-9]')
+        group by g4.pname, g3.pname, g2.pname
+        ) p3
+        where p1.bu = p2.bu(+)
+        and p1.bu = p3.bu(+)
+        and p1.department = p2.department(+)
+        and p1.department = p3.department(+)
+        and p1.function = p2.function(+)
+        and p1.function = p3.function(+)
+        )
+        order by bu asc, department asc, function asc
+        ) u1,
+        ( -- Usage Info
+        select m.bu, m.department, m.function,
+        sum(m.used_hours_in_day) as used_hours_in_day
+        from lur_user m
+        where to_char(m.record_date, 'yyyy-mm-dd') = to_char(sysdate, 'yyyy-mm-dd')
+        group by m.bu, m.department, m.function
+        order by m.bu asc, m.department asc, m.function asc
+        ) u2,
+        ( -- Date Info
+        select (case when n.working_day_mainland = 'Y' then 1 else 0 end) as working_day_mainland_num,
+        (case when n.working_day_taiwan = 'Y' then 1 else 0 end) as working_day_taiwan_num
+        from lur_date n
+        where to_char(n.record_date, 'yyyy-mm-dd') = to_char(sysdate, 'yyyy-mm-dd')
+        ) u3
+        where u1.bu = u2.bu and u1.department = u2.department and u1.function = u2.function
+        order by u1.bu asc, u1.department asc, u1.function asc
+    </select>
+
+    <insert id="setFunctionInfo" parameterType="java.util.List">
+        insert all
+        <foreach collection="list" item="item" index="index">
+            into xplm.lur_function
+            (
+            bu,department,function,used_hours_in_day,lur_in_day,record_date
+            )
+            values
+            (
+            #{item.bu},#{item.department},#{item.function},
+            #{item.usedHoursInDay},#{item.lurInDay},#{item.recordDate}
+            )
+        </foreach>
+        select 1 from dual
+    </insert>
+
+    <!--批量插入，若存在则更新-->
+    <insert id="insertOrUpdateDateRecord" parameterType="java.util.List">
+        MERGE INTO xplm.lur_date t1
+        USING (
+        <foreach collection="list" item="item" index="index" separator="union">
+            SELECT
+            #{item.recordDate,jdbcType=DATE} RECORD_DATE,
+            #{item.workingDayMainland,jdbcType=VARCHAR} WORKING_DAY_MAINLAND,
+            #{item.workingDayTaiwan,jdbcType=VARCHAR} WORKING_DAY_TAIWAN
+            FROM dual
+        </foreach>) t2
+        ON (
+        t1.RECORD_DATE = t2.RECORD_DATE
+        )
+        WHEN MATCHED THEN
+        UPDATE SET t1.WORKING_DAY_MAINLAND = t2.WORKING_DAY_MAINLAND, t1.WORKING_DAY_TAIWAN = t2.WORKING_DAY_TAIWAN
+        WHEN NOT MATCHED THEN
+        INSERT
+        (RECORD_DATE, WORKING_DAY_MAINLAND, WORKING_DAY_TAIWAN)
+        VALUES
+        (t2.RECORD_DATE, t2.WORKING_DAY_MAINLAND, t2.WORKING_DAY_TAIWAN)
+    </insert>
+
+</mapper>

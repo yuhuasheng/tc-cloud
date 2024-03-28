@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.tcsyncfolder.mapper.FolderMapper">
+    <resultMap id="BaseResultMap" type="com.foxconn.plm.tcsyncfolder.entity.FolderEntity">
+        <id property="fldSn" column="fld_sn"/>
+        <result property="fldName" column="fld_name"/>
+        <result property="creator" column="creator"/>
+        <result property="modified" column="modified"/>
+        <result property="refType" column="ref_type"/>
+        <result property="fldDesc" column="fld_desc"/>
+        <result property="refId" column="ref_id"/>
+        <result property="created" column="created"/>
+        <result property="lastUpd" column="last_upd"/>
+        <result property="delFlag" column="del_flag"/>
+    </resultMap>
+
+    <select id="getChildFolder" resultMap="BaseResultMap">
+        select
+            t1.fld_sn,t1.fld_name,t1.ref_type,t1.ref_id,t1.fld_desc
+        from
+           obj_folder t1,
+           folder_structure t2
+        WHERE t2.fld_child_id = t1.fld_sn
+        AND t2.fld_id = #{parentId}
+        AND t1.del_flag = 0
+    </select>
+
+    <select id="getId" resultType="int">
+        select obj_folder_seq.nextval from dual
+    </select>
+</mapper>
+

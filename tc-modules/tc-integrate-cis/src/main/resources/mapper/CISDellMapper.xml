@@ -1,0 +1,790 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.cis.mapper.cisdell.CISDellMapper">
+
+    <select id="getNotSyncPart" resultType="com.foxconn.plm.cis.domain.PartEntity">
+        SELECT
+        m.Id Id,
+        m.Category Category,
+        m.MFG MFG,
+        m.MFG_PART_NUMBER MfgPartNumber,
+        m.IsFrequency IsFrequency,
+        m.PART_TYPE PartType,
+        m.VALUE VALUE,
+        m.[FUNCTION] FunctionAlias,
+        m.PACKAGE_TYPE PackageType,
+        m.PACKAGE_SIZE PackageSize,
+        m.DATASHEET DATASHEET,
+        m.PART_NUMBER PartNumber,
+        m.ROHS_STATUS RohsStatus,
+        m.FOXCONN_PART_NUMBER FoxconnPartNumber,
+        m.CRITICAL CRITICAL,
+        m.CCL CCL,
+        m.DESCRIPTION DESCRIPTION,
+        m.SCHEMATIC_PART SchematicPart,
+        m.FPCategory FPCategory,
+        m.PCB_FOOTPRINT PCBFootprint,
+        m.BOM BOM,
+        m.SUB_SYSTEM SubSystem,
+        m.REMARK REMARK,
+        m.SIDE SIDE,
+        m.STANDARD_PN StandardPN,
+        m.VOLTAGE VOLTAGE,
+        m.TOLERANCE TOLERANCE,
+        m.REFLOW_TEMPERATURE ReflowTemperature,
+        m.CONTACT_GENDER ContactGender,
+        m.POWER_DISSIPATION PowerDissipation,
+        -- m.FOXCONN_PART_NUMBER_NODT FoxconnPartNumberNodt,
+        -- m.FOXCONN_PART_NUMBER_PRT FoxconnPartNumberPrt,
+        m.ORIGINAL_DRAWING_FILE OriginalDrawingFile,
+        m.MODIFIED_DRAWING_FILE ModifiedDrawingFile,
+        m.SYNC_FLAG SyncFlag,
+        m.CreatedTime CreatedTime,
+        m.UpdatedTime UpdatedTime
+        FROM TC_Sync m
+        where m.CreatedTime between #{startTime} AND #{endTime}
+    </select>
+
+    <select id="getPartById" resultType="com.foxconn.plm.cis.domain.PartEntity"
+            parameterType="java.lang.Integer">
+        SELECT
+        m.Id Id,
+        m.Category Category,
+        m.MFG MFG,
+        m.MFG_PART_NUMBER MfgPartNumber,
+        m.IsFrequency IsFrequency,
+        m.PART_TYPE PartType,
+        m.VALUE VALUE,
+        m.[FUNCTION] FunctionAlias,
+        m.PACKAGE_TYPE PackageType,
+        m.PACKAGE_SIZE PackageSize,
+        m.DATASHEET DATASHEET,
+        m.PART_NUMBER PartNumber,
+        m.ROHS_STATUS RohsStatus,
+        m.FOXCONN_PART_NUMBER FoxconnPartNumber,
+        m.CRITICAL CRITICAL,
+        m.CCL CCL,
+        m.DESCRIPTION DESCRIPTION,
+        m.SCHEMATIC_PART SchematicPart,
+        m.FPCategory FPCategory,
+        m.PCB_FOOTPRINT PCBFootprint,
+        m.BOM BOM,
+        m.SUB_SYSTEM SubSystem,
+        m.REMARK REMARK,
+        m.SIDE SIDE,
+        m.STANDARD_PN StandardPN,
+        m.VOLTAGE VOLTAGE,
+        m.TOLERANCE TOLERANCE,
+        m.REFLOW_TEMPERATURE ReflowTemperature,
+        m.CONTACT_GENDER ContactGender,
+        m.POWER_DISSIPATION PowerDissipation,
+        -- m.FOXCONN_PART_NUMBER_NODT FoxconnPartNumberNodt,
+        -- m.FOXCONN_PART_NUMBER_PRT FoxconnPartNumberPrt,
+        m.ORIGINAL_DRAWING_FILE OriginalDrawingFile,
+        m.MODIFIED_DRAWING_FILE ModifiedDrawingFile,
+        m.SYNC_FLAG SyncFlag,
+        m.CreatedTime CreatedTime,
+        m.UpdatedTime UpdatedTime
+        FROM TC_Sync m
+        where m.Id = #{id}
+    </select>
+
+    <update id="updateSync" parameterType="java.lang.Integer">
+
+        update TC_Sync set SYNC_FLAG = 1 where id = #{id}
+    </update>
+
+    <!--查找当前的cis料号信息-->
+    <select id="getThreeDDrawingRecord" resultType="com.foxconn.plm.cis.domain.ThreeDDrawingBean">
+        SELECT
+        MFG mfg, MFG_PN mfgPN, MCAD_NAME AS itemId, Creator as creator, StartTime startTime, EndTime endTime
+        FROM ThreeDDrawingRecord
+        WHERE
+        DATEDIFF(day, CreatedTime, GETDATE()) = 0
+        AND
+        (MFG is not null and LTrim(RTrim(MFG)) !='')
+        AND
+        (MFG_PN is not null and LTrim(RTrim(MFG)) !='')
+        AND
+        (StartTime is not null and LTrim(RTrim(StartTime)) !='')
+    </select>
+
+    <select id="getNoCISModelInfo2" resultType="com.foxconn.plm.cis.domain.EE3DCISModelInfo" parameterType="list">
+        with CTE_Material as(
+        SELECT
+        Material.FOXCONN_PART_NUMBER AS HHPN,
+        Material.STANDARD_PN COLLATE Chinese_PRC_CI_AS AS Standardpn,
+        Material.mfg COLLATE Chinese_PRC_CI_AS as mfg,
+        Material.MFG_PART_NUMBER COLLATE Chinese_PRC_CI_AS as mfgpn,
+        Material.PART_TYPE COLLATE Chinese_PRC_CI_AS as partType,
+        C.id as changeOrderId,
+        D.Id as threeDID,
+        CASE
+        WHEN D.Id IS NOT NULL THEN '3D Drawing Process'
+        ELSE
+        CASE
+        WHEN C.Id IS NOT NULL THEN 'Change Process - 3D Change'
+        ELSE
+        CASE
+        WHEN NewPart.mfgpn IS NOT NULL and NewPart.IsSpecial = 0 THEN 'Standard Process'
+
+        WHEN NewPart.mfgpn IS NOT NULL and NewPart.IsSpecial = 1 THEN 'Small Process'
+
+        ELSE
+        '/'
+        END
+        END
+        END AS PROCESSNAME,
+        CASE
+        WHEN D.Id IS NOT NULL THEN D.Status COLLATE Chinese_PRC_CI_AS
+        ELSE
+        CASE
+        WHEN C.Id IS NOT NULL THEN C.Status COLLATE Chinese_PRC_CI_AS
+        ELSE
+        CASE
+        WHEN NewPart.Id IS NOT NULL and NewPart.NewPartStatus = 'DellCISReview' THEN 'DellCISTeamReview' COLLATE Chinese_PRC_CI_AS
+        WHEN NewPart.Id IS NOT NULL THEN NewPart.NewPartStatus COLLATE Chinese_PRC_CI_AS
+        ELSE
+        '/'
+        END
+        END
+        END AS PROCESSSTATUS
+        FROM Material
+        LEFT JOIN NewPart ON NewPart.Id = Material.NewPartId
+        LEFT JOIN (
+        SELECT
+        *,
+        ROW_NUMBER() OVER (PARTITION BY MaterialId ORDER BY Id DESC) AS row_num
+        FROM Material_Change_Order WHERE Material_Change_Order.IsThreeDChange = 1 AND Material_Change_Order.Status != 'Released' AND
+        Material_Change_Order.Status != 'Cancelled'
+        ) AS C ON Material.Id IS NOT NULL and Material.Id = C.MaterialId and C.row_num = 1
+        LEFT JOIN (
+        SELECT
+        *,
+        ROW_NUMBER() OVER (PARTITION BY NewPartId ORDER BY Id DESC) AS row_num
+        FROM ThreeD_Order WHERE ThreeD_Order.Status != 'Released' AND ThreeD_Order.Status != 'Cancelled'
+        ) AS D ON NewPart.Id = D.NewPartId and D.row_num = 1
+        WHERE
+        Material.MFG_PART_NUMBER in
+        <foreach collection="list" item="pn" index="index" open="(" close=")" separator=",">
+            #{pn}
+        </foreach>
+        ),
+        CTE_NewPart as(
+        SELECT
+        NewPart.FoxconnPN AS HHPN,
+        NewPart.StandardHHPN AS Standardpn,
+        NewPart.mfg,
+        NewPart.Id as newpartId,
+        NewPart.mfgpn,
+        D.Id as threeId,
+        PartType.Category + '\' + PartType.PartTypeName as partType,
+        CASE
+        WHEN D.NewPartId IS NOT NULL THEN '3D Drawing Process' COLLATE Chinese_PRC_CI_AS
+        WHEN NewPart.IsSpecial = 1 THEN 'Small Process' COLLATE Chinese_PRC_CI_AS
+        ELSE 'Standard Process'
+        END AS processName,
+        CASE
+        WHEN D.NewPartId IS NOT NULL THEN D.Status COLLATE Chinese_PRC_CI_AS
+        WHEN NewPart.NewPartStatus = 'DellCISReview' THEN 'DellCISTeamReview' COLLATE Chinese_PRC_CI_AS
+        ELSE NewPart.NewPartStatus COLLATE Chinese_PRC_CI_AS
+        END AS processStatus
+        FROM (
+        SELECT NewPart.Id, NewPart.Mfg COLLATE Chinese_PRC_CI_AS AS MFG, NewPart.MfgPN COLLATE Chinese_PRC_CI_AS AS MFGPN FROM NewPart
+        WHERE NewPart.NewPartStatus != 'Cancelled'
+        EXCEPT
+        SELECT Material.NewPartId, Material.MFG COLLATE Chinese_PRC_CI_AS AS MFG, Material.MFG_PART_NUMBER COLLATE Chinese_PRC_CI_AS AS MFGPN
+        FROM Material
+        ) A
+        INNER JOIN NewPart ON A.Id = NewPart.Id
+        LEFT JOIN (
+        SELECT
+        *,
+        ROW_NUMBER() OVER (PARTITION BY NewPartId ORDER BY Id DESC) AS row_num
+        FROM ThreeD_Order WHERE ThreeD_Order.Status != 'Released' AND ThreeD_Order.Status != 'Cancelled'
+        ) AS D ON NewPart.Id = D.NewPartId and D.row_num = 1
+        INNER JOIN PartType ON NewPart.PartTypeId = PartType.Id
+        WHERE NewPart.MfgPN in
+        <foreach collection="list" item="pn" index="index" open="(" close=")" separator=",">
+            #{pn}
+        </foreach>
+        )
+        SELECT
+        HHPN,
+        Standardpn,
+        mfg,
+        mfgpn,
+        partType,
+        processName,
+        PROCESSSTATUS,
+        CASE
+        WHEN processName = 'Standard Process' or processName = 'Small Process' THEN (select top 1 m3.Department Dept from Material m3 where
+        m3.MFG_PART_NUMBER = CTE_Material.mfgpn )
+        WHEN processName = 'Change Process - 3D Change' THEN (
+        select top 1 temp.Dept from (
+        select top 1 CAST(Change_Order_Task_Detail.NewValue COLLATE Chinese_PRC_CI_AS AS varchar) as Dept
+        from Change_Order_Task_Detail
+        left join Material_Change_Order on Material_Change_Order.Id=Change_Order_Task_Detail.ChangeOrderID
+        left join Material m on m.Id = Material_Change_Order.MaterialId
+        where m.MFG_PART_NUMBER = CTE_Material.mfgpn and Change_Order_Task_Detail.ChangeItemTitle ='Department'
+        union all
+        select m3.Department from Material m3 where m3.MFG_PART_NUMBER = CTE_Material.mfgpn and m3.Department is not null
+        ) temp
+        )
+        WHEN processName = '3D Drawing Process' THEN ( select top 1 temp.Dept from
+        (
+        select MechanicalDrawing.Department as Dept
+        from MechanicalDrawing where MechanicalDrawing.Id = (select top 1 ThreeD_Order.OriginalDrawingId from ThreeD_Order join NewPart on
+        ThreeD_Order.NewPartId = NewPart.Id join Material m on m.NewPartId = NewPart.Id where m.MFG_PART_NUMBER = CTE_Material.mfgpn and
+        ThreeD_Order.Status !='Cancelled') and MechanicalDrawing.Department is not null
+        union all
+        select m3.Department from Material m3 where m3.MFG_PART_NUMBER = CTE_Material.mfgpn and m3.Department is not null
+        ) temp
+        )
+        ELSE NULL
+        END AS Department ,
+        CASE
+        WHEN processName = 'Standard Process' or processName = 'Small Process' THEN ( select m3.Customer Customer from Material m3 where
+        m3.MFG_PART_NUMBER = CTE_Material.mfgpn)
+        WHEN processName = 'Change Process - 3D Change' THEN (
+        select top 1 temp.Customer from
+        (
+        select top 1 CAST(Change_Order_Task_Detail.NewValue COLLATE Chinese_PRC_CI_AS AS varchar) as Customer
+        from Change_Order_Task_Detail
+        left join Material_Change_Order on Material_Change_Order.Id=Change_Order_Task_Detail.ChangeOrderID
+        left join Material m on m.Id = Material_Change_Order.MaterialId
+        where m.MFG_PART_NUMBER = CTE_Material.mfgpn and Change_Order_Task_Detail.ChangeItemTitle ='Customer'
+        union all
+        select m3.Customer from Material m3 where m3.MFG_PART_NUMBER = CTE_Material.mfgpn
+        ) temp
+        )
+        WHEN processName = '3D Drawing Process' THEN ( select top 1 temp.Customer from
+        (
+        select MechanicalDrawing.Customer as Customer
+        from MechanicalDrawing where MechanicalDrawing.Id = (select top 1 td.OriginalDrawingId from ThreeD_Order td join NewPart on td.NewPartId =
+        NewPart.Id join Material m on m.NewPartId = NewPart.Id where m.MFG_PART_NUMBER = CTE_Material.mfgpn and td.Status !='Cancelled') and
+        MechanicalDrawing.Customer is not null
+        union all
+        select m3.Customer from Material m3 where m3.MFG_PART_NUMBER = CTE_Material.mfgpn
+        ) temp
+        )
+        ELSE NULL
+        END AS Customer,
+        CASE
+        WHEN
+        processName = 'Standard Process' or processName = 'Small Process' THEN ( select top 1 U.Dept from [User] U where U.Id in (select n2.CreatorID
+        from Material m2 left join NewPart n2 on m2.NewPartId=n2.Id where m2.MFG_PART_NUMBER= CTE_Material.mfgpn) )
+        WHEN
+        processName = 'Change Process - 3D Change' THEN (select top 1 CAST(U.Dept COLLATE Chinese_PRC_CI_AS AS varchar)as Dept from [User] U where
+        U.Id in (select mco.CreatorID from Material m2 left join Material_Change_Order mco on m2.Id = mco.MaterialId where m2.MFG_PART_NUMBER =
+        CTE_Material.mfgpn and mco.Id = CTE_Material.changeOrderId))
+        WHEN
+        processName = '3D Drawing Process' THEN (select top 1 CAST(U.Dept COLLATE Chinese_PRC_CI_AS AS varchar)as Dept from [User] U where U.Id in
+        (select n2.CreatorID from Material m2 left join NewPart n2 on m2.NewPartId=n2.Id where m2.MFG_PART_NUMBER= CTE_Material.mfgpn))
+        ELSE NULL
+        END AS CreatorDept,
+        CASE
+        WHEN processName = 'Small Process' THEN 'https://pdmcis.efoxconn.com/PDMCISForDell/StandardSpecial/Assignment'
+
+        WHEN processName = 'Standard Process' THEN 'https://pdmcis.efoxconn.com/PDMCISForDell/Standard/Assignment'
+        WHEN processName = 'Change Process - 3D Change' THEN concat('https://pdmcis.efoxconn.com/PDMCISForDell/Change/MaterialChangeView?taskid=' ,(
+        select top 1 Id from Change_Order_Task where Change_Order_Task.ChangeOrderID = CTE_Material.changeOrderId order by
+        Change_Order_Task.CreatedTime desc) )
+        WHEN processName = '3D Drawing Process' THEN concat('https://pdmcis.efoxconn.com/PDMCISForDell/ThreeDDrawing/ThreeDOrderReview?taskid=' ,(
+        select top 1 Id from ThreeD_Order_Task where ThreeD_Order_Task.ThreeDOrderID = CTE_Material.threeDID order by ThreeD_Order_Task.CreatedTime
+        desc) )
+        ELSE 'https://pdmcis.efoxconn.com/PDMCISForDell/Material/StandardMaterialList'
+        END AS url
+        FROM CTE_Material
+        union all
+        SELECT
+        HHPN,
+        Standardpn,
+        mfg,
+        mfgpn,
+        partType,
+        processName,
+        processStatus ,
+        CASE
+        WHEN
+        processName = '3D Drawing Process' THEN ( select top 1 MechanicalDrawing.Department as Dept from MechanicalDrawing where MechanicalDrawing.Id
+        = (select top 1 ThreeD_Order.OriginalDrawingId from ThreeD_Order join NewPart n1 on ThreeD_Order.NewPartId = n1.Id where n1.Id =
+        CTE_NewPart.newpartId and ThreeD_Order.Status ! ='Cancelled'))
+        WHEN
+        processName = 'Standard Process' THEN ''
+        ELSE ''
+        END AS Department,
+        CASE
+        WHEN
+        processName = '3D Drawing Process' THEN ( select MechanicalDrawing.Customer as Customer
+        from MechanicalDrawing where MechanicalDrawing.Id =
+        (select top 1 ThreeD_Order.OriginalDrawingId from ThreeD_Order join NewPart n1 on ThreeD_Order.NewPartId = n1.Id where n1.Id =
+        CTE_NewPart.newpartId and ThreeD_Order.Status ! ='Cancelled')
+        )
+        WHEN
+        processName = 'Standard Process' THEN ''
+        ELSE ''
+        END AS Customer,
+        CASE
+        WHEN
+        processName = '3D Drawing Process' THEN (select top 1 CAST(U.Dept COLLATE Chinese_PRC_CI_AS AS varchar)as Dept from [User] U where U.Id in
+        (select n2.CreatorID from NewPart n2 where n2.MfgPN=CTE_NewPart.mfgpn))
+        WHEN
+        processName = 'Standard Process' or processName = 'Small Process' THEN (select top 1 U.Dept from [User] U where U.Id in (select n2.CreatorID
+        from NewPart n2 where n2.MfgPN = CTE_NewPart.mfgpn))
+        ELSE ''
+        END AS CreatorDept,
+        CASE
+
+        WHEN processName = 'Small Process' THEN concat('https://pdmcis.efoxconn.com/PDMCISForDell/StandardSpecial/' ,processStatus,'?taskid=', (SELECT
+        TOP 1 Id FROM NewPartTask WHERE NewPartTask.NewPartId = CTE_NewPart.newpartId ORDER BY NewPartTask.CreatedTime DESC) )
+        WHEN processName = 'Standard Process' THEN concat('https://pdmcis.efoxconn.com/PDMCISForDell/Standard/' ,processStatus,'?taskid=', (SELECT TOP
+        1 Id FROM NewPartTask WHERE NewPartTask.NewPartId = CTE_NewPart.newpartId ORDER BY NewPartTask.CreatedTime DESC) )
+        WHEN processName = '3D Drawing Process' THEN concat('https://pdmcis.efoxconn.com/PDMCISForDell/ThreeDDrawing/ThreeDOrderReview?taskid=' ,(
+        select top 1 Id from ThreeD_Order_Task where ThreeD_Order_Task.ThreeDOrderID = CTE_NewPart.threeId order by ThreeD_Order_Task.CreatedTime
+        desc) )
+        ELSE 'https://pdmcis.efoxconn.com/PDMCISForDell/Material/StandardMaterialList'
+        END AS url
+        FROM CTE_NewPart
+    </select>
+
+    <select id="getNoCISModelInfo" resultType="com.foxconn.plm.cis.domain.EE3DCISModelInfo" parameterType="list">
+        with CTE_Material as(
+
+        SELECT
+
+        Material.FOXCONN_PART_NUMBER AS HHPN,
+
+        Material.STANDARD_PN COLLATE Chinese_PRC_CI_AS AS Standardpn,
+
+        Material.mfg COLLATE Chinese_PRC_CI_AS as mfg,
+
+        Material.MFG_PART_NUMBER COLLATE Chinese_PRC_CI_AS as mfgpn,
+
+        Material.PART_TYPE COLLATE Chinese_PRC_CI_AS as partType,
+
+        C.id as changeOrderId,
+
+        D.Id as threeDID,
+
+        CASE
+
+        WHEN D.Id IS NOT NULL THEN '3D Drawing Process'
+
+        ELSE
+
+        CASE
+
+        WHEN C.Id IS NOT NULL THEN 'Change Process - 3D Change'
+
+        ELSE
+
+        CASE
+
+        WHEN NewPart.mfgpn IS NOT NULL and NewPart.IsSpecial = 0 THEN 'Standard Process'
+
+        WHEN NewPart.mfgpn IS NOT NULL and NewPart.IsSpecial = 1 THEN 'Small Process'
+
+        ELSE
+
+        '/'
+
+        END
+
+        END
+
+        END AS PROCESSNAME,
+
+        CASE
+
+        WHEN D.Id IS NOT NULL THEN D.Status COLLATE Chinese_PRC_CI_AS
+
+        ELSE
+
+        CASE
+
+        WHEN C.Id IS NOT NULL THEN C.Status COLLATE Chinese_PRC_CI_AS
+
+        ELSE
+
+        CASE
+
+        WHEN NewPart.Id IS NOT NULL and NewPart.NewPartStatus = 'DellCISReview' THEN 'DellCISTeamReview' COLLATE Chinese_PRC_CI_AS
+
+        WHEN NewPart.Id IS NOT NULL THEN NewPart.NewPartStatus COLLATE Chinese_PRC_CI_AS
+
+        ELSE
+
+        '/'
+
+        END
+
+        END
+
+        END AS PROCESSSTATUS
+
+        FROM Material
+
+        LEFT JOIN NewPart ON NewPart.Id = Material.NewPartId
+
+        LEFT JOIN (
+
+        SELECT
+
+        *,
+
+        ROW_NUMBER() OVER (PARTITION BY MaterialId ORDER BY Id DESC) AS row_num
+
+        FROM Material_Change_Order WHERE Material_Change_Order.IsThreeDChange = 1 AND Material_Change_Order.Status != 'Released' AND
+        Material_Change_Order.Status != 'Cancelled'
+
+        ) AS C ON Material.Id IS NOT NULL and Material.Id = C.MaterialId and C.row_num = 1
+
+        LEFT JOIN (
+
+        SELECT
+
+        *,
+
+        ROW_NUMBER() OVER (PARTITION BY NewPartId ORDER BY Id DESC) AS row_num
+
+        FROM ThreeD_Order WHERE ThreeD_Order.Status != 'Released' AND ThreeD_Order.Status != 'Cancelled'
+
+        ) AS D ON NewPart.Id = D.NewPartId and D.row_num = 1
+
+        WHERE
+
+        Material.MFG_PART_NUMBER in
+
+        <foreach collection="list" item="pn" index="index" open="(" close=")" separator=",">
+            #{pn}
+        </foreach>
+
+        and (Material.ModifiedDrawingFile ='' or Material.ModifiedDrawingFile is null)
+
+        ),
+
+        CTE_NewPart as(
+
+        SELECT
+
+        NewPart.FoxconnPN AS HHPN,
+
+        NewPart.StandardHHPN AS Standardpn,
+
+        NewPart.mfg,
+
+        NewPart.Id as newpartId,
+
+        NewPart.mfgpn,
+
+        D.Id as threeId,
+
+        PartType.Category + '\' + PartType.PartTypeName as partType,
+
+        CASE
+
+        WHEN D.NewPartId IS NOT NULL THEN '3D Drawing Process' COLLATE Chinese_PRC_CI_AS
+
+        WHEN NewPart.IsSpecial = 1 THEN 'Small Process' COLLATE Chinese_PRC_CI_AS
+
+        ELSE 'Standard Process'
+
+        END AS processName,
+
+        CASE
+
+        WHEN D.NewPartId IS NOT NULL THEN D.Status COLLATE Chinese_PRC_CI_AS
+
+        WHEN NewPart.NewPartStatus = 'DellCISReview' THEN 'DellCISTeamReview' COLLATE Chinese_PRC_CI_AS
+
+        ELSE NewPart.NewPartStatus COLLATE Chinese_PRC_CI_AS
+
+        END AS processStatus
+
+        FROM (
+
+        SELECT NewPart.Id, NewPart.Mfg COLLATE Chinese_PRC_CI_AS AS MFG, NewPart.MfgPN COLLATE Chinese_PRC_CI_AS AS MFGPN FROM NewPart
+
+        WHERE NewPart.NewPartStatus != 'Cancelled'
+
+        EXCEPT
+
+        SELECT Material.NewPartId, Material.MFG COLLATE Chinese_PRC_CI_AS AS MFG, Material.MFG_PART_NUMBER COLLATE Chinese_PRC_CI_AS AS MFGPN
+
+        FROM Material
+
+        ) A
+
+        INNER JOIN NewPart ON A.Id = NewPart.Id
+
+        LEFT JOIN (
+
+        SELECT
+
+        *,
+
+        ROW_NUMBER() OVER (PARTITION BY NewPartId ORDER BY Id DESC) AS row_num
+
+        FROM ThreeD_Order WHERE ThreeD_Order.Status != 'Released' AND ThreeD_Order.Status != 'Cancelled'
+
+        ) AS D ON NewPart.Id = D.NewPartId and D.row_num = 1
+
+        INNER JOIN PartType ON NewPart.PartTypeId = PartType.Id
+
+        WHERE NewPart.MfgPN in
+        <foreach collection="list" item="pn" index="index" open="(" close=")" separator=",">
+            #{pn}
+        </foreach>
+
+        )
+
+        SELECT
+
+        HHPN,
+
+        Standardpn,
+
+        mfg,
+
+        mfgpn,
+
+        partType,
+
+        processName,
+
+        PROCESSSTATUS,
+
+        CASE
+
+        WHEN processName = 'Standard Process' or processName = 'Small Process' THEN (select top 1 m3.Department Dept from Material m3 where
+        m3.MFG_PART_NUMBER = CTE_Material.mfgpn )
+
+        WHEN processName = 'Change Process - 3D Change' THEN (
+
+        select top 1 temp.Dept from (
+
+        select top 1 CAST(Change_Order_Task_Detail.NewValue COLLATE Chinese_PRC_CI_AS AS varchar) as Dept
+
+        from Change_Order_Task_Detail
+
+        left join Material_Change_Order on Material_Change_Order.Id=Change_Order_Task_Detail.ChangeOrderID
+
+        left join Material m on m.Id = Material_Change_Order.MaterialId
+
+        where m.MFG_PART_NUMBER = CTE_Material.mfgpn and Change_Order_Task_Detail.ChangeItemTitle ='Department'
+
+        union all
+
+        select m3.Department from Material m3 where m3.MFG_PART_NUMBER = CTE_Material.mfgpn and m3.Department is not null
+
+        ) temp
+
+        )
+
+        WHEN processName = '3D Drawing Process' THEN ( select top 1 temp.Dept from
+
+        (
+
+        select MechanicalDrawing.Department as Dept
+
+        from MechanicalDrawing where MechanicalDrawing.Id = (select top 1 ThreeD_Order.OriginalDrawingId from ThreeD_Order join NewPart on
+        ThreeD_Order.NewPartId = NewPart.Id join Material m on m.NewPartId = NewPart.Id where m.MFG_PART_NUMBER = CTE_Material.mfgpn and
+        ThreeD_Order.Status !='Cancelled') and MechanicalDrawing.Department is not null
+
+        union all
+
+        select m3.Department from Material m3 where m3.MFG_PART_NUMBER = CTE_Material.mfgpn and m3.Department is not null
+
+        ) temp
+
+        )
+
+        ELSE NULL
+
+        END AS Department ,
+
+        CASE
+
+        WHEN processName = 'Standard Process' or processName = 'Small Process' THEN ( select m3.Customer Customer from Material m3 where
+        m3.MFG_PART_NUMBER = CTE_Material.mfgpn)
+
+        WHEN processName = 'Change Process - 3D Change' THEN (
+
+        select top 1 temp.Customer from
+
+        (
+
+        select top 1 CAST(Change_Order_Task_Detail.NewValue COLLATE Chinese_PRC_CI_AS AS varchar) as Customer
+
+        from Change_Order_Task_Detail
+
+        left join Material_Change_Order on Material_Change_Order.Id=Change_Order_Task_Detail.ChangeOrderID
+
+        left join Material m on m.Id = Material_Change_Order.MaterialId
+
+        where m.MFG_PART_NUMBER = CTE_Material.mfgpn and Change_Order_Task_Detail.ChangeItemTitle ='Customer'
+
+        union all
+
+        select m3.Customer from Material m3 where m3.MFG_PART_NUMBER = CTE_Material.mfgpn
+
+        ) temp
+
+        )
+
+        WHEN processName = '3D Drawing Process' THEN ( select top 1 temp.Customer from
+
+        (
+
+        select MechanicalDrawing.Customer as Customer
+
+        from MechanicalDrawing where MechanicalDrawing.Id = (select top 1 td.OriginalDrawingId from ThreeD_Order td join NewPart on td.NewPartId =
+        NewPart.Id join Material m on m.NewPartId = NewPart.Id where m.MFG_PART_NUMBER = CTE_Material.mfgpn and td.Status !='Cancelled') and
+        MechanicalDrawing.Customer is not null
+
+        union all
+
+        select m3.Customer from Material m3 where m3.MFG_PART_NUMBER = CTE_Material.mfgpn
+
+        ) temp
+
+        )
+
+        ELSE NULL
+
+        END AS CISCustomer,
+
+        CASE
+
+        WHEN
+
+        processName = 'Standard Process' or processName = 'Small Process' THEN ( select top 1 U.Dept from [User] U where U.Id in (select n2.CreatorID
+        from Material m2 left join NewPart n2 on m2.NewPartId=n2.Id where m2.MFG_PART_NUMBER= CTE_Material.mfgpn) )
+
+        WHEN
+
+        processName = 'Change Process - 3D Change' THEN (select top 1 CAST(U.Dept COLLATE Chinese_PRC_CI_AS AS varchar)as Dept from [User] U where
+        U.Id in (select mco.CreatorID from Material m2 left join Material_Change_Order mco on m2.Id = mco.MaterialId where m2.MFG_PART_NUMBER =
+        CTE_Material.mfgpn and mco.Id = CTE_Material.changeOrderId))
+
+        WHEN
+
+        processName = '3D Drawing Process' THEN (select top 1 CAST(U.Dept COLLATE Chinese_PRC_CI_AS AS varchar)as Dept from [User] U where U.Id in
+        (select n2.CreatorID from Material m2 left join NewPart n2 on m2.NewPartId=n2.Id where m2.MFG_PART_NUMBER= CTE_Material.mfgpn))
+
+        ELSE NULL
+
+        END AS CreatorDept,
+
+        CASE
+
+        WHEN processName = 'Small Process' THEN 'https://pdmcis.efoxconn.com/PDMCISForDell/StandardSpecial/Assignment'
+
+        WHEN processName = 'Standard Process' THEN 'https://pdmcis.efoxconn.com/PDMCISForDell/Standard/Assignment'
+
+        WHEN processName = 'Change Process - 3D Change' THEN concat('https://pdmcis.efoxconn.com/PDMCISForDell/Change/MaterialChangeView?taskid=' ,(
+        select top 1 Id from Change_Order_Task where Change_Order_Task.ChangeOrderID = CTE_Material.changeOrderId order by
+        Change_Order_Task.CreatedTime desc) )
+
+        WHEN processName = '3D Drawing Process' THEN concat('https://pdmcis.efoxconn.com/PDMCISForDell/ThreeDDrawing/ThreeDOrderReview?taskid=' ,(
+        select top 1 Id from ThreeD_Order_Task where ThreeD_Order_Task.ThreeDOrderID = CTE_Material.threeDID order by ThreeD_Order_Task.CreatedTime
+        desc) )
+
+        ELSE 'https://pdmcis.efoxconn.com/PDMCISForDell/Material/StandardMaterialList'
+
+        END AS url
+
+        FROM CTE_Material
+
+        union all
+
+        SELECT
+
+        HHPN,
+
+        Standardpn,
+
+        mfg,
+
+        mfgpn,
+
+        partType,
+
+        processName,
+
+        processStatus ,
+
+        CASE
+
+        WHEN
+
+        processName = '3D Drawing Process' THEN ( select top 1 MechanicalDrawing.Department as Dept from MechanicalDrawing where MechanicalDrawing.Id
+        = (select top 1 ThreeD_Order.OriginalDrawingId from ThreeD_Order join NewPart n1 on ThreeD_Order.NewPartId = n1.Id where n1.Id =
+        CTE_NewPart.newpartId and ThreeD_Order.Status ! ='Cancelled'))
+
+        WHEN
+
+        processName = 'Standard Process' THEN ''
+
+        ELSE ''
+
+        END AS Department,
+
+        CASE
+
+        WHEN
+
+        processName = '3D Drawing Process' THEN ( select MechanicalDrawing.Customer as Customer
+
+        from MechanicalDrawing where MechanicalDrawing.Id =
+
+        (select top 1 ThreeD_Order.OriginalDrawingId from ThreeD_Order join NewPart n1 on ThreeD_Order.NewPartId = n1.Id where n1.Id =
+        CTE_NewPart.newpartId and ThreeD_Order.Status ! ='Cancelled')
+
+        )
+
+        WHEN
+
+        processName = 'Standard Process' THEN ''
+
+        ELSE ''
+
+        END AS Customer,
+
+        CASE
+
+        WHEN
+
+        processName = '3D Drawing Process' THEN (select top 1 CAST(U.Dept COLLATE Chinese_PRC_CI_AS AS varchar)as Dept from [User] U where U.Id in
+        (select n2.CreatorID from NewPart n2 where n2.MfgPN=CTE_NewPart.mfgpn))
+
+        WHEN
+
+        processName = 'Standard Process' or processName = 'Small Process' THEN (select top 1 U.Dept from [User] U where U.Id in (select n2.CreatorID
+        from NewPart n2 where n2.MfgPN = CTE_NewPart.mfgpn))
+
+        ELSE ''
+
+        END AS CreatorDept,
+
+        CASE
+
+        WHEN processName = 'Small Process' THEN concat('https://pdmcis.efoxconn.com/PDMCISForDell/StandardSpecial/' ,processStatus,'?taskid=', (SELECT
+        TOP 1 Id FROM NewPartTask WHERE NewPartTask.NewPartId = CTE_NewPart.newpartId ORDER BY NewPartTask.CreatedTime DESC) )
+
+        WHEN processName = 'Standard Process' THEN concat('https://pdmcis.efoxconn.com/PDMCISForDell/Standard/' ,processStatus,'?taskid=', (SELECT TOP
+        1 Id FROM NewPartTask WHERE NewPartTask.NewPartId = CTE_NewPart.newpartId ORDER BY NewPartTask.CreatedTime DESC) )
+
+        WHEN processName = '3D Drawing Process' THEN concat('https://pdmcis.efoxconn.com/PDMCISForDell/ThreeDDrawing/ThreeDOrderReview?taskid=' ,(
+        select top 1 Id from ThreeD_Order_Task where ThreeD_Order_Task.ThreeDOrderID = CTE_NewPart.threeId order by ThreeD_Order_Task.CreatedTime
+        desc) )
+
+        ELSE 'https://pdmcis.efoxconn.com/PDMCISForDell/Material/StandardMaterialList'
+
+        END AS url
+
+        FROM CTE_NewPart
+    </select>
+</mapper>

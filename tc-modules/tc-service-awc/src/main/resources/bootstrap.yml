@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: tc-service-awc
+  profiles:
+    active: local
+server:
+  port: 18090

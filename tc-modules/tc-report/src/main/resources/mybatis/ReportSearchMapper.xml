@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.tcreport.mapper.ReportSearchMapper">
+
+    <select id="getLov" resultType="com.foxconn.plm.tcreport.reportsearchparams.domain.LovBean">
+        SELECT
+        DISTINCT s.BU, s.CUSTOMER, s.PRODUCT_LINE AS productLine, s.SERIES_NAME AS projectSeries, s.project_id || '-'||
+        s.project_name AS projectInfo
+        FROM
+        infodba.SPAS_INFO s
+        WHERE
+        BU IS NOT NULL
+        AND CUSTOMER IS NOT NULL
+        AND PRODUCT_LINE IS NOT NULL
+        AND SERIES_NAME IS NOT NULL
+        AND project_id IS not NULL
+        AND project_name IS NOT NULL
+    </select>
+
+    <select id="getLovByParam" resultType="com.foxconn.plm.tcreport.reportsearchparams.domain.LovBean">
+        SELECT
+        DISTINCT s.BU, s.CUSTOMER, s.PRODUCT_LINE AS productLine, s.SERIES_NAME AS projectSeries, s.project_id || '-'||
+        s.project_name AS projectInfo
+        FROM
+        infodba.SPAS_INFO s
+        WHERE
+        s.project_id IS not NULL
+        <if test="bu != null and bu != ''">
+            AND s.BU = #{bu}
+        </if>
+        <if test="bu == null or bu == ''">
+            AND s.BU IS NOT NULL
+        </if>
+        AND s.project_id IS not NULL
+        <if test="customer != null and customer != ''">
+            AND s.CUSTOMER = #{customer}
+        </if>
+        <if test="customer == null or customer == ''">
+            AND s.CUSTOMER IS NOT NULL
+        </if>
+        <if test="productLine != null and productLine != ''">
+            AND s.PRODUCT_LINE = #{productLine}
+        </if>
+        <if test="productLine == null or productLine == ''">
+            AND s.PRODUCT_LINE IS NOT NULL
+        </if>
+        <if test="projectSeries != null and projectSeries != ''">
+            AND s.SERIES_NAME = #{projectSeries}
+        </if>
+        <if test="projectSeries == null or projectSeries == ''">
+            AND s.SERIES_NAME IS NOT NULL
+        </if>
+        <if test="projectName != null and projectName != ''">
+            AND s.project_name = #{projectName}
+        </if>
+        <if test="projectName == null or projectName == ''">
+            AND s.project_name IS NOT NULL
+        </if>
+        <if test="projectId != null and projectId != ''">
+            AND s.project_id = #{projectId}
+        </if>
+    </select>
+
+
+    <select id="getChassisByProjectId" resultType="string">
+        SELECT * FROM (
+            select ac.category_name from
+                xplm.spas_project_attribute pa,
+                xplm.spas_cus_attribute_category ac,
+                xplm.spas_cus_attribute ca
+            WHERE  pa.attribute_category_id = ac.id
+            AND ac.cus_attribute_id = ca.id
+            AND project_id = #{projectId}
+            AND ca.attribute = 'Chassis' ORDER BY pa.CREATED_TIME DESC)
+        WHERE rownum = 1
+    </select>
+
+    <select id="getMonitorChassisByProjectId" resultType="string">
+        SELECT * FROM (
+            SELECT cac.category_name FROM
+                spas_project_attribute pa,
+                spas_platform_found pf,
+                spas_product_line pl,
+                spas_customer c,
+                spas_cus_attribute_category cac,
+                spas_cus_attribute ca
+            WHERE pa.project_id = pf.id
+            AND pf.product_line_id = pl.id
+            AND pl.customer_id = c.id
+            AND pa.attribute_category_id = cac.id
+            AND cac.cus_attribute_id = ca.id
+            and pl.name = #{line}
+            and ca.attribute =#{attribute}
+            AND pa.PROJECT_ID = #{projectId}
+            ORDER BY pa.CREATED_TIME DESC)
+        WHERE rownum = 1
+    </select>
+
+
+  <select id="getPhaseByProjectId" resultType="java.util.Map">
+      select t2.phase_sn,t3.start_time,t3.end_time from
+        xplm.spas_platform_found t1,
+        xplm.SPAS_PRODUCT_LINE_PHASE t2,
+        xplm.SPAS_PROJECT_SCHEDULE t3
+      WHERE t1.product_line_id = t2.product_line_id
+      AND t2.id = t3.phase_id
+      AND t1.id = t3.project_id
+      AND t1.id = #{projectId}
+      ORDER BY phase_sn
+    </select>
+
+
+
+    <select id="getPhaseByProjectIdAndAttribute" resultType="java.util.Map">
+        SELECT pf.id projectId,pf.name projectName,plp.id phaseId,plp.phase_sn phase,ps.start_time,ps.end_time,ca.attribute,cac.category_name
+        FROM spas_project_schedule ps
+        LEFT JOIN spas_platform_found pf on ps.project_id = pf.id
+        LEFT JOIN spas_product_line_phase plp  on ps.phase_id = plp.id
+        LEFT JOIN spas_project_attribute pa on pf.id = pa.project_id and pa.business_stage_id = plp.business_stage_id
+        LEFT JOIN spas_cus_attribute_category cac on pa.attribute_category_id = cac.id
+        LEFT JOIN spas_cus_attribute ca on cac.cus_attribute_id = ca.id
+        WHERE pf.id = #{projectId}
+        ORDER BY pf.id,ps.phase_id
+    </select>
+
+    <select id="getProjectInfo" resultType="string">
+        select pf.process
+        FROM spas_platform_found pf
+        WHERE pf.id = #{projectId}
+    </select>
+</mapper>
+

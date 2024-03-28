@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.dp.plm.hdfs.dao.xplm.ProjectMapper">
+
+    <select id="getProjectList" parameterType="java.util.List"
+            resultType="com.foxconn.dp.plm.hdfs.domain.entity.TCProjectEntity">
+        SELECT p.PROJ_SPAS_ID AS id ,p.PROJ_NAME AS name ,p.FOLDER_ID AS folderId FROM OBJ_PROJECT p WHERE p.DEL_FLAG =
+        0 AND
+        <if test="ids.size()==0">
+            1=0
+        </if>
+        <if test="ids.size()>0">
+            p.PROJ_SPAS_ID IN
+            <foreach collection="ids" item="item" separator="," open="(" close=")">
+                #{item.id}
+            </foreach>
+        </if>
+
+    </select>
+
+    <select id="getVirtualProjectList" parameterType="java.util.List"
+            resultType="com.foxconn.dp.plm.hdfs.domain.entity.TCProjectEntity">
+        SELECT p.PROJ_SPAS_ID AS id,ltrim(p.PROJ_SPAS_ID,'v') as sid,p.PROJ_NAME AS name ,p.FOLDER_ID AS folderId FROM
+        OBJ_PROJECT p WHERE p.DEL_FLAG = 0 AND p.PROJ_SPAS_ID like 'v%'
+    </select>
+
+    <select id="getProjectIDsInSpas" resultType="com.foxconn.dp.plm.hdfs.domain.entity.TCProjectEntity">
+        SELECT * FROM (
+        SELECT
+        CONCAT('p',p.id) as id,
+        p.id as sid,
+        p.name as name,
+        u.work_id AS creatorId,
+        c.name AS customerName,
+        c.id as customerId,
+        l.name AS productLine,
+        l.id AS productLineId,
+        phase.PHASE_SN as phase
+        FROM SPAS_USER u
+        inner join SPAS_PLATFORM_FOUND p on u.id = p.owner
+        left join SPAS_PRODUCT_LINE l on l.id = p.product_line_id
+        left join SPAS_CUSTOMER c on c.id = l.customer_id
+        left join SPAS_PRODUCT_LINE_PHASE phase ON phase.id = p.CUR_PHASE_ID
+        WHERE 1=1
+        <if test="empId.toString() != 'admin'">
+            AND u.work_id = #{empId}
+        </if>
+
+        union
+
+        SELECT
+        CONCAT('p',tr.project_id) as id,
+        tr.project_id as sid,
+        p.name as name,
+        u.work_id AS creatorId,
+        c.name AS customerName,
+        c.id AS customerNameId,
+        l.name AS productLine,
+        l.id AS productLineId,
+        phase.PHASE_SN as phase
+        FROM SPAS_PROJECT_PERSON tr
+        inner join SPAS_PLATFORM_FOUND p on p.id =tr.project_id
+        inner join SPAS_USER u on u.id = p.owner
+        left join SPAS_PRODUCT_LINE l on l.id = p.product_line_id
+        left join SPAS_CUSTOMER c on c.id = l.customer_id
+        left join SPAS_PRODUCT_LINE_PHASE phase ON phase.id = p.CUR_PHASE_ID
+        WHERE 1=1
+        <if test="empId.toString() != 'admin'">
+            AND tr.work_id = #{empId}
+        </if>
+        ) t
+    </select>
+
+    <select id="getProjectById" resultType="com.foxconn.dp.plm.hdfs.domain.entity.TCProjectEntity">
+        SELECT u.work_id as creatorId
+        FROM SPAS_PLATFORM_FOUND p
+        INNER JOIN SPAS_USER u ON u.id = p.creator
+        WHERE p.id = SUBSTR(#{0},2)
+    </select>
+
+    <select id="getPhase" resultType="com.foxconn.dp.plm.hdfs.domain.entity.PhaseEntity">
+        select
+        s.phase_id as phaseId, p.phase_sn as phaseSn,p.name as phaseName,s.start_time as startTime,s.end_time as
+        endTime,project_id as sid
+        from
+        SPAS_PROJECT_SCHEDULE s left join SPAS_PRODUCT_LINE_PHASE p on p.id = s.phase_id
+        where
+        <if test="ids.size()==0">
+            1=0
+        </if>
+        <if test="ids.size()>0">
+            project_id in
+            <foreach collection="ids" item="item" separator="," open="(" close=")">
+                #{item.sid}
+            </foreach>
+        </if>
+        order by project_id,p.phase_sn
+    </select>
+
+
+</mapper>

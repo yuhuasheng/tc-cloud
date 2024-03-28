@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.integrate.mail.mapper.MailMapper">
+
+    <insert id="addMailGroup" parameterType="com.foxconn.plm.integrate.mail.domain.rp.MailGroupRp">
+        <selectKey keyProperty="id" resultType="java.lang.Long" order="BEFORE">
+            select ba_mail_group_seq.nextval from dual
+        </selectKey>
+        insert into ba_mail_group(id,group_name,group_descr,creator,bu,creator_name)
+        values (
+        #{id},#{groupName,jdbcType=VARCHAR},#{description,jdbcType=VARCHAR},#{creator,jdbcType=VARCHAR},#{bu,jdbcType=VARCHAR},#{creatorName}
+        )
+    </insert>
+
+    <delete id="deleteGroup">
+        delete from ba_mail_group WHERE id = #{id}
+    </delete>
+
+
+    <insert id="addMailUser" parameterType="com.foxconn.plm.integrate.mail.domain.rp.MailUserInner">
+        <selectKey keyProperty="id" resultType="java.lang.Long" order="BEFORE">
+            select ba_mail_group_user_seq.nextval from dual
+        </selectKey>
+        insert into ba_mail_group_user(id,group_id,emp_id,creator,creator_name,emp_name,mail)
+        values
+        (#{id},#{groupId},#{empId,jdbcType=VARCHAR},#{creator,jdbcType=VARCHAR},#{creatorName},#{userName},#{mail})
+    </insert>
+
+
+    <delete id="deleteMailUser">
+        delete from ba_mail_group_user WHERE group_id = #{groupId}
+    </delete>
+
+
+    <insert id="addMailItem" parameterType="com.foxconn.plm.integrate.mail.domain.rp.MailItemInner">
+        <selectKey keyProperty="id" resultType="java.lang.Long" order="BEFORE">
+            select ba_mail_group_item_seq.nextval from dual
+        </selectKey>
+        insert into ba_mail_group_item(id,group_id,item_id,item_type,creator,creator_name,item_category,uuid,item_name)
+        values
+        (#{id},#{groupId},#{itemId,jdbcType=VARCHAR},#{objType,jdbcType=VARCHAR},#{creator,jdbcType=VARCHAR},#{creatorName,jdbcType=VARCHAR},#{itemCategory,jdbcType=VARCHAR},#{uuid,jdbcType=VARCHAR},#{itemName,jdbcType=VARCHAR})
+    </insert>
+
+
+    <delete id="deleteMailItem">
+        delete from ba_mail_group_item WHERE id = #{id}
+    </delete>
+
+    <update id="updateGroup" parameterType="com.foxconn.plm.integrate.mail.domain.rp.MailGroupRp">
+        update ba_mail_group
+        <set>
+            LAST_UP_BY =#{updateBy},
+            LAST_UP_BY_NAME =#{updateByName},
+            LAST_UPD=sysdate,
+            <if test="groupName != null">group_name=#{groupName},</if>
+            <if test="description != null">group_descr=#{description},</if>
+        </set>
+        where id=#{id}
+    </update>
+
+
+    <select id="getMailGroupCnt" flushCache="true" resultType="java.lang.Integer">
+        select count(*) from ba_mail_group where upper(group_name)=#{groupName} and delete_flag=0
+    </select>
+
+
+    <select id="getMailUserCnt" flushCache="true" resultType="java.lang.Integer">
+        select count(*) from ba_mail_group_user where group_id=#{groupId} and upper(emp_id)=#{empId} and delete_flag=0
+    </select>
+
+
+    <select id="getGroupUsers" flushCache="true" resultType="com.foxconn.plm.integrate.mail.domain.MailUser">
+        select group_id groupId, emp_id empId ,emp_name userName,mail from ba_mail_group_user where group_id=#{groupId}
+        and delete_flag=0 order by id desc
+    </select>
+
+
+    <select id="getGroupUsersByName" flushCache="true" resultType="com.foxconn.plm.integrate.mail.domain.MailUser">
+        select u.group_id groupId, u.emp_id empId ,u.emp_name userName, u.mail from ba_mail_group g,ba_mail_group_user u
+        where g.group_name=#{groupName} and g.id= u.group_id and u.delete_flag=0 order by u.id desc
+    </select>
+
+
+    <select id="getGroupItems" flushCache="true" resultType="com.foxconn.plm.integrate.mail.domain.MailItem">
+        select id, group_id groupId, item_id itemId ,item_type objType,item_name itemName, item_category
+        itemCategory,uuid from ba_mail_group_item where group_id=#{groupId} order by id desc
+    </select>
+
+
+    <select id="getMailGroups" flushCache="true" resultType="com.foxconn.plm.integrate.mail.domain.MailGroup">
+        select * from (
+        select rownum rn ,id,groupName,
+        description,creator,creatorName,updateBy,updateByName,bu,created,lastUpd,editUser
+        from(
+        select id,group_name groupName,group_descr description, creator creator,creator_name creatorName,last_up_by
+        updateBy,last_up_by_name updateByName, bu,to_char(created,'yyyy/MM/dd HH24:mi:SS') created
+        ,to_char(last_upd,'yyyy/MM/dd HH24:mi:SS')lastUpd,edit_user editUser
+        from ba_mail_group
+        where delete_flag=0
+        and bu=#{bu}
+        ) order by id desc
+        ) where rn between #{rowStart} and #{rowEnd}
+
+    </select>
+
+
+    <select id="getMailGroupsCnt" flushCache="true" resultType="java.lang.Integer">
+
+        select count(*)
+        from ba_mail_group
+        where delete_flag=0
+        and bu=#{bu}
+    </select>
+
+
+</mapper>

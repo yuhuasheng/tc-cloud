@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="tc-service" />
+        <module name="tc-integrate-b2b" />
+        <module name="tc-fileservice" />
+        <module name="tc-api" />
+        <module name="tc-report" />
+        <module name="tc-hdfs" />
+        <module name="tc-integrate-sso" />
+        <module name="tc-gateway" />
+        <module name="tc-integrate" />
+        <module name="tc-sync-folder" />
+        <module name="tc-integrate-spas" />
+        <module name="tc-redis" />
+        <module name="tc-entity" />
+        <module name="tc-integrate-cis" />
+        <module name="tc-ops" />
+        <module name="tc-private" />
+        <module name="tc-util" />
+        <module name="tc-mail" />
+        <module name="tc-feign" />
+        <module name="tc-health" />
+        <module name="tc-rabbitmq" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="tc-api" target="11" />
+      <module name="tc-cloud" target="11" />
+      <module name="tc-common" target="11" />
+      <module name="tc-entity" target="11" />
+      <module name="tc-feign" target="11" />
+      <module name="tc-fileservice" target="11" />
+      <module name="tc-gateway" target="11" />
+      <module name="tc-hdfs" target="11" />
+      <module name="tc-health" target="11" />
+      <module name="tc-integrate" target="11" />
+      <module name="tc-integrate-b2b" target="11" />
+      <module name="tc-integrate-cis" target="11" />
+      <module name="tc-integrate-spas" target="11" />
+      <module name="tc-integrate-sso" target="11" />
+      <module name="tc-mail" target="11" />
+      <module name="tc-modules" target="11" />
+      <module name="tc-ops" target="11" />
+      <module name="tc-private" target="11" />
+      <module name="tc-rabbitmq" target="11" />
+      <module name="tc-redis" target="11" />
+      <module name="tc-report" target="11" />
+      <module name="tc-service" target="11" />
+      <module name="tc-sync-folder" target="11" />
+      <module name="tc-util" target="11" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="tc-api" options="--add-exports=java.base/sun.security.action=ALL-UNNAMED" />
+      <module name="tc-entity" options="--add-exports=java.base/sun.security.action=ALL-UNNAMED" />
+      <module name="tc-feign" options="--add-exports=java.base/sun.security.action=ALL-UNNAMED" />
+      <module name="tc-fileservice" options="--add-exports=java.base/sun.security.action=ALL-UNNAMED" />
+      <module name="tc-gateway" options="--add-exports=java.base/sun.security.action=ALL-UNNAMED" />
+      <module name="tc-hdfs" options="--add-exports=java.base/sun.security.action=ALL-UNNAMED" />
+      <module name="tc-health" options="--add-exports=java.base/sun.security.action=ALL-UNNAMED" />
+      <module name="tc-integrate" options="--add-exports=java.base/sun.security.action=ALL-UNNAMED" />
+      <module name="tc-integrate-b2b" options="--add-exports=java.base/sun.security.action=ALL-UNNAMED" />
+      <module name="tc-integrate-cis" options="--add-exports=java.base/sun.security.action=ALL-UNNAMED" />
+      <module name="tc-integrate-spas" options="--add-exports=java.base/sun.security.action=ALL-UNNAMED" />
+      <module name="tc-integrate-sso" options="--add-exports=java.base/sun.security.action=ALL-UNNAMED" />
+      <module name="tc-mail" options="--add-exports=java.base/sun.security.action=ALL-UNNAMED" />
+      <module name="tc-ops" options="--add-exports=java.base/sun.security.action=ALL-UNNAMED" />
+      <module name="tc-private" options="--add-exports=java.base/sun.security.action=ALL-UNNAMED" />
+      <module name="tc-rabbitmq" options="--add-exports=java.base/sun.security.action=ALL-UNNAMED" />
+      <module name="tc-redis" options="--add-exports=java.base/sun.security.action=ALL-UNNAMED" />
+      <module name="tc-report" options="--add-exports=java.base/sun.security.action=ALL-UNNAMED" />
+      <module name="tc-service" options="--add-exports=java.base/sun.security.action=ALL-UNNAMED" />
+      <module name="tc-sync-folder" options="--add-exports=java.base/sun.security.action=ALL-UNNAMED" />
+      <module name="tc-util" options="--add-exports=java.base/sun.security.action=ALL-UNNAMED" />
+    </option>
+  </component>
+</project>

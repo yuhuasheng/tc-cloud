@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.integrate.sap.rfc.mapper.SAPSupplierMapper">
+
+    <resultMap id="BaseResultMap" type="com.foxconn.plm.integrate.sap.rfc.domain.rp.PNSupplierInfo">
+        <result column="mfg" jdbcType="VARCHAR" property="mfg"/>
+        <result column="mfg_pn" jdbcType="VARCHAR" property="mfgPn"/>
+        <result column="mfg_zh" jdbcType="VARCHAR" property="mfgZh"/>
+        <result column="part_pn" jdbcType="VARCHAR" property="partPn"/>
+        <result column="rev" jdbcType="VARCHAR" property="rev"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="unit" jdbcType="VARCHAR" property="unit"/>
+        <result column="material_type" jdbcType="VARCHAR" property="materialType"/>
+        <result column="material_group" jdbcType="VARCHAR" property="materialGroup"/>
+        <result column="procurement_type" jdbcType="VARCHAR" property="procurementType"/>
+        <result column="plant" jdbcType="VARCHAR" property="plant"/>
+    </resultMap>
+
+    <delete id="deleteAll">
+		delete  from  SAP_SUPPLIER
+	</delete>
+
+    <select id="selectInPartPn"  resultMap="BaseResultMap">
+        SELECT *
+        FROM SAP_SUPPLIER P
+        WHERE PLANT = #{plant} AND part_pn in
+        <foreach item="item" index="index" collection="list"
+                 open="(" separator="," close=")">
+            #{item.partPn,jdbcType=VARCHAR}
+        </foreach>
+    </select>
+
+
+    <insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="false">
+        insert into SAP_SUPPLIER (
+        mfg,mfg_pn,mfg_zh,part_pn,plant,rev,description,unit,material_type,material_group,procurement_type
+        )
+        <foreach collection="list" item="item" index="index" separator="union">
+            (select
+            #{item.mfg,jdbcType=VARCHAR},
+            #{item.mfgPn,jdbcType=VARCHAR},
+            #{item.mfgZh,jdbcType=VARCHAR},
+            #{item.partPn,jdbcType=VARCHAR},
+            #{item.plant,jdbcType=VARCHAR},
+            #{item.rev,jdbcType=VARCHAR},
+            #{item.description,jdbcType=VARCHAR},
+            #{item.unit,jdbcType=VARCHAR},
+            #{item.materialType,jdbcType=VARCHAR},
+            #{item.materialGroup,jdbcType=VARCHAR},
+            #{item.procurementType,jdbcType=VARCHAR}
+            from dual )
+        </foreach>
+    </insert>
+
+
+</mapper>

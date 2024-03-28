@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.integrate.sap.maker.mapper.MakerMapper">
+
+    <select id="searchMakerInfo" resultType="com.foxconn.plm.integrate.sap.maker.domain.MakerInfoEntity">
+        SELECT distinct
+               m0.ADDRESS address,
+               m0.MAKERCODE makerCode ,
+               m0.MAKERNAME makerName ,
+               m0.maker_id  manufacturerID,
+               m0.MAKERPN makerPN ,
+               m0.TELEPHONE tel,
+               m0.CONTACTMAN contactMan,
+               m0.FAXNUMBER faxNumber
+          FROM sas_mnt_maker m0
+         where upper(m0.MAKERNAME) = upper(#{makerName})
+           <if test="makerContact !=null">
+               and upper(m0.CONTACTMAN) =  upper(#{makerContact})
+            </if>
+    </select>
+
+
+    <delete id="deleteMakerSas">
+        delete from sas_mnt_maker where makercode =#{id,jdbcType=VARCHAR}
+    </delete>
+
+    <delete id="deleteMakerInl">
+        delete from inl_maker_info where maker_code =#{id,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="addMakerSas">
+        insert into sas_mnt_maker (makercode,makername,epw)
+        values(#{id,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},'pass')
+    </insert>
+
+    <insert id="addMakerInl">
+        insert into inl_maker_info (maker_code,maker_name,maker_address)
+        values(#{id,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},#{address,jdbcType=VARCHAR})
+    </insert>
+</mapper>

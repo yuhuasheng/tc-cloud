@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.foxconn.plm.tcservice.mapper.master.BenefitReportMapper">
+
+    <select id="getActionLog" resultType="com.foxconn.plm.tcservice.benefitreport.domain.ActionLogBean">
+        SELECT
+        m.FUNCTION_NAME functionName,
+        m.CREATOR creator,
+        m.CREATOR_NAME creatorName,
+        m.PROJECT project,
+        m.PHASE phase,
+        m.ITEM_ID itemId,
+        m.ITEM_REV_UID itemRevUid,
+        m.START_TIME startTime,
+        m.END_TIME endTime,
+        m.ITEM_REV itemRev,
+        m.BU bu,
+        m.DEPT dept,
+        m.PROJ_LEVEL projLevel,
+        m.HANDLE_RESULT handleResult,
+        m.EXCEPTION_MSG exceptionMsg,
+        m.CUSTOMER custom,
+        m.PHASE_END_DATE phaseEndDate
+        FROM ACTION_LOG m
+        WHERE SUBSTR(m.PHASE_END_DATE, 0, 7) = #{cusDate}
+        AND m.BU = #{bu}
+    </select>
+
+    <select id="getActionLogByBUAndPhase" resultType="com.foxconn.plm.tcservice.benefitreport.domain.ActionLogBean">
+        SELECT
+        m.FUNCTION_NAME functionName,
+        m.CREATOR creator,
+        m.CREATOR_NAME creatorName,
+        m.PROJECT project,
+        m.PHASE phase,
+        m.ITEM_ID itemId,
+        m.ITEM_REV_UID itemRevUid,
+        m.START_TIME startTime,
+        m.END_TIME endTime,
+        m.ITEM_REV itemRev,
+        m.BU bu,
+        m.DEPT dept,
+        m.PROJ_LEVEL projLevel,
+        m.HANDLE_RESULT handleResult,
+        m.EXCEPTION_MSG exceptionMsg,
+        m.CUSTOMER custom,
+        m.PHASE_END_DATE phaseEndDate
+        FROM ACTION_LOG m
+        WHERE m.PHASE = #{phase}
+        AND m.BU = #{bu}
+        AND m.FUNCTION_NAME = #{functionName}
+        AND m.project = #{projectId}
+    </select>
+
+    <select id="getActionLogForSingle" resultType="com.foxconn.plm.tcservice.benefitreport.domain.ActionLogBean">
+        SELECT
+        m.FUNCTION_NAME functionName,
+        m.CREATOR creator,
+        m.CREATOR_NAME creatorName,
+        m.PROJECT project,
+        m.PHASE phase,
+        m.ITEM_ID itemId,
+        m.ITEM_REV_UID itemRevUid,
+        m.START_TIME startTime,
+        m.END_TIME endTime,
+        m.ITEM_REV itemRev,
+        m.BU bu,
+        m.DEPT dept,
+        m.PROJ_LEVEL projLevel,
+        m.HANDLE_RESULT handleResult,
+        m.EXCEPTION_MSG exceptionMsg,
+        m.CUSTOMER custom,
+        m.PHASE_END_DATE phaseEndDate
+        FROM ACTION_LOG m
+        WHERE m.PROJECT = #{projectId}
+        AND m.BU = #{bu}
+    </select>
+
+    <select id="getTCProject" resultMap="ProjectResultMap">
+        SELECT TAB3.PD9_SPAS_ID as projectId , TAB3.POBJECT_Name as projectName FROM (
+        SELECT TAB1.PUID,TAB1.PD9_SPAS_ID,TO_CHAR(TAB2.PCREATION_DATE + 8/24,'YYYY-MM-DD HH24:MI:SS') CREATE_DATE ,
+        TAB1.POBJECT_Name FROM (
+        SELECT D9.PUID ,D9.PD9_SPAS_ID , W.POBJECT_Name FROM INFODBA.PD9_PROJECTFOLDER D9
+        LEFT JOIN INFODBA.PWORKSPACEOBJECT W ON D9.PUID = W.PUID WHERE W.POBJECT_TYPE = 'D9_PlatformFoundFolder'
+        ) TAB1 LEFT JOIN INFODBA.PPOM_APPLICATION_OBJECT TAB2 ON TAB1.PUID = TAB2.PUID
+        ) TAB3 WHERE TAB3.CREATE_DATE > '2022-05-31 00:00:00'
+        AND TAB3.CREATE_DATE &lt; TO_CHAR(SYSDATE + 8/24, 'YYYY-MM-DD HH24:MI:SS')
+        <if test="projectName != null and projectName !=''">
+            AND TAB3.POBJECT_Name LIKE concat(concat('%', #{projectName}), '%')
+        </if>
+    </select>
+
+    <resultMap id="ProjectResultMap" type="java.util.Map">
+        <result property="projectId" column="projectId"/>
+        <result property="projectName" column="projectName"/>
+    </resultMap>
+
+    <select id="getRowData" resultType="com.foxconn.plm.tcservice.benefitreport.domain.RowDataBean">
+        SELECT ACTION_LOG.function_name AS functionName, ACTION_LOG.bu AS bu, ACTION_LOG.dept AS dept,
+        ACTION_LOG.creator AS creator, ACTION_LOG.creator_name AS createName,
+        ACTION_LOG.item_id AS itemId, ACTION_LOG.item_rev as ver, ACTION_LOG.project as projectId,
+        tc_project.pproject_name AS projectName,
+        ACTION_LOG.proj_level AS levels, ACTION_LOG.phase AS phase, ACTION_LOG.start_time AS startTime,
+        ACTION_LOG.end_time AS endTime, PHASE_END_DATE AS phaseEndDate
+        FROM ACTION_LOG,
+        infodba.ptc_project tc_project
+        WHERE ACTION_LOG.project = tc_project.pproject_id
+        <if test="bu != null and bu != ''">
+            AND ACTION_LOG.bu = #{bu}
+        </if>
+
+        <if test="projectId != null and projectId != ''">
+            AND ACTION_LOG.project = #{projectId}
+        </if>
+
+        <if test="startDate != null and startDate != ''">
+            AND SUBSTR(ACTION_LOG.PHASE_END_DATE, 0, 7) = #{startDate}
+        </if>
+    </select>
+
+    <select id="getRowDataByBUAndPhase" resultType="com.foxconn.plm.tcservice.benefitreport.domain.RowDataBean">
+        SELECT ACTION_LOG.function_name AS functionName, ACTION_LOG.bu AS bu, ACTION_LOG.dept AS dept,
+        ACTION_LOG.creator AS creator, ACTION_LOG.creator_name AS createName,
+        ACTION_LOG.item_id AS itemId, ACTION_LOG.item_rev as ver, ACTION_LOG.project as projectId,
+        tc_project.pproject_name AS projectName,
+        ACTION_LOG.proj_level AS levels, ACTION_LOG.phase AS phase, ACTION_LOG.start_time AS startTime,
+        ACTION_LOG.end_time AS endTime, PHASE_END_DATE AS phaseEndDate
+        FROM ACTION_LOG,
+        infodba.ptc_project tc_project
+        WHERE ACTION_LOG.project = tc_project.pproject_id
+        <if test="bu != null and bu != ''">
+            AND ACTION_LOG.bu = #{bu}
+        </if>
+
+        <if test="phase != null and phase != ''">
+            AND ACTION_LOG.phase = #{phase}
+        </if>
+
+        <if test="functionName != null and functionName != ''">
+            AND ACTION_LOG.function_name = #{functionName}
+        </if>
+
+        <if test="projectId != null and projectId != ''">
+            AND ACTION_LOG.project = #{projectId}
+        </if>
+    </select>
+
+
+    <select id="getCisRowData" resultType="com.foxconn.plm.tcservice.benefitreport.domain.RowDataBean">
+        SELECT FUNCTION_NAME AS functionName, ITEM_ID AS itemId, ITEM_REV AS ver, creator, CREATOR_NAME AS createName,
+        START_TIME AS startTime, END_TIME AS endTime, bu
+        FROM CIS_ACTION_LOG
+        <where>
+            <if test="bu != null and bu !=''">
+                AND bu = #{bu}
+            </if>
+            <if test="startDate != null and startDate != ''">
+                AND SUBSTR(START_TIME, 0, 7) = #{startDate}
+                AND SUBSTR(END_TIME, 0, 7) = #{startDate}
+            </if>
+        </where>
+    </select>
+
+
+    <resultMap id="rowDataMap" type="java.util.Map">
+        <result property="functionName" column="functionName"/>
+        <result property="bu" column="bu"/>
+        <result property="dept" column="dept"/>
+        <result property="creator" column="creator"/>
+        <result property="createName" column="createName"/>
+        <result property="itemId" column="itemId"/>
+        <result property="ver" column="ver"/>
+        <result property="projectId" column="projectId"/>
+        <result property="projectName" column="projectName"/>
+        <result property="levels" column="levels"/>
+        <result property="phase" column="phase"/>
+        <result property="startTime" column="startTime"/>
+        <result property="endTime" column="endTime"/>
+    </resultMap>
+</mapper>
